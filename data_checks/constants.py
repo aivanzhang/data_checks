@@ -1,0 +1,1 @@
+DEFAULT_CHECK_PREFIX = "check_"

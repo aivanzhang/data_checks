@@ -1,0 +1,1 @@
+export PYTHONPATH="${PYTHONPATH}:/Users/ivanzhang/Desktop/data-checks/data_checks"
