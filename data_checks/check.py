@@ -1,49 +1,64 @@
-from constants import DEFAULT_CHECK_PREFIX
+from constants import DEFAULT_RULE_PREFIX
 
 
 class Check:
     def __init__(self, name, description):
+        """
+        Initialize a check object
+        """
         self.name = name
         self.description = description
-        self.checks_prefix = DEFAULT_CHECK_PREFIX
+        self.checks_prefix = DEFAULT_RULE_PREFIX
 
     def setup(self):
+        """
+        One time setup for all rules in the check
+        """
         return
-
-    def ingest(self):
-        raise NotImplementedError
 
     def before(self):
+        """
+        Run before each rule
+        """
         return
 
-    def run(self):
+    def run(self, rule: str):
+        """
+        Runs a single rule
+        """
         try:
-            assert self.ingest()
-            # raise NotImplementedError
-        except AssertionError:
+            # Run the rule
+            self.on_success()
+            return
+        except AssertionError as e:
             self.on_failure()
             return
-        self.on_success()
 
     def after(self):
         return
 
     def run_all(self):
-        try:
-            assert self.ingest()
-            # raise NotImplementedError
-        except AssertionError:
-            self.on_failure()
-            return
-        self.on_success()
+        """
+        Run all the rules in the check
+        """
+        return
 
     def on_success(self):
+        """
+        Called when a rule succeeds
+        """
         return
 
     def on_failure(self):
+        """
+        Called when a rule fails
+        """
         return
 
     def teardown(self):
+        """
+        One time teardown after all rules are run
+        """
         return
 
     def __repr__(self):

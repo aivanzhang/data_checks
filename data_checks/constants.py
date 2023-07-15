@@ -1,1 +1,1 @@
-DEFAULT_CHECK_PREFIX = "check_"
+DEFAULT_RULE_PREFIX = "rule_"
