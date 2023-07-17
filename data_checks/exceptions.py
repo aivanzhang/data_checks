@@ -14,11 +14,20 @@ class DataCheckException(Exception):
 
     def __init__(
         self,
-        severity: float = 1.0,
+        severity=1.0,
         exception: Exception | None = None,
-        metadata: dict = {},
+        metadata={},
     ):
         self.severity = severity
         self.exception = exception
         self.metadata = metadata
         super().__init__()
+
+    def __str__(self):
+        return f"DataCheckException(severity={self.severity}, exception={self.exception}, metadata={self.metadata})"
+
+    @classmethod
+    def from_assertion_error(
+        cls, e: AssertionError, *args, **kwargs
+    ) -> "DataCheckException":
+        return cls(exception=e, *args, **kwargs)
