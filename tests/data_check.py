@@ -106,13 +106,15 @@ def get_spend() -> pd.DataFrame:
 
 
 class CompanyRevenueCheck(Check):
-    def rule_check_spend_not_empty(self):
+    @Check.rule()
+    def rule_check_spend_not_empty(self, data: dict):
         df = get_spend()
+        self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
-        return
 
     def teardown(self):
         return super().teardown()
 
 
-print(CompanyRevenueCheck(name="Amazon").run_all())
+print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
+# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").log_metadata({"a": 1}))

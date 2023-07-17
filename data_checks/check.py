@@ -2,16 +2,14 @@
 Check class
 """
 from typing import Dict, Any
-from constants import DEFAULT_RULE_PREFIX
+import time
+import inspect
 from exceptions import DataCheckException
 from utils.class_utils import get_all_methods
-import time
 
 
 class Check:
-    def __init__(
-        self, name=None, description="", rules_prefix=DEFAULT_RULE_PREFIX, verbose=False
-    ):
+    def __init__(self, name=None, description="", rules_prefix="", verbose=False):
         """
         Initialize a check object
         """
@@ -19,9 +17,14 @@ class Check:
         self.name = self.__class__.__name__ if name is None else name
         self.description = description
         self.rules_prefix = rules_prefix
-        self.rules = [
-            rule for rule in get_all_methods(self) if rule.startswith(self.rules_prefix)
-        ]
+        self.rules = {
+            rule
+            for rule in get_all_methods(self)
+            if (self.rules_prefix != "" and rule.startswith(self.rules_prefix))
+            or getattr(getattr(self, rule), "is_rule", False)
+        }
+        print(self.rules)
+
         # Stores any metadata generated when a rule runs
         self.rules_context = dict.fromkeys(self.rules, dict())
 
@@ -47,9 +50,6 @@ class Check:
     def ingest_from(self, source: str):
         return
 
-    def start_subrule(self, subrule_name: str, data: Any):
-        self.rules_context[subrule_name] = data
-
     def run(self, rule: str):
         """
         Runs a single rule
@@ -62,7 +62,6 @@ class Check:
             self.on_success()
         except AssertionError as e:
             print(e)
-            print(self.rules_context)
             self.on_failure(DataCheckException.from_assertion_error(e))
         except DataCheckException as e:
             print(e)
@@ -77,7 +76,6 @@ class Check:
         Run all the rules in the check based off the rules_prefix
         """
         self.setup()
-        print(self.name)
         for index, rule in enumerate(self.rules):
             print(f"\t[{index + 1}/{len(self.rules)}] {rule}")
             start_time = time.time()
@@ -109,6 +107,19 @@ class Check:
         """
         return
 
+    def log_metadata(self, metadata: Dict[str, Any]):
+        """
+        Log metadata with its associated rule
+        """
+        print("logging metadata")
+        rule = ""
+        curframe = inspect.currentframe()
+        # print(inspect.stack()[1][3].startswith(DEFAULT_RULE_PREFIX))
+        # calframe = inspect.getouterframes(curframe, 2)
+        # print(curframe, calframe)
+        # print('caller name:', calframe[1][3])
+        # self.rules_context[rule].update(metadata)
+
     @staticmethod
     def rule(name="", severity=1.0):
         """
@@ -116,12 +127,16 @@ class Check:
         """
 
         def wrapper(rule_func):
+            rule_name = rule_func.__name__
+
             def wrapper_func(self, *args, **kwargs):
-                self.rules_context[rule_func.__name__]["severity"] = severity
-                self.rules_context[rule_func.__name__]["args"] = args
-                self.rules_context[rule_func.__name__]["kwargs"] = kwargs
+                self.rules_context[rule_name]["name"] = name
+                self.rules_context[rule_name]["severity"] = severity
+                self.rules_context[rule_name]["args"] = args
+                self.rules_context[rule_name]["kwargs"] = kwargs
                 return rule_func(self, *args, **kwargs)
 
+            wrapper_func.is_rule = True
             return wrapper_func
 
         return wrapper

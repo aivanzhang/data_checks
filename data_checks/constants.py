@@ -1,1 +1,0 @@
-DEFAULT_RULE_PREFIX = "rule_"
