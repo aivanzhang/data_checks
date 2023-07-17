@@ -1,14 +1,18 @@
+"""
+Check class
+"""
 from constants import DEFAULT_RULE_PREFIX
+from utils.class_utils import get_all_methods
 
 
 class Check:
-    def __init__(self, name, description):
+    def __init__(self, name="", description="", checks_prefix=DEFAULT_RULE_PREFIX):
         """
         Initialize a check object
         """
-        self.name = name
+        self.name = f"{self.__class__.__name__}: {name}"
         self.description = description
-        self.checks_prefix = DEFAULT_RULE_PREFIX
+        self.checks_prefix = checks_prefix
 
     def setup(self):
         """
@@ -39,8 +43,20 @@ class Check:
 
     def run_all(self):
         """
-        Run all the rules in the check
+        Run all the rules in the check based off the checks_prefix
         """
+        print(self.name)
+        rules = [
+            rule
+            for rule in get_all_methods(self)
+            if rule.startswith(self.checks_prefix)
+        ]
+
+        for index, rule in enumerate(rules):
+            print(f"{rule} ({index + 1}/{len(rules)})")
+            rule_func = getattr(self, rule)
+            self.run(rule_func)
+
         return
 
     def on_success(self):
@@ -77,4 +93,5 @@ def ingest_template():
 def rule_template():
 
 Go from notebook to check
+Download and store locally
 """
