@@ -3,6 +3,7 @@ Check class
 """
 from typing import Dict, Any
 from constants import DEFAULT_RULE_PREFIX
+from data_exceptions import DataCheckException
 from utils.class_utils import get_all_methods
 import time
 
@@ -49,9 +50,9 @@ class Check:
             rule_func = getattr(self, rule)
             rule_func()
             self.on_success()
-        except AssertionError as e:
+        except DataCheckException as e:
             print(e)
-            self.on_failure()
+            self.on_failure(e)
         self.after()
 
     def after(self):
@@ -81,7 +82,7 @@ class Check:
         """
         return
 
-    def on_failure(self):
+    def on_failure(self, exception: DataCheckException):
         """
         Called when a rule fails
         """
