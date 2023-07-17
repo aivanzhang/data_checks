@@ -1,18 +1,22 @@
 """
 Check class
 """
+from typing import Dict, Any
 from constants import DEFAULT_RULE_PREFIX
 from utils.class_utils import get_all_methods
+import time
 
 
 class Check:
-    def __init__(self, name="", description="", checks_prefix=DEFAULT_RULE_PREFIX):
+    def __init__(self, name=None, description="", checks_prefix=DEFAULT_RULE_PREFIX):
         """
         Initialize a check object
         """
-        self.name = f"{self.__class__.__name__}: {name}"
+        self.name = self.__class__.__name__ if name is None else name
         self.description = description
         self.checks_prefix = checks_prefix
+        # Stores any metadata generated when a rule runs
+        self.rules_context: Dict[str, Any] = dict()
 
     def setup(self):
         """
@@ -26,18 +30,27 @@ class Check:
         """
         return
 
+    def _run_async(self, rule: str):
+        return
+
     def run(self, rule: str):
         """
         Runs a single rule
         """
         try:
+            self.before()
             rule_func = getattr(self, rule)
             rule_func()
             self.on_success()
         except AssertionError as e:
+            print(e)
             self.on_failure()
+        self.after()
 
     def after(self):
+        return
+
+    def run_all_async(self):
         return
 
     def run_all(self):
@@ -50,9 +63,12 @@ class Check:
             for rule in get_all_methods(self)
             if rule.startswith(self.checks_prefix)
         ]
+        print(self.name)
         for index, rule in enumerate(rules):
-            print(f"{rule} ({index + 1}/{len(rules)})")
+            print(f"\t[{index + 1}/{len(rules)}] {rule}")
+            start_time = time.time()
             self.run(rule)
+            print(f"\t{time.time() - start_time:.2f} seconds")
         self.teardown()
 
     def on_success(self):
