@@ -31,12 +31,11 @@ class Check:
         Runs a single rule
         """
         try:
-            # Run the rule
+            rule_func = getattr(self, rule)
+            rule_func()
             self.on_success()
-            return
         except AssertionError as e:
             self.on_failure()
-            return
 
     def after(self):
         return
@@ -45,19 +44,16 @@ class Check:
         """
         Run all the rules in the check based off the checks_prefix
         """
-        print(self.name)
+        self.setup()
         rules = [
             rule
             for rule in get_all_methods(self)
             if rule.startswith(self.checks_prefix)
         ]
-
         for index, rule in enumerate(rules):
             print(f"{rule} ({index + 1}/{len(rules)})")
-            rule_func = getattr(self, rule)
-            self.run(rule_func)
-
-        return
+            self.run(rule)
+        self.teardown()
 
     def on_success(self):
         """
