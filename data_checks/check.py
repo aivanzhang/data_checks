@@ -18,6 +18,13 @@ class Check:
         # Stores any metadata generated when a rule runs
         self.rules_context: Dict[str, Any] = dict()
 
+    @classmethod
+    def init(cls, file_path: str) -> "Check":
+        """
+        Initialize a check from a JSON file
+        """
+        return cls()
+
     def setup(self):
         """
         One time setup for all rules in the check
@@ -30,7 +37,7 @@ class Check:
         """
         return
 
-    def _run_async(self, rule: str):
+    def ingest_from(self, source: str):
         return
 
     def run(self, rule: str):
@@ -48,9 +55,6 @@ class Check:
         self.after()
 
     def after(self):
-        return
-
-    def run_all_async(self):
         return
 
     def run_all(self):
@@ -86,6 +90,12 @@ class Check:
     def teardown(self):
         """
         One time teardown after all rules are run
+        """
+        return
+
+    def save_to_file(self, file_path: str):
+        """
+        Save the check to a file
         """
         return
 
