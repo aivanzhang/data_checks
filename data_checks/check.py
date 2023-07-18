@@ -1,11 +1,12 @@
 """
 Check class
 """
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 import time
 import inspect
 from exceptions import DataCheckException
 from utils.class_utils import get_all_methods
+from ingestors import ingest_from_registry
 
 
 class Check:
@@ -17,12 +18,16 @@ class Check:
         self.name = self.__class__.__name__ if name is None else name
         self.description = description
         self.rules_prefix = rules_prefix
-        self.rules = {
-            rule
-            for rule in get_all_methods(self)
-            if (self.rules_prefix != "" and rule.startswith(self.rules_prefix))
-            or getattr(getattr(self, rule), "is_rule", False)
-        }
+        self.rules: Dict[str, Callable[..., None]] = dict()
+        self.ingestors: Dict[str, Callable[..., Any]] = dict()
+        for class_method in get_all_methods(self):
+            method = getattr(self, class_method)
+            if (
+                self.rules_prefix != "" and class_method.startswith(self.rules_prefix)
+            ) or getattr(method, "is_rule", False):
+                self.rules[class_method] = method
+            elif getattr(method, "is_ingestor", False):
+                self.ingestors[class_method] = method
 
         # Stores any metadata generated when a rule runs
         self.rules_context = dict.fromkeys(self.rules, dict())
@@ -46,8 +51,15 @@ class Check:
         """
         return
 
-    def ingest_from(self, source: str):
-        return
+    def _ingest_from(self, source: str):
+        """
+        Check for class-specific ingestors and then check for global ingestors
+        """
+        # print(self.ingestors, ingestor_registry)
+        if source in self.ingestors:
+            return self.ingestors[source]()
+        else:
+            return ingest_from_registry(source)()
 
     def run(self, rule: str):
         """
@@ -55,8 +67,9 @@ class Check:
         """
         self.before()
         try:
-            data = {}
-            rule_func = getattr(self, rule)
+            rule_func = self.rules[rule]
+            ingestor = getattr(rule_func, "ingest_from", "")
+            data = self._ingest_from(ingestor)
             rule_func(data)
             self.on_success()
         except AssertionError as e:
@@ -120,7 +133,7 @@ class Check:
         # self.rules_context[rule].update(metadata)
 
     @staticmethod
-    def rule(name="", severity=1.0):
+    def rule(ingest_from: str, id="", name="", severity=1.0):
         """
         Decorator for a rule function
         """
@@ -128,15 +141,30 @@ class Check:
         def wrapper(rule_func):
             rule_name = rule_func.__name__
 
-            def wrapper_func(self, *args, **kwargs):
+            def wrapper_func(self, data):
+                self.rules_context[rule_name]["ingest_from"] = ingest_from
                 self.rules_context[rule_name]["name"] = name
                 self.rules_context[rule_name]["severity"] = severity
-                self.rules_context[rule_name]["args"] = args
-                self.rules_context[rule_name]["kwargs"] = kwargs
-                return rule_func(self, *args, **kwargs)
+                self.rules_context[rule_name]["data"] = data
+                return rule_func(self, data)
 
+            wrapper_func.name = name or rule_name
             wrapper_func.is_rule = True
+            wrapper_func.ingest_from = ingest_from
             return wrapper_func
+
+        return wrapper
+
+    @staticmethod
+    def ingestor(name=""):
+        """
+        Decorator for a ingestor function
+        """
+
+        def wrapper(ingestor_func):
+            ingestor_func.name = name or ingestor_func.__name__
+            ingestor_func.is_ingestor = True
+            return ingestor_func
 
         return wrapper
 

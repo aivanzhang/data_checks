@@ -1,4 +1,5 @@
 from data_checks.check import Check
+from data_checks.ingestors import ingestor
 import os
 import uuid
 import pandas as pd
@@ -62,6 +63,7 @@ def clean_df_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+@ingestor(name="spend")
 def get_spend() -> pd.DataFrame:
     """
     Get spend data from GCS bucket.
@@ -106,8 +108,9 @@ def get_spend() -> pd.DataFrame:
 
 
 class CompanyRevenueCheck(Check):
-    @Check.rule()
+    @Check.rule(ingest_from="get_spend")
     def rule_check_spend_not_empty(self, data: dict):
+        print("data", data)
         df = get_spend()
         self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
