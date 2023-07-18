@@ -23,7 +23,6 @@ class Check:
             if (self.rules_prefix != "" and rule.startswith(self.rules_prefix))
             or getattr(getattr(self, rule), "is_rule", False)
         }
-        print(self.rules)
 
         # Stores any metadata generated when a rule runs
         self.rules_context = dict.fromkeys(self.rules, dict())
