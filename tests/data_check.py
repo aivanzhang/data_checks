@@ -108,9 +108,8 @@ def get_spend() -> pd.DataFrame:
 
 
 class CompanyRevenueCheck(Check):
-    @Check.rule(ingest_from="get_spend")
-    def rule_check_spend_not_empty(self, data: dict):
-        print("data", data)
+    @Check.rule()
+    def rule_check_spend_not_empty(self):
         df = get_spend()
         self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
