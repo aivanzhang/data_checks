@@ -45,6 +45,17 @@ class Check:
         """
         return cls()
 
+    def _get_params(self, rule: str) -> FunctionArgs:
+        """
+        Get the params for a rule
+        """
+        params = self.rule_params[rule]
+        if params:
+            if callable(params):
+                params = params()
+            return params
+        return ((), {})
+
     def setup(self):
         """
         One time setup for all rules in the check
@@ -66,16 +77,6 @@ class Check:
         else:
             return ingest_from_registry(source)
 
-    # def _get_params(self, rule) -> FunctionArgs:
-    #     """
-    #     Get the parameters for a rule
-    #     """
-    #     if rule in self.rule_params:
-    #         if callable(self.rule_params[rule]):
-    #             return self.rule_params[rule]()
-    #         return self.rule_params[rule]
-    #     return None
-
     def run(self, rule: str):
         """
         Runs a single rule
@@ -83,7 +84,8 @@ class Check:
         self.before()
         try:
             rule_func = self.rules[rule]
-            rule_func()
+            rule_params = self._get_params(rule)
+            rule_func(*rule_params[0], **rule_params[1])
             self.on_success()
         except AssertionError as e:
             print(e)
