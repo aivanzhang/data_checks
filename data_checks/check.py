@@ -4,10 +4,10 @@ Check class
 from typing import Dict, Any, Callable
 import time
 import inspect
+import asyncio
 from exceptions import DataCheckException
 from check_types import FunctionArgs
 from utils.class_utils import get_all_methods
-from ingestors import ingest_from_registry
 
 
 class Check:
@@ -18,22 +18,23 @@ class Check:
         self.verbose = verbose
         self.name = self.__class__.__name__ if name is None else name
         self.description = description
-        self.rules_prefix = rules_prefix
-        self.rules: Dict[str, Callable[..., None]] = dict()
-        self.rule_params: Dict[str, FunctionArgs | Callable[..., FunctionArgs]] = dict()
-        self.ingestor_params: Dict[
-            str, Dict[str, FunctionArgs | Callable[..., FunctionArgs]]
-        ] = dict()
 
-        self.ingestors: Dict[str, Callable[..., Any]] = dict()
+        # Prefix for all rules in the check to be automatically run
+        self.rules_prefix = rules_prefix
+
+        # Stores all the rules functions in the check
+        self.rules: Dict[str, Callable[..., None]] = dict()
+
+        # Stores the params for each rule
+        self.rule_params: Dict[str, FunctionArgs | Callable[..., FunctionArgs]] = dict()
+
+        # Find and store all the rules in the check
         for class_method in get_all_methods(self):
             method = getattr(self, class_method)
             if (
                 self.rules_prefix != "" and class_method.startswith(self.rules_prefix)
             ) or getattr(method, "is_rule", False):
                 self.rules[class_method] = method
-            elif getattr(method, "is_ingestor", False):
-                self.ingestors[class_method] = method
 
         # Stores any metadata generated when a rule runs
         self.rules_context = dict.fromkeys(self.rules, dict())
@@ -45,16 +46,20 @@ class Check:
         """
         return cls()
 
-    def _get_params(self, rule: str) -> FunctionArgs:
+    def _get_rule_params(self, rule: str) -> FunctionArgs:
         """
         Get the params for a rule
         """
-        params = self.rule_params[rule]
-        if params:
+        if rule not in self.rule_params:
+            return {
+                "args": tuple(),
+                "kwargs": dict(),
+            }
+        else:
+            params = self.rule_params[rule]
             if callable(params):
                 params = params()
             return params
-        return ((), {})
 
     def setup(self):
         """
@@ -68,15 +73,6 @@ class Check:
         """
         return
 
-    def ingest_from(self, source: str) -> Callable:
-        """
-        Check for class-specific ingestors and then check for global ingestors
-        """
-        if source in self.ingestors:
-            return self.ingestors[source]
-        else:
-            return ingest_from_registry(source)
-
     def run(self, rule: str):
         """
         Runs a single rule
@@ -84,8 +80,8 @@ class Check:
         self.before()
         try:
             rule_func = self.rules[rule]
-            rule_params = self._get_params(rule)
-            rule_func(*rule_params[0], **rule_params[1])
+            rule_params = self._get_rule_params(rule)
+            rule_func(*rule_params["args"], **rule_params["kwargs"])
             self.on_success()
         except AssertionError as e:
             print(e)
@@ -95,12 +91,15 @@ class Check:
             self.on_failure(e)
         self.after()
 
+    def run_async(self, rule: str):
+        return asyncio.get_event_loop().run_in_executor(None, self.run, rule)
+
     def after(self):
         return
 
     def run_all(self):
         """
-        Run all the rules in the check based off the rules_prefix
+        Run all the rules in the check
         """
         self.setup()
         for index, rule in enumerate(self.rules):
@@ -108,6 +107,19 @@ class Check:
             start_time = time.time()
             self.run(rule)
             print(f"\t{time.time() - start_time:.2f} seconds")
+        self.teardown()
+
+    async def run_all_async(self, should_run=True):
+        """
+        Run all the rules in the check asynchronously
+        should_run: if False, returns an array of coroutines
+        """
+        async_rule_runs = [self.run_async(rule) for rule in self.rules]
+        if not should_run:
+            return async_rule_runs
+
+        self.setup()
+        await asyncio.gather(*async_rule_runs)
         self.teardown()
 
     def on_success(self):
@@ -169,19 +181,6 @@ class Check:
 
         return wrapper
 
-    @staticmethod
-    def ingestor(name=""):
-        """
-        Decorator for a ingestor function
-        """
-
-        def wrapper(ingestor_func):
-            ingestor_func.name = name or ingestor_func.__name__
-            ingestor_func.is_ingestor = True
-            return ingestor_func
-
-        return wrapper
-
     def __repr__(self):
         return f"<{self.name}>"
 
@@ -189,10 +188,6 @@ class Check:
 """
 
 check_prefix = "rule_"
-ingestor_prefix = "ingest_"
-
-@ingestor("ingestor name")
-def ingest_template():
 
 @rule("rule name", "rule description")
 def rule_template():
@@ -201,7 +196,6 @@ Go from notebook to check
 Download and store locally
 
 rules_context withut decorator
-ingestor params
 
 streaming database
 """

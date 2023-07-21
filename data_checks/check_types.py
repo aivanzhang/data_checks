@@ -1,2 +1,7 @@
-# Type alias for function positional and keyword arguments
-FunctionArgs = tuple[tuple, dict]
+from typing import TypedDict
+
+
+# Function positional and keyword arguments
+class FunctionArgs(TypedDict):
+    args: tuple
+    kwargs: dict

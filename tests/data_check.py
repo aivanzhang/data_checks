@@ -1,8 +1,9 @@
 from data_checks.check import Check
-from data_checks.ingestors import ingestor
 import os
 import uuid
 import pandas as pd
+import time
+import asyncio
 from google.cloud import storage
 from google.cloud.storage.bucket import Bucket
 from google.cloud.storage.blob import Blob
@@ -63,7 +64,6 @@ def clean_df_columns(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-@ingestor(name="spend")
 def get_spend() -> pd.DataFrame:
     """
     Get spend data from GCS bucket.
@@ -110,12 +110,31 @@ def get_spend() -> pd.DataFrame:
 class CompanyRevenueCheck(Check):
     def __init__(self, name):
         super().__init__(self, name)
-        self.rule_params = {"rule_check_spend_not_empty": lambda: ((1,), {"b": 2})}
+        self.rule_params = {
+            "rule_check_spend_not_empty": lambda: {"args": (1,), "kwargs": {"b": 2}}
+        }
 
     @Check.rule()
     def rule_check_spend_not_empty(self, a, b=1):
         df = get_spend()
         print(a, b)
+        time.sleep(5)
+        # self.log_metadata({"spend": df})
+        assert len(df) < 0, "Spend data is empty"
+
+    @Check.rule()
+    def rule_check_spend_not_empty_1(self, a, b=1):
+        df = get_spend()
+        print(a, b)
+        time.sleep(5)
+        # self.log_metadata({"spend": df})
+        assert len(df) < 0, "Spend data is empty"
+
+    @Check.rule()
+    def rule_check_spend_not_empty_2(self, a, b=1):
+        df = get_spend()
+        print(a, b)
+        time.sleep(5)
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
@@ -123,5 +142,20 @@ class CompanyRevenueCheck(Check):
         return super().teardown()
 
 
-print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
+# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
+# print(
+#     CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
+#         "rule_check_spend_not_empty"
+#     )
+# )
+async def test():
+    await asyncio.gather(
+        CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
+            should_run=False
+        )
+    )
+
+
+# print(asyncio.run(test()))
+# print(asyncio.run(test()))
 # print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").log_metadata({"a": 1}))
