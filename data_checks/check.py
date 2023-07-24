@@ -31,7 +31,7 @@ class Check(CheckBase):
         self.rules = dict()
         self.rules_params = dict()
         self.rules_context = dict()
-        self.rules_metadata = dict()
+        self.metadata = dict()
 
         for class_method in get_all_methods(self):
             # Ensure all rules are stored in the rules dict
@@ -51,7 +51,7 @@ class Check(CheckBase):
                             f"{self.name}.{tag}" for tag in rule_tags
                         }
 
-    def _get_rule_params(self, rule: str) -> FunctionArgs:
+    def _get_rules_params(self, rule: str) -> FunctionArgs:
         """
         Get the params for a rule
         """
@@ -104,8 +104,8 @@ class Check(CheckBase):
         self.before()
         try:
             rule_func = self.rules[rule]
-            rule_params = self._get_rule_params(rule)
-            rule_func(*rule_params["args"], **rule_params["kwargs"])
+            rules_params = self._get_rules_params(rule)
+            rule_func(*rules_params["args"], **rules_params["kwargs"])
             self.on_success()
         except AssertionError as e:
             print(e)
@@ -185,13 +185,8 @@ class Check(CheckBase):
         """
         Log metadata with its associated rule
         """
-        rule = ""
-        curframe = inspect.currentframe()
-        print(inspect.stack()[1][3].startswith(self.rules_prefix))
-        # calframe = inspect.getouterframes(curframe, 2)
-        # print(curframe, calframe)
-        # print('caller name:', calframe[1][3])
-        # self.rules_context[rule].update(metadata)
+        method = inspect.stack()[1][3]
+        self.metadata[method] = metadata
 
     def __str__(self):
         return self.name
