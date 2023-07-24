@@ -1,3 +1,4 @@
+from data_checks.rule import rule, rule_func
 from data_checks.check import Check
 import os
 import uuid
@@ -107,6 +108,14 @@ def get_spend() -> pd.DataFrame:
     return df
 
 
+def test():
+    @rule_func()
+    def rule_check_spend_not_empty(a=1, b=1):
+        print(a, b)
+
+    rule_check_spend_not_empty()
+
+
 class CompanyRevenueCheck(Check):
     def __init__(self, name):
         super().__init__(self, name)
@@ -114,7 +123,7 @@ class CompanyRevenueCheck(Check):
             "rule_check_spend_not_empty": lambda: {"args": (1,), "kwargs": {"b": 2}}
         }
 
-    @Check.rule()
+    @rule()
     def rule_check_spend_not_empty(self, a, b=1):
         # self.rules_context[rule_name]["name"] = name
         # self.rules_context[rule_name]["description"] = name
@@ -123,46 +132,44 @@ class CompanyRevenueCheck(Check):
         # self.rules_context[rule_name]["kwargs"] = kwargs
         df = get_spend()
         print(a, b)
-        time.sleep(5)
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
-    @Check.rule()
-    def rule_check_spend_not_empty_1(self, a, b=1):
-        df = get_spend()
-        print(a, b)
-        time.sleep(5)
-        # self.log_metadata({"spend": df})
-        assert len(df) < 0, "Spend data is empty"
+    # @rule()
+    # def rule_check_spend_not_empty_1(a, b=1):
+    #     df = get_spend()
+    #     print(a, b)
+    #     # self.log_metadata({"spend": df})
+    #     assert len(df) < 0, "Spend data is empty"
 
-    def rule_check_spend_not_empty_2(self, a, b=1):
-        # self.rules_context[rule_name]["name"] = name
-        # self.rules_context[rule_name]["description"] = name
-        # self.rules_context[rule_name]["severity"] = severity
-        # self.rules_context[rule_name]["args"] = args
-        # self.rules_context[rule_name]["kwargs"] = kwargs
-        df = get_spend()
-        print(a, b)
-        time.sleep(5)
-        # self.log_metadata({"spend": df})
-        assert len(df) < 0, "Spend data is empty"
+    # def rule_check_spend_not_empty_2(self, a, b=1):
+    #     # self.rules_context[rule_name]["name"] = name
+    #     # self.rules_context[rule_name]["description"] = name
+    #     # self.rules_context[rule_name]["severity"] = severity
+    #     # self.rules_context[rule_name]["args"] = args
+    #     # self.rules_context[rule_name]["kwargs"] = kwargs
+    #     df = get_spend()
+    #     print(a, b)
+    #     # self.log_metadata({"spend": df})
+    #     assert len(df) < 0, "Spend data is empty"
 
-    def teardown(self):
-        return super().teardown()
+    # def teardown(self):
+    #     return super().teardown()
 
 
 # print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
-# print(
-#     CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
-#         "rule_check_spend_not_empty"
-#     )
-# )
-async def test():
-    await asyncio.gather(
-        CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
-            should_run=False
-        )
+print(
+    CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
+        "rule_check_spend_not_empty"
     )
+)
+test()
+# async def test():
+#     await asyncio.gather(
+#         CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
+#             should_run=False
+#         )
+#     )
 
 
 # print(asyncio.run(test()))

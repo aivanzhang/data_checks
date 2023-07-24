@@ -1,5 +1,5 @@
 """
-This module contains utility functions for working with classes.
+This module contains functions for working with classes.
 """
 
 

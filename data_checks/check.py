@@ -1,26 +1,24 @@
 """
 Check class
 """
-from typing import Dict, Any, Callable
+from typing import Dict, Any, Iterable
 import time
 import inspect
 import asyncio
 from exceptions import DataCheckException
-from check_types import FunctionArgs, RuleContext
-from utils._class import get_all_methods
+from check_types import FunctionArgs, CheckBase
+from utils.class_functions import get_all_methods
 
 
-class Check:
-    # Default rule context for rules missing fields
-    DEFAULT_RULE_CONTEXT: RuleContext = {
-        "name": "",
-        "description": "",
-        "severity": 1.0,
-        "args": tuple(),
-        "kwargs": dict(),
-    }
-
-    def __init__(self, name=None, description="", rules_prefix="", verbose=False):
+class Check(CheckBase):
+    def __init__(
+        self,
+        name=None,
+        description="",
+        rules_prefix="",
+        tags: Iterable = [],
+        verbose=False,
+    ):
         """
         Initialize a check object
         """
@@ -28,14 +26,9 @@ class Check:
         self.name = self.__class__.__name__ if name is None else name
         self.description = description
 
-        # Prefix for all rules in the check to be automatically run
         self.rules_prefix = rules_prefix
-
-        # Stores all the rules functions in the check
-        self.rules: Dict[str, Callable[..., None]] = dict()
-
-        # Stores the params for each rule
-        self.rule_params: Dict[str, FunctionArgs | Callable[..., FunctionArgs]] = dict()
+        self.rules = dict()
+        self.rule_params = dict()
 
         # Find and store all the rules in the check
         for class_method in get_all_methods(self):
@@ -45,18 +38,12 @@ class Check:
             ) or getattr(method, "is_rule", False):
                 self.rules[class_method] = method
 
-        # Stores any metadata generated when a rule runs
-        self.rules_context: Dict[str, RuleContext] = dict.fromkeys(
+        self.rules_context = dict.fromkeys(
             self.rules,
             self.DEFAULT_RULE_CONTEXT,
         )
 
-    @classmethod
-    def init(cls, file_path: str) -> "Check":
-        """
-        Initialize a check from a JSON file
-        """
-        return cls()
+        self.tags = set(tags)
 
     def _get_rule_params(self, rule: str) -> FunctionArgs:
         """
@@ -72,6 +59,13 @@ class Check:
             if callable(params):
                 params = params()
             return params
+
+    @classmethod
+    def init(cls, file_path: str) -> "Check":
+        """
+        Initialize a check from a JSON file
+        """
+        return cls()
 
     def setup(self):
         """
@@ -93,7 +87,18 @@ class Check:
         try:
             rule_func = self.rules[rule]
             rule_params = self._get_rule_params(rule)
-            rule_func(*rule_params["args"], **rule_params["kwargs"])
+            args = rule_params["args"]
+            kwargs = rule_params["kwargs"]
+
+            self.rules_context[rule]["args"] = (
+                self.DEFAULT_RULE_CONTEXT["args"] if len(args) == 0 else args
+            )
+            self.rules_context[rule]["kwargs"] = (
+                self.DEFAULT_RULE_CONTEXT["kwargs"]
+                if len(kwargs.keys()) == 0
+                else kwargs
+            )
+            rule_func(*args, **kwargs)
             self.on_success()
         except AssertionError as e:
             print(e)
@@ -109,13 +114,26 @@ class Check:
     def after(self):
         return
 
-    def run_all(self):
+    def run_all(self, rule_tags: Iterable | None = None):
         """
         Run all the rules in the check
+        Parameters:
+            rule_tags: only run rules with these tags will be run
         """
         self.setup()
-        for index, rule in enumerate(self.rules):
-            print(f"\t[{index + 1}/{len(self.rules)}] {rule}")
+
+        rule_tags = None if rule_tags is None else set(rule_tags)
+        rules_to_run = self.rules
+
+        if rule_tags is not None:
+            rules_to_run = {
+                rule
+                for rule in self.rules
+                if rule_tags.intersection(self.rules_context[rule]["tags"])
+            }
+
+        for index, rule in enumerate(rules_to_run):
+            print(f"\t[{index + 1}/{len(rules_to_run)}] {rule}")
             start_time = time.time()
             self.run(rule)
             print(f"\t{time.time() - start_time:.2f} seconds")
@@ -171,45 +189,16 @@ class Check:
         # print('caller name:', calframe[1][3])
         # self.rules_context[rule].update(metadata)
 
-    @staticmethod
-    def rule(
-        name=DEFAULT_RULE_CONTEXT["name"],
-        description=DEFAULT_RULE_CONTEXT["description"],
-        severity=DEFAULT_RULE_CONTEXT["severity"],
-    ):
-        """
-        Decorator for instantite a rule function
-        """
-
-        def wrapper(rule_func):
-            rule_name = str(rule_func.__name__)
-
-            def wrapper_func(self: Check, *args, **kwargs):
-                self.rules_context[rule_name]["name"] = name
-                self.rules_context[rule_name]["description"] = description
-                self.rules_context[rule_name]["severity"] = severity
-                self.rules_context[rule_name]["args"] = (
-                    self.DEFAULT_RULE_CONTEXT["args"] if len(args) == 0 else args
-                )
-                self.rules_context[rule_name]["kwargs"] = (
-                    self.DEFAULT_RULE_CONTEXT["kwargs"]
-                    if len(kwargs.keys()) == 0
-                    else kwargs
-                )
-                return rule_func(self, *args, **kwargs)
-
-            wrapper_func.name = name or rule_name
-            wrapper_func.is_rule = True
-            return wrapper_func
-
-        return wrapper
-
     def __repr__(self):
         return f"<{self.name}>"
 
 
 """
 Go from notebook to check
+tagging
+suites
+roadmap
+
 Download and store locally
 
 rules_context without decorator
