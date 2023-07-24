@@ -25,25 +25,30 @@ class Check(CheckBase):
         self.verbose = verbose
         self.name = self.__class__.__name__ if name is None else name
         self.description = description
+        self.tags = set(tags)
 
         self.rules_prefix = rules_prefix
         self.rules = dict()
         self.rule_params = dict()
+        self.rules_context = dict()
 
-        # Find and store all the rules in the check
         for class_method in get_all_methods(self):
+            # Ensure all rules are stored in the rules dict
             method = getattr(self, class_method)
             if (
                 self.rules_prefix != "" and class_method.startswith(self.rules_prefix)
             ) or getattr(method, "is_rule", False):
                 self.rules[class_method] = method
+                self.rules_context[class_method] = self.DEFAULT_RULE_CONTEXT.copy()
 
-        self.rules_context = dict.fromkeys(
-            self.rules,
-            self.DEFAULT_RULE_CONTEXT,
-        )
-
-        self.tags = set(tags)
+                # Ensure all tags are stored in the rules_context dict
+                rule_tags = getattr(method, "tags", None)
+                if rule_tags is not None:
+                    self.rules_context[class_method]["tags"] = rule_tags
+                    if getattr(method, "should_prefix_tags", False):
+                        self.rules_context[class_method]["tags"] = {
+                            f"{self.name}.{tag}" for tag in rule_tags
+                        }
 
     def _get_rule_params(self, rule: str) -> FunctionArgs:
         """
@@ -59,6 +64,18 @@ class Check(CheckBase):
             if callable(params):
                 params = params()
             return params
+
+    def find_rules_by_tags(self, tags: Iterable | None) -> set:
+        """
+        Find rules by tags
+        """
+        if tags is None:
+            return set(self.rules.keys())
+        return {
+            rule
+            for rule in self.rules.keys()
+            if set(tags).intersection(self.rules_context[rule]["tags"])
+        }
 
     @classmethod
     def init(cls, file_path: str) -> "Check":
@@ -87,18 +104,7 @@ class Check(CheckBase):
         try:
             rule_func = self.rules[rule]
             rule_params = self._get_rule_params(rule)
-            args = rule_params["args"]
-            kwargs = rule_params["kwargs"]
-
-            self.rules_context[rule]["args"] = (
-                self.DEFAULT_RULE_CONTEXT["args"] if len(args) == 0 else args
-            )
-            self.rules_context[rule]["kwargs"] = (
-                self.DEFAULT_RULE_CONTEXT["kwargs"]
-                if len(kwargs.keys()) == 0
-                else kwargs
-            )
-            rule_func(*args, **kwargs)
+            rule_func(*rule_params["args"], **rule_params["kwargs"])
             self.on_success()
         except AssertionError as e:
             print(e)
@@ -114,37 +120,33 @@ class Check(CheckBase):
     def after(self):
         return
 
-    def run_all(self, rule_tags: Iterable | None = None):
+    def run_all(self, tags: Iterable | None = None):
         """
         Run all the rules in the check
         Parameters:
-            rule_tags: only run rules with these tags will be run
+            tags: only run rules with these tags will be run
         """
         self.setup()
 
-        rule_tags = None if rule_tags is None else set(rule_tags)
-        rules_to_run = self.rules
-
-        if rule_tags is not None:
-            rules_to_run = {
-                rule
-                for rule in self.rules
-                if rule_tags.intersection(self.rules_context[rule]["tags"])
-            }
+        tags = None if tags is None else set(tags)
+        rules_to_run = self.find_rules_by_tags(tags)
 
         for index, rule in enumerate(rules_to_run):
             print(f"\t[{index + 1}/{len(rules_to_run)}] {rule}")
             start_time = time.time()
             self.run(rule)
             print(f"\t{time.time() - start_time:.2f} seconds")
+
         self.teardown()
 
-    async def run_all_async(self, should_run=True):
+    async def run_all_async(self, should_run=True, tags: Iterable | None = None):
         """
         Run all the rules in the check asynchronously
         should_run: if False, returns an array of coroutines
         """
-        async_rule_runs = [self.run_async(rule) for rule in self.rules]
+        async_rule_runs = [
+            self.run_async(rule) for rule in self.find_rules_by_tags(tags)
+        ]
         if not should_run:
             return async_rule_runs
 
@@ -156,13 +158,13 @@ class Check(CheckBase):
         """
         Called when a rule succeeds
         """
-        return
+        pass
 
     def on_failure(self, exception: DataCheckException):
         """
         Called when a rule fails
         """
-        return
+        raise exception
 
     def teardown(self):
         """

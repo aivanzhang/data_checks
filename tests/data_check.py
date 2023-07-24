@@ -122,8 +122,9 @@ class CompanyRevenueCheck(Check):
         self.rule_params = {
             "rule_check_spend_not_empty": lambda: {"args": (1,), "kwargs": {"b": 2}}
         }
+        self.rules_prefix = "rule_"
 
-    @rule()
+    @rule(tags=[1])
     def rule_check_spend_not_empty(self, a, b=1):
         # self.rules_context[rule_name]["name"] = name
         # self.rules_context[rule_name]["description"] = name
@@ -135,35 +136,34 @@ class CompanyRevenueCheck(Check):
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
-    # @rule()
-    # def rule_check_spend_not_empty_1(a, b=1):
-    #     df = get_spend()
-    #     print(a, b)
-    #     # self.log_metadata({"spend": df})
-    #     assert len(df) < 0, "Spend data is empty"
+    @rule(tags=[2])
+    def rule_check_spend_not_empty_1(a=2, b=2):
+        df = get_spend()
+        print(a, b)
+        # self.log_metadata({"spend": df})
+        assert len(df) < 0, "Spend data is empty"
 
-    # def rule_check_spend_not_empty_2(self, a, b=1):
-    #     # self.rules_context[rule_name]["name"] = name
-    #     # self.rules_context[rule_name]["description"] = name
-    #     # self.rules_context[rule_name]["severity"] = severity
-    #     # self.rules_context[rule_name]["args"] = args
-    #     # self.rules_context[rule_name]["kwargs"] = kwargs
-    #     df = get_spend()
-    #     print(a, b)
-    #     # self.log_metadata({"spend": df})
-    #     assert len(df) < 0, "Spend data is empty"
+    @rule(tags=[1])
+    def rule_check_spend_not_empty_2(self, a=3, b=3):
+        # self.rules_context[rule_name]["name"] = name
+        # self.rules_context[rule_name]["description"] = name
+        # self.rules_context[rule_name]["severity"] = severity
+        # self.rules_context[rule_name]["args"] = args
+        # self.rules_context[rule_name]["kwargs"] = kwargs
+        df = get_spend()
+        print(a, b)
+        # self.log_metadata({"spend": df})
+        assert len(df) < 0, "Spend data is empty"
 
-    # def teardown(self):
-    #     return super().teardown()
+    def on_failure(self, exception):
+        return
+
+    def teardown(self):
+        return super().teardown()
 
 
 # print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
-print(
-    CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
-        "rule_check_spend_not_empty"
-    )
-)
-test()
+print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all(tags=[1]))
 # async def test():
 #     await asyncio.gather(
 #         CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
