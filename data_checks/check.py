@@ -142,7 +142,9 @@ class Check(CheckBase):
     async def run_all_async(self, should_run=True, tags: Iterable | None = None):
         """
         Run all the rules in the check asynchronously
-        should_run: if False, returns an array of coroutines
+        Parameters:
+            should_run: if False, returns an array of coroutines that can be awaited
+            tags: only run rules with these tags will be run
         """
         async_rule_runs = [
             self.run_async(rule) for rule in self.find_rules_by_tags(tags)
@@ -191,13 +193,12 @@ class Check(CheckBase):
         # print('caller name:', calframe[1][3])
         # self.rules_context[rule].update(metadata)
 
-    def __repr__(self):
-        return f"<{self.name}>"
+    def __str__(self):
+        return self.name
 
 
 """
 Go from notebook to check
-tagging
 suites
 roadmap
 

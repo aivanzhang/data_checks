@@ -117,8 +117,8 @@ def test():
 
 
 class CompanyRevenueCheck(Check):
-    def __init__(self, name):
-        super().__init__(self, name)
+    def __init__(self, name: str):
+        super().__init__(name)
         self.rule_params = {
             "rule_check_spend_not_empty": lambda: {"args": (1,), "kwargs": {"b": 2}}
         }
@@ -126,13 +126,9 @@ class CompanyRevenueCheck(Check):
 
     @rule(tags=[1])
     def rule_check_spend_not_empty(self, a, b=1):
-        # self.rules_context[rule_name]["name"] = name
-        # self.rules_context[rule_name]["description"] = name
-        # self.rules_context[rule_name]["severity"] = severity
-        # self.rules_context[rule_name]["args"] = args
-        # self.rules_context[rule_name]["kwargs"] = kwargs
         df = get_spend()
         print(a, b)
+        time.sleep(5)
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
@@ -145,13 +141,9 @@ class CompanyRevenueCheck(Check):
 
     @rule(tags=[1])
     def rule_check_spend_not_empty_2(self, a=3, b=3):
-        # self.rules_context[rule_name]["name"] = name
-        # self.rules_context[rule_name]["description"] = name
-        # self.rules_context[rule_name]["severity"] = severity
-        # self.rules_context[rule_name]["args"] = args
-        # self.rules_context[rule_name]["kwargs"] = kwargs
         df = get_spend()
         print(a, b)
+        time.sleep(5)
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
@@ -162,12 +154,13 @@ class CompanyRevenueCheck(Check):
         return super().teardown()
 
 
-# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
-print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all(tags=[1]))
+print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon"))
+# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all(tags=[1]))
 # async def test():
 #     await asyncio.gather(
 #         CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
-#             should_run=False
+#             should_run=False,
+#             tags=[1],
 #         )
 #     )
 
