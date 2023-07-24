@@ -116,6 +116,11 @@ class CompanyRevenueCheck(Check):
 
     @Check.rule()
     def rule_check_spend_not_empty(self, a, b=1):
+        # self.rules_context[rule_name]["name"] = name
+        # self.rules_context[rule_name]["description"] = name
+        # self.rules_context[rule_name]["severity"] = severity
+        # self.rules_context[rule_name]["args"] = args
+        # self.rules_context[rule_name]["kwargs"] = kwargs
         df = get_spend()
         print(a, b)
         time.sleep(5)
@@ -130,8 +135,12 @@ class CompanyRevenueCheck(Check):
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
-    @Check.rule()
     def rule_check_spend_not_empty_2(self, a, b=1):
+        # self.rules_context[rule_name]["name"] = name
+        # self.rules_context[rule_name]["description"] = name
+        # self.rules_context[rule_name]["severity"] = severity
+        # self.rules_context[rule_name]["args"] = args
+        # self.rules_context[rule_name]["kwargs"] = kwargs
         df = get_spend()
         print(a, b)
         time.sleep(5)

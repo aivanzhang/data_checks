@@ -6,11 +6,20 @@ import time
 import inspect
 import asyncio
 from exceptions import DataCheckException
-from check_types import FunctionArgs
-from utils.class_utils import get_all_methods
+from check_types import FunctionArgs, RuleContext
+from utils._class import get_all_methods
 
 
 class Check:
+    # Default rule context for rules missing fields
+    DEFAULT_RULE_CONTEXT: RuleContext = {
+        "name": "",
+        "description": "",
+        "severity": 1.0,
+        "args": tuple(),
+        "kwargs": dict(),
+    }
+
     def __init__(self, name=None, description="", rules_prefix="", verbose=False):
         """
         Initialize a check object
@@ -37,7 +46,10 @@ class Check:
                 self.rules[class_method] = method
 
         # Stores any metadata generated when a rule runs
-        self.rules_context = dict.fromkeys(self.rules, dict())
+        self.rules_context: Dict[str, RuleContext] = dict.fromkeys(
+            self.rules,
+            self.DEFAULT_RULE_CONTEXT,
+        )
 
     @classmethod
     def init(cls, file_path: str) -> "Check":
@@ -160,19 +172,30 @@ class Check:
         # self.rules_context[rule].update(metadata)
 
     @staticmethod
-    def rule(name="", severity=1.0):
+    def rule(
+        name=DEFAULT_RULE_CONTEXT["name"],
+        description=DEFAULT_RULE_CONTEXT["description"],
+        severity=DEFAULT_RULE_CONTEXT["severity"],
+    ):
         """
-        Decorator for a rule function
+        Decorator for instantite a rule function
         """
 
         def wrapper(rule_func):
-            rule_name = rule_func.__name__
+            rule_name = str(rule_func.__name__)
 
-            def wrapper_func(self, *args, **kwargs):
+            def wrapper_func(self: Check, *args, **kwargs):
                 self.rules_context[rule_name]["name"] = name
+                self.rules_context[rule_name]["description"] = description
                 self.rules_context[rule_name]["severity"] = severity
-                self.rules_context[rule_name]["args"] = args
-                self.rules_context[rule_name]["kwargs"] = kwargs
+                self.rules_context[rule_name]["args"] = (
+                    self.DEFAULT_RULE_CONTEXT["args"] if len(args) == 0 else args
+                )
+                self.rules_context[rule_name]["kwargs"] = (
+                    self.DEFAULT_RULE_CONTEXT["kwargs"]
+                    if len(kwargs.keys()) == 0
+                    else kwargs
+                )
                 return rule_func(self, *args, **kwargs)
 
             wrapper_func.name = name or rule_name
@@ -186,16 +209,10 @@ class Check:
 
 
 """
-
-check_prefix = "rule_"
-
-@rule("rule name", "rule description")
-def rule_template():
-
 Go from notebook to check
 Download and store locally
 
-rules_context withut decorator
+rules_context without decorator
 
 streaming database
 """

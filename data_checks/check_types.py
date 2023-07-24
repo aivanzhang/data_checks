@@ -5,3 +5,11 @@ from typing import TypedDict
 class FunctionArgs(TypedDict):
     args: tuple
     kwargs: dict
+
+
+class RuleContext(TypedDict):
+    name: str
+    description: str
+    severity: float
+    args: tuple
+    kwargs: dict
