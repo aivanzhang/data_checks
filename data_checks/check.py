@@ -78,13 +78,6 @@ class Check(CheckBase):
             if set(tags).intersection(self.rules_context[rule]["tags"])
         }
 
-    @classmethod
-    def init(cls, file_path: str) -> "Check":
-        """
-        Initialize a check from a JSON file
-        """
-        return cls()
-
     def setup(self):
         """
         One time setup for all rules in the check
@@ -119,7 +112,22 @@ class Check(CheckBase):
         return asyncio.get_event_loop().run_in_executor(None, self.run, rule)
 
     def after(self):
+        """
+        Runs after each rule
+        """
         return
+
+    def on_success(self):
+        """
+        Called when a rule succeeds
+        """
+        pass
+
+    def on_failure(self, exception: DataCheckException):
+        """
+        Called when a rule fails
+        """
+        raise exception
 
     def run_all(self, tags: Optional[Iterable]):
         """
@@ -157,27 +165,9 @@ class Check(CheckBase):
         await asyncio.gather(*async_rule_runs)
         self.teardown()
 
-    def on_success(self):
-        """
-        Called when a rule succeeds
-        """
-        pass
-
-    def on_failure(self, exception: DataCheckException):
-        """
-        Called when a rule fails
-        """
-        raise exception
-
     def teardown(self):
         """
         One time teardown after all rules are run
-        """
-        return
-
-    def save_to_file(self, file_path: str):
-        """
-        Save the check to a file
         """
         return
 
@@ -190,16 +180,3 @@ class Check(CheckBase):
 
     def __str__(self):
         return self.name
-
-
-"""
-Go from notebook to check
-suites
-roadmap
-
-Download and store locally
-
-rules_context without decorator
-
-streaming database
-"""
