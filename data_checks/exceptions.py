@@ -1,6 +1,7 @@
 """
 Exceptions for Data Checks
 """
+from typing import Optional
 
 
 class DataCheckException(Exception):
@@ -14,8 +15,8 @@ class DataCheckException(Exception):
 
     def __init__(
         self,
+        exception: Optional[Exception],
         severity=1.0,
-        exception: Exception | None = None,
         metadata={},
     ):
         self.severity = severity

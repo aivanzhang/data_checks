@@ -1,7 +1,7 @@
 """
 Check class
 """
-from typing import Dict, Any, Iterable
+from typing import Dict, Any, Iterable, Optional
 import time
 import inspect
 import asyncio
@@ -29,8 +29,9 @@ class Check(CheckBase):
 
         self.rules_prefix = rules_prefix
         self.rules = dict()
-        self.rule_params = dict()
+        self.rules_params = dict()
         self.rules_context = dict()
+        self.rules_metadata = dict()
 
         for class_method in get_all_methods(self):
             # Ensure all rules are stored in the rules dict
@@ -54,18 +55,18 @@ class Check(CheckBase):
         """
         Get the params for a rule
         """
-        if rule not in self.rule_params:
+        if rule not in self.rules_params:
             return {
                 "args": tuple(),
                 "kwargs": dict(),
             }
         else:
-            params = self.rule_params[rule]
+            params = self.rules_params[rule]
             if callable(params):
                 params = params()
             return params
 
-    def find_rules_by_tags(self, tags: Iterable | None) -> set:
+    def find_rules_by_tags(self, tags: Optional[Iterable]) -> set:
         """
         Find rules by tags
         """
@@ -120,7 +121,7 @@ class Check(CheckBase):
     def after(self):
         return
 
-    def run_all(self, tags: Iterable | None = None):
+    def run_all(self, tags: Optional[Iterable]):
         """
         Run all the rules in the check
         Parameters:
@@ -139,7 +140,7 @@ class Check(CheckBase):
 
         self.teardown()
 
-    async def run_all_async(self, should_run=True, tags: Iterable | None = None):
+    async def run_all_async(self, tags: Optional[Iterable], should_run=True):
         """
         Run all the rules in the check asynchronously
         Parameters:
@@ -184,10 +185,9 @@ class Check(CheckBase):
         """
         Log metadata with its associated rule
         """
-        print("logging metadata")
         rule = ""
         curframe = inspect.currentframe()
-        # print(inspect.stack()[1][3].startswith(DEFAULT_RULE_PREFIX))
+        print(inspect.stack()[1][3].startswith(self.rules_prefix))
         # calframe = inspect.getouterframes(curframe, 2)
         # print(curframe, calframe)
         # print('caller name:', calframe[1][3])
