@@ -119,7 +119,7 @@ def test():
 class CompanyRevenueCheck(Check):
     def __init__(self, name: str):
         super().__init__(name)
-        self.rule_params = {
+        self.rules_params = {
             "rule_check_spend_not_empty": lambda: {"args": (1,), "kwargs": {"b": 2}}
         }
         self.rules_prefix = "rule_"
@@ -127,23 +127,20 @@ class CompanyRevenueCheck(Check):
     @rule(tags=[1])
     def rule_check_spend_not_empty(self, a, b=1):
         df = get_spend()
-        print(a, b)
-        time.sleep(5)
-        # self.log_metadata({"spend": df})
+        self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
     @rule(tags=[2])
     def rule_check_spend_not_empty_1(a=2, b=2):
         df = get_spend()
-        print(a, b)
+        # print(a, b)
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
-    @rule(tags=[1])
+    @rule(tags=[2])
     def rule_check_spend_not_empty_2(self, a=3, b=3):
         df = get_spend()
-        print(a, b)
-        time.sleep(5)
+        # print(a, b)
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
 
@@ -154,8 +151,8 @@ class CompanyRevenueCheck(Check):
         return super().teardown()
 
 
-print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon"))
-# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all(tags=[1]))
+# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon"))
+CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all(tags=[1])
 # async def test():
 #     await asyncio.gather(
 #         CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
