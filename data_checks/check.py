@@ -70,7 +70,7 @@ class Check(CheckBase, MetadataMixin):
                 params = params()
             return params
 
-    def find_rules_by_tags(self, tags: Optional[Iterable]) -> set:
+    def get_rules_with_tags(self, tags: Optional[Iterable]) -> set:
         """
         Find rules by tags
         """
@@ -88,7 +88,7 @@ class Check(CheckBase, MetadataMixin):
         """
         return
 
-    def before(self):
+    def before(self, rule_func: Callable[..., None], params: FunctionArgs):
         """
         Run before each rule
         """
@@ -98,7 +98,7 @@ class Check(CheckBase, MetadataMixin):
         """
         Execute a rule
         """
-        self.before()
+        self.before(rule_func=rule_func, params=params)
         try:
             rule_func(*params["args"], **params["kwargs"])
             self.on_success()
@@ -108,7 +108,7 @@ class Check(CheckBase, MetadataMixin):
         except DataCheckException as e:
             print(e)
             self.on_failure(e)
-        self.after()
+        self.after(rule_func=rule_func, params=params)
 
     def run(self, rule: str):
         """
@@ -139,7 +139,7 @@ class Check(CheckBase, MetadataMixin):
                 None, self._exec_rule, rule_func, rules_params
             )
 
-    def after(self):
+    def after(self, rule_func: Callable[..., None], params: FunctionArgs):
         """
         Runs after each rule
         """
@@ -165,7 +165,7 @@ class Check(CheckBase, MetadataMixin):
         """
         self.setup()
 
-        rules_to_run = self.find_rules_by_tags(tags)
+        rules_to_run = self.get_rules_with_tags(tags)
 
         for index, rule in enumerate(rules_to_run):
             print(f"\t[{index + 1}/{len(rules_to_run)}] {rule}")
@@ -183,7 +183,7 @@ class Check(CheckBase, MetadataMixin):
         """
         return [
             async_rule
-            for rule_name in self.find_rules_by_tags(tags)
+            for rule_name in self.get_rules_with_tags(tags)
             for async_rule in self.run_async(rule_name)
         ]
 
