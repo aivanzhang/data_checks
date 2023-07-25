@@ -3,6 +3,13 @@
 ### WIP
 - [ ] suites
 - [ ] Go from notebook to check
+    - check.init => name, etc
+    - rule.start() => rule.end()
+    - generate_base_file(overwrite)
+
+    
+
+
 - [ ] roadmap
 ### Lower Priority
 - [ ] Download and store locally

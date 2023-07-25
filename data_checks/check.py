@@ -5,6 +5,7 @@ from typing import Dict, Any, Iterable, Optional
 import time
 import inspect
 import asyncio
+import json
 from exceptions import DataCheckException
 from check_types import FunctionArgs, CheckBase
 from utils.class_functions import get_all_methods
@@ -13,7 +14,8 @@ from utils.class_functions import get_all_methods
 class Check(CheckBase):
     def __init__(
         self,
-        name=None,
+        name: Optional[str] = None,
+        metadata_dir: Optional[str] = None,
         description="",
         rules_prefix="",
         tags: Iterable = [],
@@ -24,6 +26,7 @@ class Check(CheckBase):
         """
         self.verbose = verbose
         self.name = self.__class__.__name__ if name is None else name
+        self.metadata_dir = metadata_dir
         self.description = description
         self.tags = set(tags)
 
@@ -177,6 +180,18 @@ class Check(CheckBase):
         """
         method = inspect.stack()[1][3]
         self.metadata[method] = metadata
+
+    def write_metadata(self):
+        """
+        Write metadata to a file and clears the memory
+        """
+        if self.metadata_dir is None:
+            raise ValueError("metadata_dir is not set")
+
+        with open(f"{self.metadata_dir}/{self.name}.json", "w") as f:
+            json.dump(self.metadata, f)
+
+        self.metadata = dict()
 
     def __str__(self):
         return self.name
