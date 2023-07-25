@@ -166,7 +166,7 @@ class CompanyRevenueCheck(Check):
         print("Finished teardown")
 
 
-# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon"))
+print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
 # CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
 #     "rule_check_spend_not_empty"
 # )
@@ -181,4 +181,8 @@ class CompanyRevenueCheck(Check):
 
 # print(asyncio.run(test()))
 # print(asyncio.run(test()))
-# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").log_metadata({"a": 1}))
+# print(
+#     CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").log_metadata(
+#         {"a": 1}, id="abc"
+#     )
+# )

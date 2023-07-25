@@ -2,7 +2,6 @@
 
 ### WIP
 - [ ] suites
-- [ ] log metadata defaults rulename + params
 - [ ] Go from notebook to check
     - check.init => name, etc
     - rule.start() => rule.end()
