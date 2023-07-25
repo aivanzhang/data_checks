@@ -34,3 +34,4 @@
 - [ ] frontend
 - [ ] data profiling
 - [ ] deployment
+- [ ] wrap assertions for printing
