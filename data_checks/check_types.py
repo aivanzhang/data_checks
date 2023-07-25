@@ -21,8 +21,11 @@ class CheckBase(ABC):
     rules_prefix: str  # Prefix for all rules in the check to be automatically run
     rules: Dict[str, Callable[..., None]]  # Stores all the rules functions in the check
     rule_params: Dict[
-        str, FunctionArgs | Callable[..., FunctionArgs]
-    ]  # Stores the params for each rule
+        str,
+        FunctionArgs
+        | list[FunctionArgs]
+        | Callable[..., FunctionArgs | list[FunctionArgs]],
+    ]  # Stores the params for each rule. If params is a list of params then run the rule multiple times with each param element
     rules_context: Dict[
         str, RuleContext
     ]  # Stores any metadata generated when a rule runs

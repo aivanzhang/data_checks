@@ -120,13 +120,23 @@ class CompanyRevenueCheck(Check):
     def __init__(self, name: str):
         super().__init__(name)
         self.rules_params = {
-            "rule_check_spend_not_empty": lambda: {"args": (1,), "kwargs": {"b": 2}}
+            "rule_check_spend_not_empty": lambda: [
+                {"args": (), "kwargs": {"company_id": 1}},
+                {"args": (), "kwargs": {"company_id": 2}},
+            ]
         }
         self.rules_prefix = "rule_"
 
+    def setup(self):
+        print("Starting setup")
+        time.sleep(5)
+        print("Finished setup")
+
     @rule(tags=[1])
-    def rule_check_spend_not_empty(self, a, b=1):
+    def rule_check_spend_not_empty(self, company_id=1):
         df = get_spend()
+        print(company_id)
+        time.sleep(5)
         self.log_metadata(
             {"spend": df},
             write_to_file="/Users/ivanzhang/Desktop/data-checks/tests/metadata/metadata.json",
@@ -151,15 +161,19 @@ class CompanyRevenueCheck(Check):
         return
 
     def teardown(self):
-        return super().teardown()
+        print("Starting teardown")
+        time.sleep(5)
+        print("Finished teardown")
 
 
 # print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon"))
-CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all()
+# CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
+#     "rule_check_spend_not_empty"
+# )
 # async def test():
 #     await asyncio.gather(
 #         CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
-#             should_run=False,
+#             # should_run=False,
 #             tags=[1],
 #         )
 #     )

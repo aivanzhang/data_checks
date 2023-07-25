@@ -1,7 +1,7 @@
 """
 Check class
 """
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Callable, Awaitable, Generator
 import time
 import asyncio
 from exceptions import DataCheckException
@@ -53,7 +53,7 @@ class Check(CheckBase, MetadataMixin):
                             f"{self.name}.{tag}" for tag in rule_tags
                         }
 
-    def _get_rules_params(self, rule: str) -> FunctionArgs:
+    def _get_rules_params(self, rule: str) -> FunctionArgs | list[FunctionArgs]:
         """
         Get the params for a rule
         """
@@ -63,7 +63,9 @@ class Check(CheckBase, MetadataMixin):
                 "kwargs": dict(),
             }
         else:
-            params = self.rules_params[rule]
+            params: FunctionArgs | list[FunctionArgs] | Callable[
+                ..., FunctionArgs | list[FunctionArgs]
+            ] = self.rules_params[rule]
             if callable(params):
                 params = params()
             return params
@@ -92,15 +94,13 @@ class Check(CheckBase, MetadataMixin):
         """
         return
 
-    def run(self, rule: str):
+    def _exec_rule(self, rule_func: Callable[..., None], params: FunctionArgs):
         """
-        Runs a single rule
+        Execute a rule
         """
         self.before()
         try:
-            rule_func = self.rules[rule]
-            rules_params = self._get_rules_params(rule)
-            rule_func(*rules_params["args"], **rules_params["kwargs"])
+            rule_func(*params["args"], **params["kwargs"])
             self.on_success()
         except AssertionError as e:
             print(e)
@@ -110,8 +110,34 @@ class Check(CheckBase, MetadataMixin):
             self.on_failure(e)
         self.after()
 
+    def run(self, rule: str):
+        """
+        Runs a rule once with one set of params or multiple times with multiple sets of params
+        """
+        rule_func = self.rules[rule]
+        rules_params = self._get_rules_params(rule)
+        if isinstance(rules_params, list):
+            for params in rules_params:
+                self._exec_rule(rule_func, params)
+        else:
+            self._exec_rule(rule_func, rules_params)
+
     def run_async(self, rule: str):
-        return asyncio.get_event_loop().run_in_executor(None, self.run, rule)
+        """
+        Asynchronously runs a rule once with one set of params or multiple times with multiple sets of params
+        """
+        rule_func = self.rules[rule]
+        rules_params = self._get_rules_params(rule)
+
+        if isinstance(rules_params, list):
+            for params in rules_params:
+                yield asyncio.get_event_loop().run_in_executor(
+                    None, self._exec_rule, rule_func, params
+                )
+        else:
+            yield asyncio.get_event_loop().run_in_executor(
+                None, self._exec_rule, rule_func, rules_params
+            )
 
     def after(self):
         """
@@ -149,6 +175,18 @@ class Check(CheckBase, MetadataMixin):
 
         self.teardown()
 
+    def _generate_async_rule_runs(
+        self, tags: Optional[Iterable] = None
+    ) -> list[Awaitable]:
+        """
+        Generate a list of coroutines that can be awaited
+        """
+        return [
+            async_rule
+            for rule_name in self.find_rules_by_tags(tags)
+            for async_rule in self.run_async(rule_name)
+        ]
+
     async def run_all_async(self, tags: Optional[Iterable] = None, should_run=True):
         """
         Run all the rules in the check asynchronously
@@ -156,14 +194,11 @@ class Check(CheckBase, MetadataMixin):
             should_run: if False, returns an array of coroutines that can be awaited
             tags: only run rules with these tags will be run
         """
-        async_rule_runs = [
-            self.run_async(rule) for rule in self.find_rules_by_tags(tags)
-        ]
         if not should_run:
-            return async_rule_runs
+            return self._generate_async_rule_runs(tags)
 
         self.setup()
-        await asyncio.gather(*async_rule_runs)
+        await asyncio.gather(*self._generate_async_rule_runs(tags))
         self.teardown()
 
     def teardown(self):
