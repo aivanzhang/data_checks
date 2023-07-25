@@ -88,27 +88,32 @@ class Check(CheckBase, MetadataMixin):
         """
         return
 
-    def before(self, rule_func: Callable[..., None], params: FunctionArgs):
+    def before(self, rule: str, params: FunctionArgs):
         """
         Run before each rule
         """
         return
 
-    def _exec_rule(self, rule_func: Callable[..., None], params: FunctionArgs):
+    def _exec_rule(
+        self, rule: str, rule_func: Callable[..., None], params: FunctionArgs
+    ):
         """
         Execute a rule
         """
-        self.before(rule_func=rule_func, params=params)
+        rule_metadata = {"rule": rule, "params": params}
+        self.before(**rule_metadata)
         try:
             rule_func(*params["args"], **params["kwargs"])
-            self.on_success()
+            self.on_success(**rule_metadata)
         except AssertionError as e:
             print(e)
-            self.on_failure(DataCheckException.from_assertion_error(e))
+            self.on_failure(
+                DataCheckException.from_assertion_error(e, metadata=rule_metadata)
+            )
         except DataCheckException as e:
             print(e)
             self.on_failure(e)
-        self.after(rule_func=rule_func, params=params)
+        self.after(**rule_metadata)
 
     def run(self, rule: str):
         """
@@ -118,9 +123,9 @@ class Check(CheckBase, MetadataMixin):
         rules_params = self._get_rules_params(rule)
         if isinstance(rules_params, list):
             for params in rules_params:
-                self._exec_rule(rule_func, params)
+                self._exec_rule(rule, rule_func, params)
         else:
-            self._exec_rule(rule_func, rules_params)
+            self._exec_rule(rule, rule_func, rules_params)
 
     def run_async(self, rule: str):
         """
@@ -132,20 +137,20 @@ class Check(CheckBase, MetadataMixin):
         if isinstance(rules_params, list):
             for params in rules_params:
                 yield asyncio.get_event_loop().run_in_executor(
-                    None, self._exec_rule, rule_func, params
+                    None, self._exec_rule, rule, rule_func, params
                 )
         else:
             yield asyncio.get_event_loop().run_in_executor(
-                None, self._exec_rule, rule_func, rules_params
+                None, self._exec_rule, rule, rule_func, rules_params
             )
 
-    def after(self, rule_func: Callable[..., None], params: FunctionArgs):
+    def after(self, rule: str, params: FunctionArgs):
         """
         Runs after each rule
         """
         return
 
-    def on_success(self):
+    def on_success(self, rule: str, params: FunctionArgs):
         """
         Called when a rule succeeds
         """
