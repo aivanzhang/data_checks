@@ -1,8 +1,8 @@
 # panda-patrol
 
 ### WIP
-- [ ] Go from notebook to check
 - [ ] suites
+- [ ] Go from notebook to check
 - [ ] roadmap
 ### Lower Priority
 - [ ] Download and store locally
@@ -23,3 +23,7 @@
 - [ ] rules_context without decorator (with comments)
 - [ ] streaming database
 - [ ] anomaly detection
+- [ ] pretty printing
+- [ ] frontend
+- [ ] data profiling
+- [ ] deployment
