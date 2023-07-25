@@ -1,17 +1,16 @@
 """
 Check class
 """
-from typing import Dict, Any, Iterable, Optional
+from typing import Iterable, Optional
 import time
-import inspect
 import asyncio
-import json
 from exceptions import DataCheckException
 from check_types import FunctionArgs, CheckBase
-from utils.class_functions import get_all_methods
+from mixins.metadata_mixin import MetadataMixin
+from utils.class_utils import get_all_methods
 
 
-class Check(CheckBase):
+class Check(CheckBase, MetadataMixin):
     def __init__(
         self,
         name: Optional[str] = None,
@@ -24,17 +23,17 @@ class Check(CheckBase):
         """
         Initialize a check object
         """
+        super().__init__()
         self.verbose = verbose
         self.name = self.__class__.__name__ if name is None else name
-        self.metadata_dir = metadata_dir
         self.description = description
         self.tags = set(tags)
+        self.set_metadata_dir(metadata_dir)
 
         self.rules_prefix = rules_prefix
         self.rules = dict()
         self.rules_params = dict()
         self.rules_context = dict()
-        self.metadata = dict()
 
         for class_method in get_all_methods(self):
             # Ensure all rules are stored in the rules dict
@@ -132,7 +131,7 @@ class Check(CheckBase):
         """
         raise exception
 
-    def run_all(self, tags: Optional[Iterable]):
+    def run_all(self, tags: Optional[Iterable] = None):
         """
         Run all the rules in the check
         Parameters:
@@ -140,7 +139,6 @@ class Check(CheckBase):
         """
         self.setup()
 
-        tags = None if tags is None else set(tags)
         rules_to_run = self.find_rules_by_tags(tags)
 
         for index, rule in enumerate(rules_to_run):
@@ -151,7 +149,7 @@ class Check(CheckBase):
 
         self.teardown()
 
-    async def run_all_async(self, tags: Optional[Iterable], should_run=True):
+    async def run_all_async(self, tags: Optional[Iterable] = None, should_run=True):
         """
         Run all the rules in the check asynchronously
         Parameters:
@@ -173,25 +171,6 @@ class Check(CheckBase):
         One time teardown after all rules are run
         """
         return
-
-    def log_metadata(self, metadata: Dict[str, Any]):
-        """
-        Log metadata with its associated rule
-        """
-        method = inspect.stack()[1][3]
-        self.metadata[method] = metadata
-
-    def write_metadata(self):
-        """
-        Write metadata to a file and clears the memory
-        """
-        if self.metadata_dir is None:
-            raise ValueError("metadata_dir is not set")
-
-        with open(f"{self.metadata_dir}/{self.name}.json", "w") as f:
-            json.dump(self.metadata, f)
-
-        self.metadata = dict()
 
     def __str__(self):
         return self.name

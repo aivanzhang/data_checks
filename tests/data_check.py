@@ -127,7 +127,10 @@ class CompanyRevenueCheck(Check):
     @rule(tags=[1])
     def rule_check_spend_not_empty(self, a, b=1):
         df = get_spend()
-        self.log_metadata({"spend": df})
+        self.log_metadata(
+            {"spend": df},
+            write_to_file="/Users/ivanzhang/Desktop/data-checks/tests/metadata/metadata.json",
+        )
         assert len(df) < 0, "Spend data is empty"
 
     @rule(tags=[2])
@@ -152,7 +155,7 @@ class CompanyRevenueCheck(Check):
 
 
 # print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon"))
-CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all(tags=[1])
+CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all()
 # async def test():
 #     await asyncio.gather(
 #         CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
