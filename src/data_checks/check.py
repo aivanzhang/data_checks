@@ -1,7 +1,7 @@
 """
 Check class
 """
-from typing import Iterable, Optional, Callable, Awaitable, Generator
+from typing import Iterable, Optional, Callable, Awaitable
 import time
 import asyncio
 from exceptions import DataCheckException

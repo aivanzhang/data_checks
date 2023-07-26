@@ -1,5 +1,5 @@
 import asyncio
-from typing import Iterable, Optional, Awaitable
+from typing import Iterable, Optional
 from check import Check
 from suite_types import SuiteBase
 
