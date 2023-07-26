@@ -6,11 +6,19 @@ from constants import DEFAULT_RULE_CONTEXT
 
 # Function positional and keyword arguments
 class FunctionArgs(TypedDict):
+    """
+    Function positional and keyword arguments
+    """
+
     args: tuple
     kwargs: dict
 
 
 class CheckBase(ABC):
+    """
+    Base class for all checks
+    """
+
     # Default rule context for rules missing fields
     DEFAULT_RULE_CONTEXT: RuleContext = DEFAULT_RULE_CONTEXT
 
