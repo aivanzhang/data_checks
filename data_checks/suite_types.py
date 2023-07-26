@@ -10,6 +10,6 @@ class SuiteBase(ABC):
     description: str
     checks: list[Check]  # Checks to be run in the suite
     check_rule_tags: Dict[
-        str, Iterable[str]
+        str, Iterable
     ]  # Tags to be used to filter which rules are run in each check
     ...

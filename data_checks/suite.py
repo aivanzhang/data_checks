@@ -6,13 +6,13 @@ from suite_types import SuiteBase
 
 class Suite(SuiteBase):
     def __init__(
-        self, name, checks: list[Check], check_rule_tags: dict[str, Iterable[str]] = {}
+        self, name, checks: list[Check], check_rule_tags: dict[str, Iterable] = {}
     ):
         self.name = name
         self.checks = checks
         self.check_rule_tags = check_rule_tags
 
-    def get_checks_with_tags(self, tags: Optional[Iterable[str]]) -> list[Check]:
+    def get_checks_with_tags(self, tags: Optional[Iterable]) -> list[Check]:
         """
         Get checks for a given set of tags
         """
@@ -35,12 +35,12 @@ class Suite(SuiteBase):
         """
         return
 
-    def run(self, check_tags: Optional[Iterable[str]] = None):
+    def run(self, check_tags: Optional[Iterable] = None):
         self.setup()
 
         checks_to_run = self.get_checks_with_tags(check_tags)
         for index, check in enumerate(checks_to_run):
-            print(f"\t[{index + 1}/{len(checks_to_run)}] {check}")
+            print(f"[{index + 1}/{len(checks_to_run)} Checks] {check}")
             try:
                 self.before(check)
                 check.run_all(tags=self.check_rule_tags.get(check.name, None))
@@ -50,28 +50,24 @@ class Suite(SuiteBase):
 
         self.teardown()
 
-    def _generate_async_check_runs(
-        self, check_tags: Optional[Iterable] = None
-    ) -> list[Awaitable]:
-        """
-        Generate a list of coroutines that can be awaited
-        """
-        return [
-            check.run_all_async(
-                tags=self.check_rule_tags.get(check.name, None), should_run=False
-            )
-            for check in self.get_checks_with_tags(check_tags)
-        ]
-
     async def run_async(
-        self, check_tags: Optional[str] = None, should_run: bool = True
+        self, check_tags: Optional[Iterable] = None, should_run: bool = True
     ):
-        self.setup()
         if not should_run:
-            return self._generate_async_check_runs(check_tags)
+            return [
+                check._generate_async_rule_runs(
+                    tags=self.check_rule_tags.get(check.name, None)
+                )
+                for check in self.get_checks_with_tags(check_tags)
+            ]
 
         self.setup()
-        await asyncio.gather(*self._generate_async_check_runs(check_tags))
+        await asyncio.gather(
+            *[
+                check.run_all_async(tags=self.check_rule_tags.get(check.name, None))
+                for check in self.get_checks_with_tags(check_tags)
+            ]
+        )
         self.teardown()
 
     def after(self, check: Check):

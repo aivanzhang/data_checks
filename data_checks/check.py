@@ -173,7 +173,7 @@ class Check(CheckBase, MetadataMixin):
         rules_to_run = self.get_rules_with_tags(tags)
 
         for index, rule in enumerate(rules_to_run):
-            print(f"\t[{index + 1}/{len(rules_to_run)}] {rule}")
+            print(f"\t[{index + 1}/{len(rules_to_run)} Rules] {rule}")
             start_time = time.time()
             self.run(rule)
             print(f"\t{time.time() - start_time:.2f} seconds")
