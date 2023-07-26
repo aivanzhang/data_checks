@@ -126,33 +126,63 @@ class CompanyRevenueCheck(Check):
             ]
         }
         self.rules_prefix = "rule_"
+        self.tags = {1, 2}
 
     def setup(self):
-        print("Starting setup")
-        time.sleep(5)
-        print("Finished setup")
+        print("Starting CompanyRevenueCheck setup")
+        time.sleep(1)
+        print("Finished CompanyRevenueCheck setup")
 
     @rule(tags=[1])
     def rule_check_spend_not_empty(self, company_id=1):
         df = get_spend()
         print(company_id)
-        time.sleep(5)
+        time.sleep(1)
         self.log_metadata(
             {"spend": df},
             write_to_file="/Users/ivanzhang/Desktop/data-checks/tests/metadata/metadata.json",
         )
-        assert len(df) < 0, "Spend data is empty"
+        assert len(df) < 0, "Spend data is empty 1"
 
     @rule(tags=[2])
     def rule_check_spend_not_empty_1(a=2, b=2):
         df = get_spend()
         # print(a, b)
         # self.log_metadata({"spend": df})
-        assert len(df) < 0, "Spend data is empty"
+        assert len(df) < 0, "Spend data is empty 2"
 
     @rule(tags=[2])
     def rule_check_spend_not_empty_2(self, a=3, b=3):
         df = get_spend()
+        # print(a, b)
+        # self.log_metadata({"spend": df})
+        assert len(df) < 0, "Spend data is empty 3"
+
+    def on_failure(self, exception):
+        return
+
+    def teardown(self):
+        print("Starting CompanyRevenueCheck teardown")
+        time.sleep(1)
+        print("Finished CompanyRevenueCheck teardown")
+
+
+class CompanyRevenueCheck2(Check):
+    def __init__(self, name: str):
+        super().__init__(name)
+        self.rules_params = {}
+        self.rules_prefix = "rule_"
+        self.tags = {2, 3}
+
+    def setup(self):
+        print("Starting CompanyRevenueCheck2 setup")
+        time.sleep(1)
+        print("Finished CompanyRevenueCheck2 setup")
+
+    @rule(tags=[2])
+    def rule_check_spend_not_empty_2(self):
+        df = get_spend()
+        print("HI")
         # print(a, b)
         # self.log_metadata({"spend": df})
         assert len(df) < 0, "Spend data is empty"
@@ -161,12 +191,12 @@ class CompanyRevenueCheck(Check):
         return
 
     def teardown(self):
-        print("Starting teardown")
-        time.sleep(5)
-        print("Finished teardown")
+        print("Starting CompanyRevenueCheck2 teardown")
+        time.sleep(1)
+        print("Finished CompanyRevenueCheck2 teardown")
 
 
-print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
+# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
 # CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
 #     "rule_check_spend_not_empty"
 # )
