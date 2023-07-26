@@ -1,12 +1,7 @@
 # panda-patrol
 
 ### WIP
-- [ ] suites
-- [ ] Go from notebook to check
-    - check.init => name, etc
-    - rule.start() => rule.end()
-    - generate_base_file(overwrite)
-
+- [x] suites
     
 
 
@@ -35,3 +30,7 @@
 - [ ] data profiling
 - [ ] deployment
 - [ ] wrap assertions for printing
+- [ ] Go from notebook to check
+    - check.init => name, etc
+    - rule.start() => rule.end()
+    - generate_base_file(overwrite)
