@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "data_checks"
+version = "0.0.1"
+authors = [
+  { name="SuperiorityComplex", email="ivanzhangofficial@gmail.com" },
+]
+description = "Data observability checks to easily create comprehensive data quality tests"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE"}
+
+[project.urls]
+"Homepage" = "https://github.com/SuperiorityComplex/data-checks"
+"Bug Tracker" = "https://github.com/SuperiorityComplex/data-checks/issues"
