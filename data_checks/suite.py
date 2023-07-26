@@ -47,6 +47,7 @@ class Suite(SuiteBase):
                 self.on_success(check)
             except Exception as e:
                 self.on_failure(e)
+            self.after(check)
 
         self.teardown()
 
