@@ -194,10 +194,10 @@ class Check(CheckBase, MetadataMixin):
 
     async def run_all_async(self, tags: Optional[Iterable] = None, should_run=True):
         """
-        Run all the rules in the check asynchronously
+        Run all the rules in the check asynchronously. Note that order of execution is not guaranteed (aside from setup and teardown).
         Parameters:
-            should_run: if False, returns an array of coroutines that can be awaited
             tags: only run rules with these tags will be run
+            should_run: if False, will only generate async rules that can be awaited. Skips setup and teardown.
         """
         if not should_run:
             return self._generate_async_rule_runs(tags)

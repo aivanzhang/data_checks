@@ -53,6 +53,12 @@ class Suite(SuiteBase):
     async def run_async(
         self, check_tags: Optional[Iterable] = None, should_run: bool = True
     ):
+        """
+        Run all checks in the suite asynchronously. Note that order of execution is not guaranteed (aside from setup and teardown).
+        Parameters:
+            check_tags: Tags to filter checks by
+            should_run: If False, will only generate async check runs that can be awaited. Skips setup and teardown.
+        """
         if not should_run:
             return [
                 check._generate_async_rule_runs(
