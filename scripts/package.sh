@@ -1,3 +1,3 @@
-python -m build &&
-tar tzf dist/data_checks-0.1.tar.gz &&
-twine check dist/*
+python3 -m build &&
+twine check dist/* &&
+python3 -m twine upload --config-file .pypirc --repository testpypi dist/* 
