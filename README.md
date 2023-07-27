@@ -1,13 +1,13 @@
 # panda-patrol
 
 ### WIP
-- [x] suites
-    
+[x] suites
+[ ] GE integration
 
 
-- [ ] roadmap
+[ ] roadmap
 ### Lower Priority
-- [ ] Download and store locally
+[ ] Download and store locally
 ```python
     @classmethod
     def init(cls, file_path: str) -> "Check":
@@ -22,15 +22,15 @@
         """
         return
 ```
-- [ ] rules_context without decorator (with comments)
-- [ ] streaming database
-- [ ] anomaly detection
-- [ ] pretty printing
-- [ ] frontend
-- [ ] data profiling
-- [ ] deployment
-- [ ] wrap assertions for printing
-- [ ] Go from notebook to check
-    - check.init => name, etc
-    - rule.start() => rule.end()
-    - generate_base_file(overwrite)
+[ ] rules_context without decorator (with comments)
+[ ] streaming database
+[ ] anomaly detection
+[ ] pretty printing
+[ ] frontend
+[ ] data profiling
+[ ] deployment
+[ ] wrap assertions for printing
+- Go from notebook to check
+    [ ] check.init => name, etc
+    [ ] rule.start() => rule.end()
+    [ ] generate_base_file(overwrite)
