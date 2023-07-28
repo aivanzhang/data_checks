@@ -4,10 +4,10 @@ Check class
 from typing import Iterable, Optional, Callable, Awaitable
 import time
 import asyncio
-from exceptions import DataCheckException
-from check_types import FunctionArgs, CheckBase
-from mixins.metadata_mixin import MetadataMixin
-from utils.class_utils import get_all_methods
+from .exceptions import DataCheckException
+from .check_types import FunctionArgs, CheckBase
+from .mixins.metadata_mixin import MetadataMixin
+from .utils.class_utils import get_all_methods
 
 
 class Check(CheckBase, MetadataMixin):

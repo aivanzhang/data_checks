@@ -4,7 +4,7 @@ Metadata Mixin for metadata-related functions
 
 from typing import Dict, Any, Optional
 import inspect
-from utils.metadata_utils import write_metadata
+from ..utils.metadata_utils import write_metadata
 
 
 class MetadataMixin:

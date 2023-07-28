@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import TypedDict, Dict, Callable
-from rule_types import RuleContext
-from constants import DEFAULT_RULE_CONTEXT
+from .rule_types import RuleContext
+from .constants import DEFAULT_RULE_CONTEXT
 
 
 # Function positional and keyword arguments

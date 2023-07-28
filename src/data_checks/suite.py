@@ -1,7 +1,7 @@
 import asyncio
 from typing import Iterable, Optional
-from check import Check
-from suite_types import SuiteBase
+from .check import Check
+from .suite_types import SuiteBase
 
 
 class Suite(SuiteBase):
