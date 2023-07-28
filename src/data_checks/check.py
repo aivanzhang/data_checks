@@ -178,7 +178,6 @@ class Check(CheckBase, MetadataMixin):
         rules_to_run = self.get_rules_with_tags(tags)
 
         for index, rule in enumerate(rules_to_run):
-            print(self.rules_context[rule])
             print(
                 f"\t[{index + 1}/{len(rules_to_run)} Rules] {self.rules_context[rule]['name']}"
             )
