@@ -1,4 +1,6 @@
-import data_checks
+import sys
+
+sys.path.append("./src")
 from data_checks.rule import rule, rule_func
 from data_checks.check import Check
 import os
@@ -100,17 +102,19 @@ class CompanyRevenueCheck2(Check):
         print("Finished CompanyRevenueCheck2 teardown")
 
 
-# print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
-# CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
-#     "rule_check_spend_not_empty"
-# )
-# async def test():
-#     await asyncio.gather(
-#         CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
-#             # should_run=False,
-#             tags=[1],
-#         )
-#     )
+print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all())
+CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
+    "rule_check_spend_not_empty"
+)
+
+
+async def test():
+    await asyncio.gather(
+        CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all_async(
+            # should_run=False,
+            tags=[1],
+        )
+    )
 
 
 # print(asyncio.run(test()))
