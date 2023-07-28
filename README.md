@@ -37,3 +37,5 @@
 - @params, ingestor (caching)
 - pause check
 - depends on pipeline
+- alerting
+- versioning
