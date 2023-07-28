@@ -4,6 +4,7 @@ Check class
 from typing import Iterable, Optional, Callable, Awaitable
 import time
 import asyncio
+import copy
 from .exceptions import DataCheckException
 from .check_types import FunctionArgs, CheckBase
 from .mixins.metadata_mixin import MetadataMixin
@@ -42,7 +43,9 @@ class Check(CheckBase, MetadataMixin):
                 self.rules_prefix != "" and class_method.startswith(self.rules_prefix)
             ) or getattr(method, "is_rule", False):
                 self.rules[class_method] = method
-                self.rules_context[class_method] = self.DEFAULT_RULE_CONTEXT.copy()
+                self.rules_context[class_method] = copy.deepcopy(
+                    self.DEFAULT_RULE_CONTEXT
+                )
 
                 # Ensure all tags are stored in the rules_context dict
                 rule_tags = getattr(method, "tags", None)

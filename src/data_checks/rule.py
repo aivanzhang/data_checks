@@ -45,14 +45,8 @@ def rule(
             self.rules_context[rule_name]["severity"] = (
                 severity or self.DEFAULT_RULE_CONTEXT["severity"]
             )
-            self.rules_context[rule_name]["args"] = (
-                self.DEFAULT_RULE_CONTEXT["args"] if len(args) == 0 else args
-            )
-            self.rules_context[rule_name]["kwargs"] = (
-                self.DEFAULT_RULE_CONTEXT["kwargs"]
-                if len(kwargs.keys()) == 0
-                else kwargs
-            )
+            self.rules_context[rule_name]["args"].append(args)
+            self.rules_context[rule_name]["kwargs"].append(kwargs)
             return rule_func(self, *args, **kwargs)
 
         wrapper_func.name = name or rule_name

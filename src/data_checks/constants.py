@@ -5,6 +5,6 @@ DEFAULT_RULE_CONTEXT: RuleContext = {
     "description": "",
     "severity": 1.0,
     "tags": set(),
-    "args": tuple(),
-    "kwargs": dict(),
+    "args": [],
+    "kwargs": [],
 }

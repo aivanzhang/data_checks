@@ -1,6 +1,6 @@
 from abc import ABC
 from typing import Iterable, Dict
-from check import Check
+from .check import Check
 
 
 class SuiteBase(ABC):

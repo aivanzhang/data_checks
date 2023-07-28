@@ -6,5 +6,5 @@ class RuleContext(TypedDict):
     description: str
     severity: float
     tags: set
-    args: tuple
-    kwargs: dict
+    args: list[tuple]
+    kwargs: list[dict]
