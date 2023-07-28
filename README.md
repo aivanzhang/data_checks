@@ -34,3 +34,6 @@
     [ ] check.init => name, etc
     [ ] rule.start() => rule.end()
     [ ] generate_base_file(overwrite)
+- @params, ingestor (caching)
+- pause check
+- depends on pipeline

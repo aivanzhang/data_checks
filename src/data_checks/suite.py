@@ -6,9 +6,9 @@ from .suite_types import SuiteBase
 
 class Suite(SuiteBase):
     def __init__(
-        self, name, checks: list[Check], check_rule_tags: dict[str, Iterable] = {}
+        self, name, checks: list[Check] = [], check_rule_tags: dict[str, Iterable] = {}
     ):
-        self.name = name
+        self.name = self.__class__.__name__ if name is None else name
         self.checks = checks
         self.check_rule_tags = check_rule_tags
 
