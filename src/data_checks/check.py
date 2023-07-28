@@ -18,6 +18,8 @@ class Check(CheckBase, MetadataMixin):
         metadata_dir: Optional[str] = None,
         description="",
         rules_prefix="",
+        rules_params=dict(),
+        excluded_rules: Iterable = [],
         tags: Iterable = [],
         verbose=False,
     ):
@@ -28,13 +30,14 @@ class Check(CheckBase, MetadataMixin):
         self.verbose = verbose
         self.name = self.__class__.__name__ if name is None else name
         self.description = description
+        self.excluded_rules = set(excluded_rules)
         self.tags = set(tags)
         self.set_metadata_dir(metadata_dir)
 
         self.rules_prefix = rules_prefix
         self.rules = dict()
-        self.rules_params = dict()
         self.rules_context = dict()
+        self.rules_params = rules_params
 
         for class_method in get_all_methods(self):
             # Ensure all rules are stored in the rules dict
@@ -58,6 +61,14 @@ class Check(CheckBase, MetadataMixin):
                             f"{self.name}.{tag}" for tag in rule_tags
                         }
 
+    def only_run_specified_rules(self):
+        """
+        Appends to self.exclude_rules so that only rules in self.rules_params.keys() are run
+        """
+        self.excluded_rules = self.excluded_rules.union(
+            set(self.rules.keys()) - set(self.rules_params.keys())
+        )
+
     def _get_rules_params(self, rule: str) -> FunctionArgs | list[FunctionArgs]:
         """
         Get the params for a rule
@@ -75,15 +86,20 @@ class Check(CheckBase, MetadataMixin):
                 params = params()
             return params
 
-    def get_rules_with_tags(self, tags: Optional[Iterable]) -> set:
+    def get_rules_to_run(self, tags: Optional[Iterable]) -> set:
         """
-        Find rules by tags
+        Find rules by tags and exclude rules
         """
+
+        included_rules = [
+            rule for rule in self.rules.keys() if rule not in self.excluded_rules
+        ]
+
         if tags is None:
-            return set(self.rules.keys())
+            return set(included_rules)
         return {
             rule
-            for rule in self.rules.keys()
+            for rule in included_rules
             if set(tags).intersection(self.rules_context[rule]["tags"])
         }
 
@@ -175,7 +191,7 @@ class Check(CheckBase, MetadataMixin):
         """
         self.setup()
 
-        rules_to_run = self.get_rules_with_tags(tags)
+        rules_to_run = self.get_rules_to_run(tags)
 
         for index, rule in enumerate(rules_to_run):
             print(
@@ -195,7 +211,7 @@ class Check(CheckBase, MetadataMixin):
         """
         return [
             async_rule
-            for rule_name in self.get_rules_with_tags(tags)
+            for rule_name in self.get_rules_to_run(tags)
             for async_rule in self.run_async(rule_name)
         ]
 

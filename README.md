@@ -39,3 +39,4 @@
 - depends on pipeline
 - alerting
 - versioning
+- rule without self

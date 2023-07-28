@@ -37,5 +37,6 @@ class CheckBase(ABC):
     rules_context: Dict[
         str, RuleContext
     ]  # Stores any metadata generated when a rule runs
+    excluded_rules: set
     tags: set
     ...

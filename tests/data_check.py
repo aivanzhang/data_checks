@@ -29,8 +29,10 @@ class CompanyRevenueCheck(Check):
             "rule_check_spend_not_empty": [
                 {"args": (1,), "kwargs": {}},
                 {"args": (2,), "kwargs": {}},
-            ]
+            ],
+            "rule_check_spend_not_empty_1": [{"args": (1,), "kwargs": {}}],
         }
+        self.excluded_rules = {"rule_check_spend_not_empty_1"}
         # self.rules_prefix = "rule_"
         self.tags = {1, 2}
 
@@ -106,7 +108,8 @@ class CompanyRevenueCheck2(Check):
         print("Finished CompanyRevenueCheck2 teardown")
 
 
-print(CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run_all(tags=[1]))
+cr = CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon")
+cr.run_all(tags=[2])
 # CompanyRevenueCheck(name="CompanyRevenueCheck - Amazon").run(
 #     "rule_check_spend_not_empty"
 # )
