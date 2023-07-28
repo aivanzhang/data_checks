@@ -39,7 +39,7 @@ class CompanyRevenueCheck(Check):
         time.sleep(1)
         print("Finished CompanyRevenueCheck setup")
 
-    @rule(tags=[1])
+    @rule(name="Spend Not Empty", tags=[1])
     def rule_check_spend_not_empty(self, company_id):
         df = get_spend()
         print(company_id)

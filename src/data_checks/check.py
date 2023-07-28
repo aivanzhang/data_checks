@@ -46,7 +46,9 @@ class Check(CheckBase, MetadataMixin):
                 self.rules_context[class_method] = copy.deepcopy(
                     self.DEFAULT_RULE_CONTEXT
                 )
-
+                rule_name = getattr(method, "name", "")
+                if rule_name:
+                    self.rules_context[class_method]["name"] = rule_name
                 # Ensure all tags are stored in the rules_context dict
                 rule_tags = getattr(method, "tags", None)
                 if rule_tags is not None:
@@ -176,7 +178,10 @@ class Check(CheckBase, MetadataMixin):
         rules_to_run = self.get_rules_with_tags(tags)
 
         for index, rule in enumerate(rules_to_run):
-            print(f"\t[{index + 1}/{len(rules_to_run)} Rules] {rule}")
+            print(self.rules_context[rule])
+            print(
+                f"\t[{index + 1}/{len(rules_to_run)} Rules] {self.rules_context[rule]['name']}"
+            )
             start_time = time.time()
             self.run(rule)
             print(f"\t{time.time() - start_time:.2f} seconds")
