@@ -35,7 +35,7 @@
     [ ] rule.start() => rule.end()
     [ ] generate_base_file(overwrite)
 - @params, ingestor (caching)
-- pause check
+- pause check, silencing check
 - depends on pipeline
 - alerting
 - versioning
