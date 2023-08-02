@@ -1,6 +1,11 @@
+from typing import Optional
 from sqlalchemy import create_engine, Engine
 
-engine: Engine
+engine: Optional[Engine] = None
+
+
+def is_engine_defined():
+    return engine is not None
 
 
 def set_engine(engine_: Engine):
@@ -8,7 +13,7 @@ def set_engine(engine_: Engine):
     engine = engine_
 
 
-def get_engine() -> Engine:
+def get_engine() -> Optional[Engine]:
     return engine
 
 
