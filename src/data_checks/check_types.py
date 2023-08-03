@@ -1,7 +1,8 @@
 from abc import ABC
-from typing import TypedDict, Dict, Callable
+from typing import TypedDict, Dict, Callable, Optional
 from .rule_types import RuleContext
 from .constants import DEFAULT_RULE_CONTEXT
+from .dataset import Dataset
 
 
 # Function positional and keyword arguments
@@ -25,6 +26,7 @@ class CheckBase(ABC):
     verbose: bool
 
     name: str
+    dataset: Optional[Dataset]
     description: str
     rules_prefix: str  # Prefix for all rules in the check to be automatically run
     rules: Dict[str, Callable[..., None]]  # Stores all the rules functions in the check

@@ -7,6 +7,7 @@ import asyncio
 import copy
 from .exceptions import DataCheckException
 from .check_types import FunctionArgs, CheckBase
+from .dataset import Dataset
 from .mixins.metadata_mixin import MetadataMixin
 from .utils.class_utils import get_all_methods
 
@@ -22,6 +23,7 @@ class Check(CheckBase, MetadataMixin):
         excluded_rules: Iterable = [],
         tags: Iterable = [],
         verbose=False,
+        dataset: Optional[Dataset] = None,
     ):
         """
         Initialize a check object
@@ -29,6 +31,7 @@ class Check(CheckBase, MetadataMixin):
         super().__init__()
         self.verbose = verbose
         self.name = self.__class__.__name__ if name is None else name
+        self.dataset = dataset
         self.description = description
         self.excluded_rules = set(excluded_rules)
         self.tags = set(tags)
@@ -68,6 +71,12 @@ class Check(CheckBase, MetadataMixin):
         self.excluded_rules = self.excluded_rules.union(
             set(self.rules.keys()) - set(self.rules_params.keys())
         )
+
+    def use_dataset(self, dataset: Dataset):
+        """
+        Sets the dataset for the check
+        """
+        self.dataset = dataset
 
     def _get_rules_params(self, rule: str) -> FunctionArgs | list[FunctionArgs]:
         """

@@ -1,6 +1,7 @@
 import asyncio
 from typing import Iterable, Optional
 from .check import Check
+from .dataset import Dataset
 from .suite_types import SuiteBase
 
 
@@ -10,9 +11,11 @@ class Suite(SuiteBase):
         name: Optional[str] = None,
         checks: list[Check] = [],
         check_rule_tags: dict[str, Iterable] = {},
+        dataset: Optional[Dataset] = None,
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.checks = checks
+        self.dataset = dataset
         self.check_rule_tags = check_rule_tags
 
     def get_checks_with_tags(self, tags: Optional[Iterable]) -> list[Check]:
