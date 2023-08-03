@@ -55,9 +55,6 @@ class Check(CheckBase, MetadataMixin):
                 rule_name = getattr(method, "name", "")
                 if rule_name:
                     self.rules_context[class_method]["name"] = rule_name
-                run_if_func = getattr(method, "run_if", None)
-                if run_if_func is not None:
-                    self.rules_context[class_method]["run_if"] = run_if_func
                 # Ensure all tags are stored in the rules_context dict
                 rule_tags = getattr(method, "tags", None)
                 if rule_tags is not None:
@@ -104,13 +101,7 @@ class Check(CheckBase, MetadataMixin):
         """
 
         included_rules = [
-            rule
-            for rule in self.rules.keys()
-            if rule not in self.excluded_rules
-            and (
-                self.rules_context[rule]["run_if"] is None
-                or self.rules_context[rule]["run_if"]()
-            )
+            rule for rule in self.rules.keys() if rule not in self.excluded_rules
         ]
 
         if tags is None:
