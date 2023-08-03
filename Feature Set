@@ -1,9 +1,7 @@
 - being able to connect any database to schema
 - silencing alerts and reminder in X days, minutes, hours, etc.
-- Number of occurences before alert is triggered
-- Skippable / Dont run alerts conditional
-- Alerting
 - Versioning
+- Skippable / Dont run alerts conditional
 - Aggregation of total, status, messages by category
 - Search through metadata for insights
 - Temporal Look at Checks (i.e. history of success and failures)
@@ -14,7 +12,7 @@
 - data values at the time of the error (i.e. parameters)
 - unique id
 - assigning to users
-
+- transforms on dataset object
 
 Check + Suites
 - tags on checks and suites
@@ -23,3 +21,5 @@ Check + Suites
 - Storing static string of suite and check
 // - Scheduled runs
 // - Execution started, ended, status, logs
+// - Alerting
+// - Number of occurences before alert is triggered
