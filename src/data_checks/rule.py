@@ -13,6 +13,7 @@ def rule(
     severity: Optional[float] = None,
     tags: Optional[Iterable] = None,
     should_prefix_tags: bool = False,
+    run_if=Callable[..., bool],
 ):
     """
     Decorator to instantiate a rule function inside a Check class
@@ -22,6 +23,7 @@ def rule(
         severity: severity of the rule
         tags: tags for the rule
         should_prefix_tags: if True, prefixes the tags with the check name
+        run_if: static function that determines if the rule should run
     """
 
     def wrapper(
@@ -52,6 +54,7 @@ def rule(
         wrapper_func.name = name or rule_name
         wrapper_func.is_rule = True
         wrapper_func.should_prefix_tags = should_prefix_tags
+        wrapper_func.run_if = run_if
         wrapper_func.tags = set(tags or [])
 
         return wrapper_func

@@ -16,9 +16,14 @@ class GeneralCompanyTransactionCheck(Check):
             ],
         }
 
+    @staticmethod
+    def should_run_rule():
+        return False
+
     @rule(
         name="Company Payments Size Increasing",
         description="Size of the payments dataframe is increasing",
+        run_if=should_run_rule,
     )
     def company_payments_size_increasing(self, company_name, days=[2, 5]):
         # old_payments_df = pd.read_csv(
