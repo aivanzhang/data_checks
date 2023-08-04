@@ -1,22 +1,22 @@
+from typing import Optional
 from .base_manager import BaseManager
-from ..models import Check, CheckExecution, Rule
+from .models import Check, CheckExecution, Rule
 
 
 class CheckManager(BaseManager):
+    @classmethod
     def create_check(
-        self,
-        id: int,
+        cls,
         name: str,
-        readable_name: str,
-        description: str,
         code: str,
-        tags: list[str],
-        excluded_rules: list[str],
-        rules: list["Rule"],
-        executions: list["CheckExecution"],
+        readable_name: Optional[str] = None,
+        description: Optional[str] = None,
+        tags: list[str] = [],
+        excluded_rules: list[str] = [],
+        rules: list["Rule"] = [],
+        executions: list["CheckExecution"] = [],
     ) -> Check:
         new_check = Check(
-            id=id,
             name=name,
             readable_name=readable_name,
             description=description,
@@ -26,6 +26,6 @@ class CheckManager(BaseManager):
             rules=rules,
             executions=executions,
         )
-        self.session.add(new_check)
-        self.session.commit()
+
+        cls.session.add(new_check)
         return new_check

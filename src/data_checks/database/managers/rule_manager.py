@@ -1,6 +1,29 @@
+from typing import Optional
 from .base_manager import BaseManager
+from .models import Rule, RuleExecution
 
 
 class RuleManager(BaseManager):
-    def create_rule(self):
-        pass
+    @classmethod
+    def create_rule(
+        cls,
+        name: str,
+        code: str,
+        readable_name: Optional[str] = None,
+        description: Optional[str] = None,
+        severity: float = 0.0,
+        tags: list[str] = [],
+        executions: list["RuleExecution"] = [],
+    ) -> Rule:
+        new_rule = Rule(
+            name=name,
+            readable_name=readable_name,
+            description=description,
+            code=code,
+            tags=tags,
+            severity=severity,
+            executions=executions,
+        )
+        cls.session.add(new_rule)
+
+        return new_rule

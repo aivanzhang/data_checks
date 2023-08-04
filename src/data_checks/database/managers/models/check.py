@@ -6,7 +6,7 @@ from .classes import Base, CheckExecution, Rule
 
 class Check(Base):
     __tablename__ = "checks"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255))
     readable_name: Mapped[str] = mapped_column(String(255), nullable=True)
     description: Mapped[str] = mapped_column(String(1024), nullable=True)

@@ -6,10 +6,10 @@ from .classes import Base, Rule, SuiteExecution
 
 class Suite(Base):
     __tablename__ = "suites"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(255))
     readable_name: Mapped[str] = mapped_column(String(255), nullable=True)
-    description: Mapped[str] = mapped_column(String(1024))
+    description: Mapped[str] = mapped_column(String(1024), nullable=True)
     excluded_check_tags: Mapped[List[str]] = mapped_column(
         ARRAY(String(255)), default=[]
     )

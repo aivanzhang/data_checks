@@ -1,7 +1,8 @@
 from sqlalchemy.orm import DeclarativeBase
+from .mixins import CRUDMixin
 
 
-class Base(DeclarativeBase):
+class Base(DeclarativeBase, CRUDMixin):
     pass
 
 
