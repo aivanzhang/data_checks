@@ -1,5 +1,6 @@
 from typing import List
-from sqlalchemy import String, UnicodeText, ARRAY, ForeignKey, Numeric
+import datetime
+from sqlalchemy import String, UnicodeText, ARRAY, ForeignKey, Numeric, func, DateTime
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from .classes import Base, RuleExecution, Check, Suite
 
@@ -13,6 +14,9 @@ class Rule(Base):
     severity: Mapped[float] = mapped_column(Numeric(6, 3), default=0.0)
     tags: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])
     code: Mapped[str] = mapped_column(UnicodeText())
+    created_at: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"), nullable=True)
     suite: Mapped["Suite"] = relationship(back_populates="rules")

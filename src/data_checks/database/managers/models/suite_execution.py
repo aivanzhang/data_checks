@@ -6,7 +6,7 @@ from .classes import Base, Suite
 
 class SuiteExecution(Base):
     __tablename__ = "suite_executions"
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"))
     suite: Mapped["Suite"] = relationship(back_populates="executions")
     status: Mapped[str] = mapped_column(String(255), nullable=True)
