@@ -14,7 +14,7 @@ class Rule(Base):
     tags: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])
     code: Mapped[str] = mapped_column(UnicodeText())
 
-    suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"))
+    suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"), nullable=True)
     suite: Mapped["Suite"] = relationship(back_populates="rules")
     check_id: Mapped[int] = mapped_column(ForeignKey("checks.id"))
     check: Mapped["Check"] = relationship(back_populates="rules")
