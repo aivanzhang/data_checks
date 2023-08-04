@@ -1,6 +1,6 @@
 from typing import List
 import datetime
-from sqlalchemy import String, UnicodeText, ARRAY, func, DateTime, 
+from sqlalchemy import String, UnicodeText, ARRAY, func, DateTime
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from .classes import Base, CheckExecution, Rule
 
@@ -20,7 +20,6 @@ class Check(Base):
 
     rules: Mapped[List["Rule"]] = relationship(back_populates="check")
     executions: Mapped[List["CheckExecution"]] = relationship(back_populates="check")
-
 
     def __repr__(self) -> str:
         return (
