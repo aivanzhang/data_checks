@@ -6,6 +6,5 @@ class RuleContext(TypedDict):
     description: str
     severity: float
     tags: set
-    run_if: Callable[..., bool]
     args: list[tuple]
     kwargs: list[dict]
