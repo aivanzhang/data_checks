@@ -3,20 +3,28 @@ from typing import Iterable, Optional
 from .check import Check
 from .dataset import Dataset
 from .suite_types import SuiteBase
+from .database import db
+from .database import SuiteManager
+from .utils import file_utils
 
 
 class Suite(SuiteBase):
     def __init__(
         self,
         name: Optional[str] = None,
+        description: Optional[str] = None,
         checks: list[Check] = [],
         check_rule_tags: dict[str, Iterable] = {},
         dataset: Optional[Dataset] = None,
     ):
         self.name = self.__class__.__name__ if name is None else name
+        self.description = description or ""
         self.checks = checks
         self.dataset = dataset
         self.check_rule_tags = check_rule_tags
+        self._internal = {
+            "suite_model": None,
+        }
 
     def get_checks_with_tags(self, tags: Optional[Iterable]) -> list[Check]:
         """
@@ -33,13 +41,18 @@ class Suite(SuiteBase):
         """
         One time setup for all checks in the suites
         """
-        return
+        self._internal["suite_model"] = SuiteManager.create_suite(
+            name=self.name,
+            description=self.description,
+            code=file_utils.get_current_file_contents(__file__),
+        )
+        db.save()
 
     def before(self, check: Check):
         """
         Run before each check
         """
-        return
+        check._update_from_suite_internals(self._internal)
 
     def run(self, check_tags: Optional[Iterable] = None):
         self.setup()

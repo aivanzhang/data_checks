@@ -7,9 +7,13 @@ import asyncio
 import copy
 from .exceptions import DataCheckException
 from .check_types import FunctionArgs, CheckBase
+from .suite_helper_types import SuiteInternal
 from .dataset import Dataset
 from .mixins.metadata_mixin import MetadataMixin
 from .utils.class_utils import get_all_methods
+from .utils import file_utils, class_utils
+from .database import db
+from .database import CheckManager, RuleManager
 
 
 class Check(CheckBase, MetadataMixin):
@@ -35,6 +39,10 @@ class Check(CheckBase, MetadataMixin):
         self.description = description
         self.excluded_rules = set(excluded_rules)
         self.tags = set(tags)
+        self._internal = {
+            "check_model": None,
+            "suite_model": None,
+        }
         self.set_metadata_dir(metadata_dir)
 
         self.rules_prefix = rules_prefix
@@ -63,6 +71,12 @@ class Check(CheckBase, MetadataMixin):
                         self.rules_context[class_method]["tags"] = {
                             f"{self.name}.{tag}" for tag in rule_tags
                         }
+
+    def _update_from_suite_internals(self, suite_internals: SuiteInternal):
+        """
+        Internal: Set the suite model for the check
+        """
+        self._internal["suite_model"] = suite_internals["suite_model"]
 
     def only_run_specified_rules(self):
         """
@@ -112,24 +126,34 @@ class Check(CheckBase, MetadataMixin):
             if set(tags).intersection(self.rules_context[rule]["tags"])
         }
 
-    def _setup(self):
-        """
-        Internal: One time setup for all rules in the check
-        """
-        return
-
     def setup(self):
         """
         One time setup for all rules in the check
         """
-        self._setup()
-        return
+        self._internal["check_model"] = CheckManager.create_check(
+            name=self.name,
+            description=self.description,
+            tags=list(self.tags),
+            excluded_rules=list(self.excluded_rules),
+            code=file_utils.get_current_file_contents(__file__),
+        )
+        db.save()
 
     def before(self, rule: str, params: FunctionArgs):
         """
         Run before each rule
         """
-        return
+        new_rule = RuleManager.create_rule(
+            name=self.rules_context[rule]["name"],
+            description=self.rules_context[rule]["description"],
+            tags=list(self.rules_context[rule]["tags"]),
+            code=class_utils.get_function_code(self, rule),
+        )
+        if self._internal["check_model"] is not None:
+            new_rule.update(check=self._internal["check_model"])
+        if self._internal["suite_model"] is not None:
+            new_rule.update(suite=self._internal["suite_model"])
+        db.save()
 
     def _exec_rule(
         self, rule: str, rule_func: Callable[..., None], params: FunctionArgs

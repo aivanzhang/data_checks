@@ -1,10 +1,12 @@
 from abc import ABC
 from typing import Iterable, Dict
 from .check import Check
+from .suite_helper_types import SuiteInternal
 
 
 class SuiteBase(ABC):
     # Default rule context for rules missing fields
+    _internal: SuiteInternal
     verbose: bool
     name: str
     description: str
