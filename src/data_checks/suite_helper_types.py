@@ -9,4 +9,5 @@ class SuiteInternal(TypedDict):
     """
 
     suite_model: Optional[models.Suite]
+    suite_execution_model: Optional[models.SuiteExecution]
     dataset: Optional[Dataset]

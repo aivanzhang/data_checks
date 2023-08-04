@@ -1,10 +1,11 @@
 import asyncio
+import datetime
 from typing import Iterable, Optional
 from .check import Check
 from .dataset import Dataset
 from .suite_types import SuiteBase
 from .database import db
-from .database import SuiteManager
+from .database import SuiteManager, SuiteExecutionManager
 from .utils import file_utils
 
 
@@ -23,7 +24,11 @@ class Suite(SuiteBase):
         if _dataset is not None:
             self._dataset = _dataset
         self.check_rule_tags = check_rule_tags
-        self._internal = {"suite_model": None, "dataset": _dataset}
+        self._internal = {
+            "suite_model": None,
+            "suite_execution_model": None,
+            "dataset": _dataset,
+        }
 
     @property
     def dataset(self):
@@ -53,6 +58,11 @@ class Suite(SuiteBase):
             name=self.name,
             description=self.description,
             code=file_utils.get_current_file_contents(__file__),
+        )
+        self._internal[
+            "suite_execution_model"
+        ] = SuiteExecutionManager.create_suite_exceution(
+            suite=self._internal["suite_model"]
         )
         db.save()
 
@@ -126,7 +136,13 @@ class Suite(SuiteBase):
         """
         One time teardown after all checks are run
         """
-        return
+        suite_execution = self._internal["suite_execution_model"]
+        if suite_execution:
+            suite_execution.update(
+                status="success",
+                finished_at=datetime.datetime.utcnow(),
+            )
+        db.save()
 
     def get_all_metadata(self):
         """

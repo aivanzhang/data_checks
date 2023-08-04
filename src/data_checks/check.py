@@ -3,6 +3,7 @@ Check class
 """
 from typing import Iterable, Optional, Callable, Awaitable
 import time
+import datetime
 import asyncio
 import copy
 from .exceptions import DataCheckException
@@ -13,7 +14,12 @@ from .mixins.metadata_mixin import MetadataMixin
 from .utils.class_utils import get_all_methods
 from .utils import file_utils, class_utils
 from .database import db
-from .database import CheckManager, RuleManager
+from .database import (
+    CheckManager,
+    CheckExecutionManager,
+    RuleManager,
+    RuleExecutionManager,
+)
 
 
 class Check(CheckBase, MetadataMixin):
@@ -41,8 +47,10 @@ class Check(CheckBase, MetadataMixin):
         self.excluded_rules = set(excluded_rules)
         self.tags = set(tags)
         self._internal = {
-            "check_model": None,
             "suite_model": None,
+            "check_model": None,
+            "check_execution_model": None,
+            "rule_execution_models": dict(),
         }
         self.set_metadata_dir(metadata_dir)
 
@@ -154,8 +162,22 @@ class Check(CheckBase, MetadataMixin):
         )
         if self._internal["check_model"] is not None:
             new_rule.update(check=self._internal["check_model"])
+            self._internal[
+                "check_execution_model"
+            ] = CheckExecutionManager.create_check_exceution(
+                check=self._internal["check_model"]
+            )
         if self._internal["suite_model"] is not None:
             new_rule.update(suite=self._internal["suite_model"])
+
+        new_rule_execution = RuleExecutionManager.create_rule_exceution(
+            rule=new_rule,
+        )
+
+        self._internal["rule_execution_models"][rule] = {
+            "rule_model": new_rule,
+            "rule_execution_model": new_rule_execution,
+        }
         db.save()
 
     def _exec_rule(
@@ -212,7 +234,18 @@ class Check(CheckBase, MetadataMixin):
         """
         Runs after each rule
         """
-        return
+        rule_execution = (
+            self._internal["rule_execution_models"]
+            .get(rule, dict())
+            .get("rule_execution_model", None)
+        )
+
+        if rule_execution:
+            rule_execution.update(
+                status="success", finished_at=datetime.datetime.utcnow()
+            )
+
+            db.save()
 
     def on_success(self, rule: str, params: FunctionArgs):
         """
@@ -276,7 +309,14 @@ class Check(CheckBase, MetadataMixin):
         """
         One time teardown after all rules are run
         """
-        return
+        check_execution = self._internal["check_execution_model"]
+
+        if check_execution:
+            check_execution.update(
+                status="success", finished_at=datetime.datetime.utcnow()
+            )
+
+            db.save()
 
     def __str__(self):
         return self.name
