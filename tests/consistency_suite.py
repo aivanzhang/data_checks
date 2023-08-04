@@ -19,7 +19,8 @@ class ConsistencySuite(Suite):
                 os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
             ),
         )
-        self.checks = [GeneralCompanyTransactionCheck(self.dataset)]
 
-        for check in self.checks:
-            check.use_dataset(self.dataset)
+        self.checks = [GeneralCompanyTransactionCheck()]
+
+        # for check in self.checks:
+        #     check.use_dataset(self.dataset)

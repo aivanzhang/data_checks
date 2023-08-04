@@ -15,16 +15,24 @@ class Suite(SuiteBase):
         description: Optional[str] = None,
         checks: list[Check] = [],
         check_rule_tags: dict[str, Iterable] = {},
-        dataset: Optional[Dataset] = None,
+        _dataset: Optional[Dataset] = None,
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
         self.checks = checks
-        self.dataset = dataset
+        if _dataset is not None:
+            self._dataset = _dataset
         self.check_rule_tags = check_rule_tags
-        self._internal = {
-            "suite_model": None,
-        }
+        self._internal = {"suite_model": None, "dataset": _dataset}
+
+    @property
+    def dataset(self):
+        return self._dataset
+
+    @dataset.setter
+    def dataset(self, new_dataset):
+        self._internal["dataset"] = new_dataset
+        self._dataset = new_dataset
 
     def get_checks_with_tags(self, tags: Optional[Iterable]) -> list[Check]:
         """

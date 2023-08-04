@@ -35,7 +35,8 @@ class Check(CheckBase, MetadataMixin):
         super().__init__()
         self.verbose = verbose
         self.name = self.__class__.__name__ if name is None else name
-        self.dataset = dataset
+        if dataset is not None:
+            self.dataset = dataset
         self.description = description
         self.excluded_rules = set(excluded_rules)
         self.tags = set(tags)
@@ -77,6 +78,8 @@ class Check(CheckBase, MetadataMixin):
         Internal: Set the suite model for the check
         """
         self._internal["suite_model"] = suite_internals["suite_model"]
+        if suite_internals["dataset"] is not None:
+            self.dataset = suite_internals["dataset"]
 
     def only_run_specified_rules(self):
         """
