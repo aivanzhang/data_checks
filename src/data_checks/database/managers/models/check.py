@@ -1,6 +1,6 @@
 from typing import List
 import datetime
-from sqlalchemy import String, UnicodeText, ARRAY, func, DateTime
+from sqlalchemy import String, UnicodeText, ARRAY, DateTime
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from .classes import Base, CheckExecution, Rule
 

@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import ForeignKey, func, DateTime, String, UnicodeText
+from sqlalchemy import ForeignKey, DateTime, String, UnicodeText
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from .classes import Base, Suite
 
