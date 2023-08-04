@@ -11,7 +11,7 @@ class CheckExecution(Base):
     check: Mapped["Check"] = relationship(back_populates="executions")
     status: Mapped[str] = mapped_column(String(255), nullable=True)
 
-    data = mapped_column(UnicodeText(), nullable=True)
+    params = mapped_column(UnicodeText(), nullable=True)
     logs: Mapped[str] = mapped_column(UnicodeText(), nullable=True)
     traceback: Mapped[str] = mapped_column(UnicodeText(), nullable=True)
     exception = mapped_column(UnicodeText(), nullable=True)

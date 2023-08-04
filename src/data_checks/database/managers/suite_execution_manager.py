@@ -9,7 +9,7 @@ class SuiteExecutionManager(BaseManager):
         cls,
         suite: Suite,
         status: Optional[str] = None,
-        data: Optional[str] = None,
+        params: Optional[str] = None,
         logs: Optional[str] = None,
         traceback: Optional[str] = None,
         exception: Optional[str] = None,
@@ -17,7 +17,7 @@ class SuiteExecutionManager(BaseManager):
         new_execution = SuiteExecution(
             suite=suite,
             status=status,
-            data=data,
+            params=params,
             logs=logs,
             traceback=traceback,
             exception=exception,

@@ -9,7 +9,7 @@ class RuleExecutionManager(BaseManager):
         cls,
         rule: Rule,
         status: Optional[str] = None,
-        data: Optional[str] = None,
+        params: Optional[str] = None,
         logs: Optional[str] = None,
         traceback: Optional[str] = None,
         exception: Optional[str] = None,
@@ -17,7 +17,7 @@ class RuleExecutionManager(BaseManager):
         new_execution = RuleExecution(
             rule=rule,
             status=status,
-            data=data,
+            params=params,
             logs=logs,
             traceback=traceback,
             exception=exception,
