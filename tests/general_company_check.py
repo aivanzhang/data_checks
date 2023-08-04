@@ -31,7 +31,6 @@ class GeneralCompanyTransactionCheck(Check):
         # new_payments_df = pd.read_csv(
         #     os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
         # )
-        print(self.dataset)
         assert_that(
             self.dataset.new_payments_df.shape[0]
             >= self.dataset.old_payments_df.shape[0],
