@@ -17,7 +17,7 @@ class CheckExecution(Base):
     exception = mapped_column(UnicodeText(), nullable=True)
 
     created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), default=datetime.datetime.utcnow()
     )
     finished_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), nullable=True

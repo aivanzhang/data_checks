@@ -13,7 +13,7 @@ class Check(Base):
     description: Mapped[str] = mapped_column(String(1024), nullable=True)
     code: Mapped[str] = mapped_column(UnicodeText())
     created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), default=datetime.datetime.utcnow()
     )
     tags: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])
     excluded_rules: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])

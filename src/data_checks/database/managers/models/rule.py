@@ -15,7 +15,7 @@ class Rule(Base):
     tags: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])
     code: Mapped[str] = mapped_column(UnicodeText())
     created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
+        DateTime(timezone=True), default=datetime.datetime.utcnow()
     )
 
     suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"), nullable=True)
