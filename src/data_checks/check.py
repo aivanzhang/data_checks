@@ -112,10 +112,17 @@ class Check(CheckBase, MetadataMixin):
             if set(tags).intersection(self.rules_context[rule]["tags"])
         }
 
+    def _setup(self):
+        """
+        Internal: One time setup for all rules in the check
+        """
+        return
+
     def setup(self):
         """
         One time setup for all rules in the check
         """
+        self._setup()
         return
 
     def before(self, rule: str, params: FunctionArgs):
