@@ -14,7 +14,7 @@ class SuiteExecutionManager(BaseManager):
         traceback: Optional[str] = None,
         exception: Optional[str] = None,
     ) -> SuiteExecution:
-        new_execution = SuiteExecution(
+        new_execution = SuiteExecution.create(
             suite=suite,
             status=status,
             params=params,
@@ -22,6 +22,4 @@ class SuiteExecutionManager(BaseManager):
             traceback=traceback,
             exception=exception,
         )
-
-        cls.session.add(new_execution)
         return new_execution

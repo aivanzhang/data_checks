@@ -16,7 +16,7 @@ class CheckManager(BaseManager):
         rules: list["Rule"] = [],
         executions: list["CheckExecution"] = [],
     ) -> Check:
-        new_check = Check(
+        new_check = Check.create(
             name=name,
             readable_name=readable_name,
             description=description,
@@ -26,6 +26,4 @@ class CheckManager(BaseManager):
             rules=rules,
             executions=executions,
         )
-
-        cls.session.add(new_check)
         return new_check

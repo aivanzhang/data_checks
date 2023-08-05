@@ -14,7 +14,7 @@ class CheckExecutionManager(BaseManager):
         traceback: Optional[str] = None,
         exception: Optional[str] = None,
     ) -> CheckExecution:
-        new_execution = CheckExecution(
+        new_execution = CheckExecution.create(
             check=check,
             status=status,
             params=params,
@@ -22,6 +22,4 @@ class CheckExecutionManager(BaseManager):
             traceback=traceback,
             exception=exception,
         )
-
-        cls.session.add(new_execution)
         return new_execution

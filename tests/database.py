@@ -1,4 +1,3 @@
-from src.data_checks.database.utils import *
 from src.data_checks.database import *
 from src.data_checks.database.managers import (
     CheckManager,

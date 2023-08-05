@@ -20,7 +20,13 @@ class ConsistencySuite(Suite):
             ),
         )
 
-        self.checks = [GeneralCompanyTransactionCheck()]
+        self.checks = [
+            GeneralCompanyTransactionCheck(),
+            GeneralCompanyTransactionCheck(),
+            GeneralCompanyTransactionCheck(),
+            GeneralCompanyTransactionCheck(),
+            GeneralCompanyTransactionCheck(),
+        ]
 
         # for check in self.checks:
         #     check.use_dataset(self.dataset)

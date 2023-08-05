@@ -20,7 +20,7 @@ class Rule(Base):
 
     suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"), nullable=True)
     suite: Mapped["Suite"] = relationship(back_populates="rules")
-    check_id: Mapped[int] = mapped_column(ForeignKey("checks.id"))
+    check_id: Mapped[int] = mapped_column(ForeignKey("checks.id"), nullable=True)
     check: Mapped["Check"] = relationship(back_populates="rules")
     executions: Mapped[List["RuleExecution"]] = relationship(back_populates="rule")
 

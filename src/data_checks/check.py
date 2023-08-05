@@ -159,7 +159,6 @@ class Check(CheckBase, MetadataMixin):
             excluded_rules=list(self.excluded_rules),
             code=file_utils.get_current_file_contents(__file__),
         )
-        db.save()
 
     def before(self, rule: str, params: FunctionArgs):
         """
@@ -190,7 +189,6 @@ class Check(CheckBase, MetadataMixin):
             "rule_model": new_rule,
             "rule_execution_model": new_rule_execution,
         }
-        db.save()
 
     def _exec_rule(
         self, rule: str, rule_func: Callable[..., None], params: FunctionArgs
@@ -256,8 +254,6 @@ class Check(CheckBase, MetadataMixin):
             rule_execution.update(
                 status="success", finished_at=datetime.datetime.utcnow()
             )
-
-            db.save()
 
     def on_success(self, rule: str, params: FunctionArgs):
         """
@@ -327,8 +323,6 @@ class Check(CheckBase, MetadataMixin):
             check_execution.update(
                 status="success", finished_at=datetime.datetime.utcnow()
             )
-
-            db.save()
 
     def __str__(self):
         return self.name

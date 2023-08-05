@@ -1,6 +1,6 @@
 import asyncio
 import datetime
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Awaitable
 from .check import Check
 from .dataset import Dataset
 from .suite_types import SuiteBase
@@ -64,7 +64,6 @@ class Suite(SuiteBase):
         ] = SuiteExecutionManager.create_suite_exceution(
             suite=self._internal["suite_model"]
         )
-        db.save()
 
     def before(self, check: Check):
         """
@@ -78,15 +77,32 @@ class Suite(SuiteBase):
         checks_to_run = self.get_checks_with_tags(check_tags)
         for index, check in enumerate(checks_to_run):
             print(f"[{index + 1}/{len(checks_to_run)} Checks] {check}")
-            try:
-                self.before(check)
-                check.run_all(tags=self.check_rule_tags.get(check.name, None))
-                self.on_success(check)
-            except Exception as e:
-                self.on_failure(e)
-            self.after(check)
+            asyncio.run(self._exec_async_check(check))
 
         self.teardown()
+
+    async def _exec_async_check(self, check: Check):
+        """
+        Execute a check
+        """
+        self.before(check)
+        try:
+            await check.run_all_async(tags=self.check_rule_tags.get(check.name, None))
+            self.on_success(check)
+        except Exception as e:
+            self.on_failure(e)
+        self.after(check)
+
+    def _generate_async_check_runs(
+        self, check_tags: Optional[Iterable] = None
+    ) -> list[Awaitable]:
+        """
+        Generate a list of coroutines that can be awaited
+        """
+        return [
+            self._exec_async_check(check)
+            for check in self.get_checks_with_tags(check_tags)
+        ]
 
     async def run_async(
         self, check_tags: Optional[Iterable] = None, should_run: bool = True
@@ -98,17 +114,12 @@ class Suite(SuiteBase):
             should_run: If False, will only generate async check runs that can be awaited. Skips setup and teardown.
         """
         if not should_run:
-            return [
-                check._generate_async_rule_runs(
-                    tags=self.check_rule_tags.get(check.name, None)
-                )
-                for check in self.get_checks_with_tags(check_tags)
-            ]
+            return self._generate_async_check_runs(check_tags)
 
         self.setup()
         await asyncio.gather(
             *[
-                check.run_all_async(tags=self.check_rule_tags.get(check.name, None))
+                self._exec_async_check(check)
                 for check in self.get_checks_with_tags(check_tags)
             ]
         )
@@ -142,7 +153,6 @@ class Suite(SuiteBase):
                 status="success",
                 finished_at=datetime.datetime.utcnow(),
             )
-        db.save()
 
     def get_all_metadata(self):
         """

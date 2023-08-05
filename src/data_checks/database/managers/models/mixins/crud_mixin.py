@@ -1,25 +1,23 @@
-from sqlalchemy.orm import Session
-from src.data_checks.database.utils import get_session
+from ...utils.sessions import session_scope
 
 
 class CRUDMixin(object):
-    session: Session
-
-    @classmethod
-    def set_session(cls, session):
-        cls.session = session
-
     @classmethod
     def create(cls, **kwargs):
         instance = cls(**kwargs)
-        cls.session.add(instance)
+        instance.add()
+        return instance
+
+    def add(self):
+        with session_scope() as session:
+            session.add(self)
 
     def update(self, **kwargs):
-        for attr, value in kwargs.items():
-            setattr(self, attr, value)
-        return self
+        with session_scope() as session:
+            return self
 
     def save(self):
-        self.session.add(self)
-        self.session.commit()
+        with session_scope() as session:
+            session.add(self)
+            session.commit()
         return self

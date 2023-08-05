@@ -12,7 +12,22 @@ class GeneralCompanyTransactionCheck(Check):
         self.category = "Consistency"
         self.rules_params = {
             "company_payments_size_increasing": [
-                {"args": (), "kwargs": {"company_name": "company_name"}}
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+            ],
+            "company_payments_size_increasing_2": [
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
+                {"args": (), "kwargs": {"company_name": "company_name"}},
             ],
         }
 
@@ -37,3 +52,24 @@ class GeneralCompanyTransactionCheck(Check):
             equal_to(True),
             f"Size of the payments dataframe has decreased in the last few days",
         )
+        print(self.dataset)
+
+    @rule(
+        name="Company Payments Size Increasing 2",
+        description="Size of the payments dataframe is increasing",
+    )
+    def company_payments_size_increasing_2(self, company_name, days=[2, 5]):
+        # old_payments_df = pd.read_csv(
+        #     os.path.dirname(os.path.realpath(__file__)) + "/old_payments.csv"
+        # )
+        # new_payments_df = pd.read_csv(
+        #     os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
+        # )
+
+        assert_that(
+            self.dataset.new_payments_df.shape[0]
+            >= self.dataset.old_payments_df.shape[0],
+            equal_to(True),
+            f"Size of the payments dataframe has decreased in the last few days",
+        )
+        print(self.dataset)

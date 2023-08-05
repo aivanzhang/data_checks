@@ -14,7 +14,7 @@ class RuleExecutionManager(BaseManager):
         traceback: Optional[str] = None,
         exception: Optional[str] = None,
     ) -> RuleExecution:
-        new_execution = RuleExecution(
+        new_execution = RuleExecution.create(
             rule=rule,
             status=status,
             params=params,
@@ -22,6 +22,4 @@ class RuleExecutionManager(BaseManager):
             traceback=traceback,
             exception=exception,
         )
-
-        cls.session.add(new_execution)
         return new_execution

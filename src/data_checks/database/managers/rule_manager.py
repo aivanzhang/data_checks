@@ -15,7 +15,7 @@ class RuleManager(BaseManager):
         tags: list[str] = [],
         executions: list["RuleExecution"] = [],
     ) -> Rule:
-        new_rule = Rule(
+        new_rule = Rule.create(
             name=name,
             readable_name=readable_name,
             description=description,
@@ -24,6 +24,4 @@ class RuleManager(BaseManager):
             severity=severity,
             executions=executions,
         )
-        cls.session.add(new_rule)
-
         return new_rule

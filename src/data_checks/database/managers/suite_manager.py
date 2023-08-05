@@ -15,7 +15,7 @@ class SuiteManager(BaseManager):
         rules: list["Rule"] = [],
         executions: list["SuiteExecution"] = [],
     ) -> Suite:
-        new_suite = Suite(
+        new_suite = Suite.create(
             name=name,
             readable_name=readable_name,
             description=description,
@@ -24,5 +24,4 @@ class SuiteManager(BaseManager):
             excluded_check_tags=excluded_check_tags,
             executions=executions,
         )
-        cls.session.add(new_suite)
         return new_suite

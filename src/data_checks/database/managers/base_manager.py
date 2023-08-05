@@ -1,13 +1,8 @@
-from sqlalchemy.orm import Session
+from .utils.sessions import session_scope
 
 
 class BaseManager(object):
-    session: Session
-
-    @classmethod
-    def set_session(cls, session):
-        cls.session = session
-
-    @classmethod
-    def save(cls):
-        cls.session.commit()
+    @staticmethod
+    def save():
+        with session_scope() as session:
+            session.commit()
