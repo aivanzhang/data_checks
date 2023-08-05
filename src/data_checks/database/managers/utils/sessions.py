@@ -8,7 +8,6 @@ DataCheckSession = sessionmaker()
 def configure(bind: Engine, **kwargs):
     global DataCheckSession
     DataCheckSession.configure(bind=bind, **kwargs)
-    DataCheckSession = scoped_session(DataCheckSession)
 
 
 @contextmanager

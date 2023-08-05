@@ -43,4 +43,3 @@ new_check = CheckManager.create_check(
 )
 
 new_rule.update(check=new_check)
-print(db.save())
