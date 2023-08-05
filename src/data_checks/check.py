@@ -6,6 +6,7 @@ import time
 import datetime
 import asyncio
 import copy
+import json
 from .exceptions import DataCheckException
 from .check_types import FunctionArgs, CheckBase
 from .suite_helper_types import SuiteInternal
@@ -80,6 +81,16 @@ class Check(CheckBase, MetadataMixin):
                         self.rules_context[class_method]["tags"] = {
                             f"{self.name}.{tag}" for tag in rule_tags
                         }
+
+    def rule_execution(self, rule_name: str):
+        """
+        Get the rule execution model for a rule
+        """
+        return (
+            self._internal["rule_execution_models"]
+            .get(rule_name, dict())
+            .get("rule_execution_model", None)
+        )
 
     def _update_from_suite_internals(self, suite_internals: SuiteInternal):
         """
@@ -172,6 +183,7 @@ class Check(CheckBase, MetadataMixin):
 
         new_rule_execution = RuleExecutionManager.create_rule_exceution(
             rule=new_rule,
+            params=json.dumps(params),
         )
 
         self._internal["rule_execution_models"][rule] = {
