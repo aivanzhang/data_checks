@@ -14,7 +14,6 @@ from .dataset import Dataset
 from .mixins.metadata_mixin import MetadataMixin
 from .utils.class_utils import get_all_methods
 from .utils import file_utils, class_utils
-from .database import db
 from .database import (
     CheckManager,
     CheckExecutionManager,

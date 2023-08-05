@@ -4,7 +4,6 @@ from typing import Iterable, Optional, Awaitable
 from .check import Check
 from .dataset import Dataset
 from .suite_types import SuiteBase
-from .database import db
 from .database import SuiteManager, SuiteExecutionManager
 from .utils import file_utils
 
