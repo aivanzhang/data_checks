@@ -7,8 +7,8 @@ import os
 
 
 class GeneralCompanyTransactionCheck(Check):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, dataset: Dataset | None = None):
+        super().__init__(dataset=dataset)
         self.category = "Consistency"
         self.rules_params = {
             "company_payments_size_increasing": [
@@ -46,6 +46,7 @@ class GeneralCompanyTransactionCheck(Check):
         # new_payments_df = pd.read_csv(
         #     os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
         # )
+        print("hello 1")
         assert_that(
             self.dataset.new_payments_df.shape[0]
             >= self.dataset.old_payments_df.shape[0],
@@ -65,6 +66,7 @@ class GeneralCompanyTransactionCheck(Check):
         #     os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
         # )
 
+        print("hello 2")
         assert_that(
             self.dataset.new_payments_df.shape[0]
             >= self.dataset.old_payments_df.shape[0],

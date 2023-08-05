@@ -1,7 +1,7 @@
 import os
 from .utils.engine import connect
-from .managers.models import Base
 from .managers.utils import sessions
+from .managers.models import Base
 from .managers import *
 
 check_database_url = os.getenv("CHECKS_DATABASE_URL")

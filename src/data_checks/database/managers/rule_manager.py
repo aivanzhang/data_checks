@@ -1,12 +1,12 @@
 from typing import Optional
 from .base_manager import BaseManager
 from .models import Rule, RuleExecution
+from .utils.sessions import session_scope
 
 
 class RuleManager(BaseManager):
-    @classmethod
+    @staticmethod
     def create_rule(
-        cls,
         name: str,
         code: str,
         readable_name: Optional[str] = None,
@@ -24,4 +24,24 @@ class RuleManager(BaseManager):
             severity=severity,
             executions=executions,
         )
+        with session_scope() as session:
+            session.add(new_rule)
         return new_rule
+
+    @staticmethod
+    def update_suite_id(rule_id: int, suite_id: int):
+        with session_scope() as session:
+            session.query(Rule).filter_by(id=rule_id).update(
+                {
+                    "suite_id": suite_id,
+                }
+            )
+
+    @staticmethod
+    def update_check_id(rule_id: int, check_id: int):
+        with session_scope() as session:
+            session.query(Rule).filter_by(id=rule_id).update(
+                {
+                    "check_id": check_id,
+                }
+            )

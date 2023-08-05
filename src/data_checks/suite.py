@@ -60,7 +60,7 @@ class Suite(SuiteBase):
         )
         self._internal[
             "suite_execution_model"
-        ] = SuiteExecutionManager.create_suite_exceution(
+        ] = SuiteExecutionManager.create_suite_execution(
             suite=self._internal["suite_model"]
         )
 
@@ -153,10 +153,11 @@ class Suite(SuiteBase):
         One time teardown after all checks are run
         """
         suite_execution = self._internal["suite_execution_model"]
+
         if suite_execution:
-            suite_execution.update(
+            SuiteExecutionManager.update_execution(
+                suite_execution.id,
                 status="success",
-                finished_at=datetime.datetime.utcnow(),
             )
 
     def get_all_metadata(self):

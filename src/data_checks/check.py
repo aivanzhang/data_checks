@@ -3,7 +3,6 @@ Check class
 """
 from typing import Iterable, Optional, Callable, Awaitable
 import time
-import datetime
 import asyncio
 import copy
 import json
@@ -20,7 +19,6 @@ from .database import (
     CheckExecutionManager,
     RuleManager,
     RuleExecutionManager,
-    db,
 )
 
 
@@ -154,6 +152,7 @@ class Check(CheckBase, MetadataMixin):
         """
         One time setup for all rules in the check
         """
+
         self._internal["check_model"] = CheckManager.create_check(
             name=self.name,
             description=self.description,
@@ -161,8 +160,13 @@ class Check(CheckBase, MetadataMixin):
             excluded_rules=list(self.excluded_rules),
             code=file_utils.get_current_file_contents(__file__),
         )
+        self._internal[
+            "check_execution_model"
+        ] = CheckExecutionManager.create_check_execution(
+            check=self._internal["check_model"]
+        )
 
-    def before(self, rule: str, params: FunctionArgs):
+    def before(self, rule: str, params: FunctionArgs) -> int:
         """
         Run before each rule
         """
@@ -172,25 +176,22 @@ class Check(CheckBase, MetadataMixin):
             tags=list(self.rules_context[rule]["tags"]),
             code=class_utils.get_function_code(self, rule),
         )
-        if self._internal["check_model"] is not None:
-            new_rule.update(check=self._internal["check_model"])
-            self._internal[
-                "check_execution_model"
-            ] = CheckExecutionManager.create_check_exceution(
-                check=self._internal["check_model"]
-            )
-        if self._internal["suite_model"] is not None:
-            new_rule.update(suite=self._internal["suite_model"])
-
-        new_rule_execution = RuleExecutionManager.create_rule_exceution(
+        new_rule_execution = RuleExecutionManager.create_rule_execution(
             rule=new_rule,
             params=json.dumps(params),
         )
 
-        self._internal["rule_execution_models"][rule] = {
+        if self._internal["check_model"] is not None:
+            RuleManager.update_check_id(new_rule.id, self._internal["check_model"].id)
+
+        if self._internal["suite_model"] is not None:
+            RuleManager.update_suite_id(new_rule.id, self._internal["suite_model"].id)
+
+        self._internal["rule_execution_models"][f"{rule}-{new_rule_execution.id}"] = {
             "rule_model": new_rule,
             "rule_execution_model": new_rule_execution,
         }
+        return new_rule_execution.id
 
     def _exec_rule(
         self, rule: str, rule_func: Callable[..., None], params: FunctionArgs
@@ -199,7 +200,7 @@ class Check(CheckBase, MetadataMixin):
         Execute a rule
         """
         rule_metadata = {"rule": rule, "params": params}
-        self.before(**rule_metadata)
+        exec_id = self.before(**rule_metadata)
         try:
             rule_func(*params["args"], **params["kwargs"])
             self.on_success(**rule_metadata)
@@ -211,7 +212,7 @@ class Check(CheckBase, MetadataMixin):
         except DataCheckException as e:
             print(e)
             self.on_failure(e)
-        self.after(**rule_metadata)
+        self.after(**rule_metadata, exec_id=exec_id)
 
     def run(self, rule: str):
         """
@@ -242,20 +243,22 @@ class Check(CheckBase, MetadataMixin):
                 None, self._exec_rule, rule, rule_func, rules_params
             )
 
-    def after(self, rule: str, params: FunctionArgs):
+    def after(self, rule: str, params: FunctionArgs, **kwargs):
         """
         Runs after each rule
         """
-        rule_execution = (
-            self._internal["rule_execution_models"]
-            .get(rule, dict())
-            .get("rule_execution_model", None)
-        )
-
-        if rule_execution:
-            rule_execution.update(
-                status="success", finished_at=datetime.datetime.utcnow()
+        if "exec_id" in kwargs:
+            rule_execution = (
+                self._internal["rule_execution_models"]
+                .get(f"{rule}-{kwargs['exec_id']}", dict())
+                .get("rule_execution_model", None)
             )
+            if rule_execution:
+                RuleExecutionManager.update_execution(
+                    rule_execution.id,
+                    status="success",
+                    params=json.dumps(params),
+                )
 
     def on_success(self, rule: str, params: FunctionArgs):
         """
@@ -322,8 +325,9 @@ class Check(CheckBase, MetadataMixin):
         check_execution = self._internal["check_execution_model"]
 
         if check_execution:
-            check_execution.update(
-                status="success", finished_at=datetime.datetime.utcnow()
+            CheckExecutionManager.update_execution(
+                check_execution.id,
+                status="success",
             )
 
     def __str__(self):

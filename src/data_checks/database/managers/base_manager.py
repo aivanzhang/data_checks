@@ -1,8 +1,10 @@
+from contextlib import contextmanager
 from .utils.sessions import session_scope
 
 
 class BaseManager(object):
+    @contextmanager
     @staticmethod
-    def save():
+    def transaction():
         with session_scope() as session:
-            session.commit()
+            yield session

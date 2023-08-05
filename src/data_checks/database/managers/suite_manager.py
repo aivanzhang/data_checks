@@ -1,12 +1,12 @@
 from typing import Optional
 from .base_manager import BaseManager
 from .models import Rule, Suite, SuiteExecution
+from .utils.sessions import session_scope
 
 
 class SuiteManager(BaseManager):
-    @classmethod
+    @staticmethod
     def create_suite(
-        cls,
         name: str,
         code: str,
         readable_name: Optional[str] = None,
@@ -24,4 +24,6 @@ class SuiteManager(BaseManager):
             excluded_check_tags=excluded_check_tags,
             executions=executions,
         )
+        with session_scope() as session:
+            session.add(new_suite)
         return new_suite

@@ -8,7 +8,9 @@ class CRUDMixin(object):
         return instance
 
     def update(self, **kwargs):
+        for attr, value in kwargs.items():
+            setattr(self, attr, value)
+
+    def save(self):
         with session_scope() as session:
-            for attr, value in kwargs.items():
-                setattr(self, attr, value)
             session.add(self)
