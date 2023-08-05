@@ -1,6 +1,7 @@
 from typing import Callable, Iterable, Optional, TypeVar, ParamSpec, Concatenate
 from .globals import rule_registry
 from .check_types import CheckBase
+from .rule_types import RuleData
 
 CheckType = TypeVar("CheckType", bound=CheckBase)
 RuleReturnParameters = ParamSpec("RuleReturnParameters")
@@ -49,10 +50,14 @@ def rule(
             self.rules_context[rule_name]["kwargs"].append(kwargs)
             return rule_func(self, *args, **kwargs)
 
-        wrapper_func.name = name or rule_name
+        wrapper_func.data = RuleData(
+            name=name or rule_name,
+            description=description or "",
+            severity=severity or 0.0,
+            tags=set(tags or []),
+        )
         wrapper_func.is_rule = True
         wrapper_func.should_prefix_tags = should_prefix_tags
-        wrapper_func.tags = set(tags or [])
 
         return wrapper_func
 

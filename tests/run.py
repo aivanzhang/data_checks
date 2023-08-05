@@ -2,7 +2,8 @@ from .consistency_suite import ConsistencySuite
 import asyncio
 
 
-asyncio.run(ConsistencySuite().run_async())
+ConsistencySuite().run()
+# asyncio.run(ConsistencySuite().run_async())
 
 
 # async def test():

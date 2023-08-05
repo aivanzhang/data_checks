@@ -52,7 +52,6 @@ class GeneralCompanyTransactionCheck(Check):
             equal_to(True),
             f"Size of the payments dataframe has decreased in the last few days",
         )
-        print(self.dataset)
 
     @rule(
         name="Company Payments Size Increasing 2",
@@ -72,4 +71,3 @@ class GeneralCompanyTransactionCheck(Check):
             equal_to(True),
             f"Size of the payments dataframe has decreased in the last few days",
         )
-        print(self.dataset)

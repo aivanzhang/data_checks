@@ -9,6 +9,7 @@ import copy
 import json
 from .exceptions import DataCheckException
 from .check_types import FunctionArgs, CheckBase
+from .rule_types import RuleData
 from .suite_helper_types import SuiteInternal
 from .dataset import Dataset
 from .mixins.metadata_mixin import MetadataMixin
@@ -19,6 +20,7 @@ from .database import (
     CheckExecutionManager,
     RuleManager,
     RuleExecutionManager,
+    db,
 )
 
 
@@ -69,12 +71,13 @@ class Check(CheckBase, MetadataMixin):
                 self.rules_context[class_method] = copy.deepcopy(
                     self.DEFAULT_RULE_CONTEXT
                 )
-                rule_name = getattr(method, "name", "")
-                if rule_name:
-                    self.rules_context[class_method]["name"] = rule_name
-                # Ensure all tags are stored in the rules_context dict
-                rule_tags = getattr(method, "tags", None)
-                if rule_tags is not None:
+
+                rule_data = getattr(method, "data", None)
+                if rule_data:
+                    rule_data = RuleData(**rule_data)
+                    self.rules_context[class_method].update(rule_data)
+                    # Ensure all tags are stored in the rules_context dict
+                    rule_tags = rule_data["tags"]
                     self.rules_context[class_method]["tags"] = rule_tags
                     if getattr(method, "should_prefix_tags", False):
                         self.rules_context[class_method]["tags"] = {

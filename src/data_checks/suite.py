@@ -76,7 +76,13 @@ class Suite(SuiteBase):
         checks_to_run = self.get_checks_with_tags(check_tags)
         for index, check in enumerate(checks_to_run):
             print(f"[{index + 1}/{len(checks_to_run)} Checks] {check}")
-            asyncio.run(self._exec_async_check(check))
+            self.before(check)
+            try:
+                check.run_all(tags=self.check_rule_tags.get(check.name, None))
+                self.on_success(check)
+            except Exception as e:
+                self.on_failure(e)
+            self.after(check)
 
         self.teardown()
 

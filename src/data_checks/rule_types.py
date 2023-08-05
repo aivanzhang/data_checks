@@ -1,4 +1,4 @@
-from typing import TypedDict, Callable
+from typing import TypedDict
 
 
 class RuleContext(TypedDict):
@@ -8,3 +8,14 @@ class RuleContext(TypedDict):
     tags: set
     args: list[tuple]
     kwargs: list[dict]
+
+
+class RuleData(TypedDict):
+    """
+    Data to be passed from decorator to rules_context
+    """
+
+    name: str
+    description: str
+    severity: float
+    tags: set
