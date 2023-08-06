@@ -1,12 +1,14 @@
 """
 Check class
 """
-from typing import Iterable, Optional, Callable, Awaitable
 import traceback
 import time
 import asyncio
 import copy
 import json
+import sys
+from typing import Iterable, Optional, Callable, Awaitable
+from io import StringIO
 from .exceptions import DataCheckException
 from .check_types import FunctionArgs, CheckBase
 from .rule_types import RuleData
@@ -52,6 +54,7 @@ class Check(CheckBase, MetadataMixin):
             "check_model": None,
             "check_execution_model": None,
             "rule_models": dict(),
+            "rule_execution_id_to_output": dict(),
         }
         self.set_metadata_dir(metadata_dir)
 
@@ -181,6 +184,12 @@ class Check(CheckBase, MetadataMixin):
 
         self._internal["rule_models"][rule] = new_rule
 
+        rule_output = StringIO()
+        self._internal["rule_execution_id_to_output"][
+            new_rule_execution.id
+        ] = rule_output
+        sys.stdout = rule_output
+
         return new_rule_execution.id
 
     def _exec_rule(
@@ -248,10 +257,22 @@ class Check(CheckBase, MetadataMixin):
         """
         Runs after each rule
         """
+        logs = ""
+        if (
+            kwargs["exec_id"]
+            and self._internal["rule_execution_id_to_output"][kwargs["exec_id"]]
+        ):
+            logs = self._internal["rule_execution_id_to_output"][
+                kwargs["exec_id"]
+            ].getvalue()
+            sys.stdout = sys.__stdout__
+            print(logs)
+
         self.update_execution(
             type="rule",
             execution_id=kwargs["exec_id"],
             params=json.dumps(params),
+            logs=logs,
         )
 
     def on_success(self, rule: str, params: FunctionArgs, **kwargs):

@@ -1,5 +1,6 @@
 from abc import ABC
 from typing import TypedDict, Dict, Callable, Optional
+from io import StringIO
 from .rule_types import RuleContext
 from .constants import DEFAULT_RULE_CONTEXT
 from .dataset import Dataset
@@ -25,6 +26,7 @@ class CheckInternal(TypedDict):
     check_model: Optional[models.Check]
     check_execution_model: Optional[models.CheckExecution]
     rule_models: Dict[str, models.Rule]
+    rule_execution_id_to_output: Dict[int, StringIO]
 
 
 class CheckBase(ABC):
