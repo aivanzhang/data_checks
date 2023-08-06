@@ -11,11 +11,6 @@ class SuiteExecution(Base):
     suite: Mapped["Suite"] = relationship(back_populates="executions")
     status: Mapped[str] = mapped_column(String(255), nullable=True)
 
-    params = mapped_column(UnicodeText(), nullable=True)
-    logs: Mapped[str] = mapped_column(UnicodeText(), nullable=True)
-    traceback: Mapped[str] = mapped_column(UnicodeText(), nullable=True)
-    exception = mapped_column(UnicodeText(), nullable=True)
-
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.datetime.utcnow()
     )

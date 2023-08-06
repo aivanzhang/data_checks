@@ -34,18 +34,11 @@ class CheckExecutionManager(BaseManager):
         execution_id: int,
         finished_at: datetime = datetime.now(),
         status: Optional[str] = None,
-        params: Optional[str] = None,
-        logs: Optional[str] = None,
-        traceback: Optional[str] = None,
-        exception: Optional[str] = None,
     ):
         with session_scope() as session:
             session.query(CheckExecution).filter_by(id=execution_id).update(
                 generate_update_object(
                     status=status,
-                    params=params,
-                    logs=logs,
-                    traceback=traceback,
-                    exception=exception,
+                    finished_at=finished_at,
                 )
             )
