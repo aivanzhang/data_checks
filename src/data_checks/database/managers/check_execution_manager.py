@@ -42,3 +42,17 @@ class CheckExecutionManager(BaseManager):
                     finished_at=finished_at,
                 )
             )
+
+    @staticmethod
+    def update_execution_from_check_id(
+        check_id: int,
+        finished_at: datetime = datetime.now(),
+        status: Optional[str] = None,
+    ):
+        with session_scope() as session:
+            session.query(CheckExecution).filter_by(check_id=check_id).update(
+                generate_update_object(
+                    status=status,
+                    finished_at=finished_at,
+                )
+            )

@@ -11,9 +11,6 @@ class CheckExecution(Base):
     check: Mapped["Check"] = relationship(back_populates="executions")
     status: Mapped[str] = mapped_column(String(255), nullable=True)
 
-    traceback: Mapped[str] = mapped_column(UnicodeText(), nullable=True)
-    exception = mapped_column(UnicodeText(), nullable=True)
-
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), default=datetime.datetime.utcnow()
     )
