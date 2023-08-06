@@ -50,7 +50,7 @@ class Check(CheckBase, MetadataMixin):
             "suite_model": None,
             "check_model": None,
             "check_execution_model": None,
-            "rule_execution_models": dict(),
+            "rule_models": dict(),
         }
         self.set_metadata_dir(metadata_dir)
 
@@ -81,16 +81,6 @@ class Check(CheckBase, MetadataMixin):
                         self.rules_context[class_method]["tags"] = {
                             f"{self.name}.{tag}" for tag in rule_tags
                         }
-
-    def rule_execution(self, rule_name: str):
-        """
-        Get the rule execution model for a rule
-        """
-        return (
-            self._internal["rule_execution_models"]
-            .get(rule_name, dict())
-            .get("rule_execution_model", None)
-        )
 
     def _update_from_suite_internals(self, suite_internals: SuiteInternal):
         """
@@ -187,10 +177,8 @@ class Check(CheckBase, MetadataMixin):
         if self._internal["suite_model"] is not None:
             RuleManager.update_suite_id(new_rule.id, self._internal["suite_model"].id)
 
-        self._internal["rule_execution_models"][f"{rule}-{new_rule_execution.id}"] = {
-            "rule_model": new_rule,
-            "rule_execution_model": new_rule_execution,
-        }
+        self._internal["rule_models"][rule] = new_rule
+
         return new_rule_execution.id
 
     def _exec_rule(
@@ -203,15 +191,16 @@ class Check(CheckBase, MetadataMixin):
         exec_id = self.before(**rule_metadata)
         try:
             rule_func(*params["args"], **params["kwargs"])
-            self.on_success(**rule_metadata)
+            self.on_success(**rule_metadata, exec_id=exec_id)
         except AssertionError as e:
             print(e)
             self.on_failure(
-                DataCheckException.from_assertion_error(e, metadata=rule_metadata)
+                DataCheckException.from_assertion_error(e, metadata=rule_metadata),
+                exec_id=exec_id,
             )
         except DataCheckException as e:
             print(e)
-            self.on_failure(e)
+            self.on_failure(e, exec_id=exec_id)
         self.after(**rule_metadata, exec_id=exec_id)
 
     def run(self, rule: str):
@@ -243,34 +232,49 @@ class Check(CheckBase, MetadataMixin):
                 None, self._exec_rule, rule, rule_func, rules_params
             )
 
+    @staticmethod
+    def update_execution(type: str, execution_id: int | None, **kwargs):
+        """
+        Update the execution of a rule
+        """
+        if type == "rule" and execution_id:
+            RuleExecutionManager.update_execution(execution_id, **kwargs)
+
     def after(self, rule: str, params: FunctionArgs, **kwargs):
         """
         Runs after each rule
         """
-        if "exec_id" in kwargs:
-            rule_execution = (
-                self._internal["rule_execution_models"]
-                .get(f"{rule}-{kwargs['exec_id']}", dict())
-                .get("rule_execution_model", None)
-            )
-            if rule_execution:
-                RuleExecutionManager.update_execution(
-                    rule_execution.id,
-                    status="success",
-                    params=json.dumps(params),
-                )
+        self.update_execution(
+            type="rule",
+            execution_id=kwargs["exec_id"],
+            params=json.dumps(params),
+        )
 
-    def on_success(self, rule: str, params: FunctionArgs):
+    def on_success(self, rule: str, params: FunctionArgs, **kwargs):
         """
         Called when a rule succeeds
         """
-        pass
+        self.update_execution(
+            type="rule",
+            execution_id=kwargs["exec_id"],
+            status="success",
+            logs="",
+        )
 
-    def on_failure(self, exception: DataCheckException):
+    def on_failure(self, exception: DataCheckException, **kwargs):
         """
         Called when a rule fails
         """
-        raise exception
+        self.update_execution(
+            type="rule",
+            execution_id=kwargs["exec_id"],
+            status="failure",
+            logs="",
+            traceback=exception.exception.__traceback__
+            if exception.exception
+            else None,
+            exception=exception,
+        )
 
     def run_all(self, tags: Optional[Iterable] = None):
         """

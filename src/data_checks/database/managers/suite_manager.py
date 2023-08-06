@@ -1,7 +1,7 @@
 from typing import Optional
 from .base_manager import BaseManager
 from .models import Rule, Suite, SuiteExecution
-from .utils.sessions import session_scope
+from .utils.session_utils import session_scope
 
 
 class SuiteManager(BaseManager):

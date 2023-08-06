@@ -2,7 +2,8 @@ from typing import Optional
 from datetime import datetime
 from .base_manager import BaseManager
 from .models import Suite, SuiteExecution
-from .utils.sessions import session_scope
+from .utils.session_utils import session_scope
+from .utils.database_utils import generate_update_object
 
 
 class SuiteExecutionManager(BaseManager):
@@ -40,12 +41,12 @@ class SuiteExecutionManager(BaseManager):
     ):
         with session_scope() as session:
             session.query(SuiteExecution).filter_by(id=execution_id).update(
-                {
-                    "status": status,
-                    "params": params,
-                    "logs": logs,
-                    "traceback": traceback,
-                    "exception": exception,
-                    "finished_at": finished_at,
-                }
+                generate_update_object(
+                    status=status,
+                    params=params,
+                    logs=logs,
+                    traceback=traceback,
+                    exception=exception,
+                    finished_at=finished_at,
+                )
             )

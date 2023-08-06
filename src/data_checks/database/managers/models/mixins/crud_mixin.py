@@ -1,4 +1,4 @@
-from ...utils.sessions import session_scope
+from ...utils.session_utils import session_scope
 
 
 class CRUDMixin(object):

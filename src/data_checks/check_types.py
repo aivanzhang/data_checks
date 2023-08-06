@@ -16,15 +16,6 @@ class FunctionArgs(TypedDict):
     kwargs: dict
 
 
-class RuleModelEntry(TypedDict):
-    """
-    Entry in CheckInternal.rule_execution_models for a rule
-    """
-
-    rule_model: models.Rule
-    rule_execution_model: models.RuleExecution
-
-
 class CheckInternal(TypedDict):
     """
     Internal check data
@@ -33,7 +24,7 @@ class CheckInternal(TypedDict):
     suite_model: Optional[models.Suite]
     check_model: Optional[models.Check]
     check_execution_model: Optional[models.CheckExecution]
-    rule_execution_models: Dict[str, RuleModelEntry]
+    rule_models: Dict[str, models.Rule]
 
 
 class CheckBase(ABC):

@@ -1,7 +1,7 @@
 from typing import Optional
 from .base_manager import BaseManager
 from .models import Check, CheckExecution, Rule
-from .utils.sessions import session_scope
+from .utils.session_utils import session_scope
 
 
 class CheckManager(BaseManager):
