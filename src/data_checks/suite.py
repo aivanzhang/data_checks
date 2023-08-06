@@ -61,7 +61,8 @@ class Suite(SuiteBase):
         self._internal[
             "suite_execution_model"
         ] = SuiteExecutionManager.create_suite_execution(
-            suite=self._internal["suite_model"]
+            suite=self._internal["suite_model"],
+            status="running",
         )
 
     def before(self, check: Check):
@@ -142,12 +143,10 @@ class Suite(SuiteBase):
         """
         pass
 
-    def on_failure(self, exception: Exception, should_ignore=True):
+    def on_failure(self, exception: Exception):
         """
         Called when a rule fails
         """
-        if should_ignore:
-            return
         raise exception
 
     def teardown(self):
