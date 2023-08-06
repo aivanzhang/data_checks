@@ -199,20 +199,24 @@ class Check(CheckBase, MetadataMixin):
         Execute a rule
         """
         rule_metadata = {"rule": rule, "params": params}
-        exec_id = self.before(**rule_metadata)
         try:
-            rule_func(*params["args"], **params["kwargs"])
-            self.on_success(**rule_metadata, exec_id=exec_id)
-        except AssertionError as e:
-            print(e)
-            self.on_failure(
-                DataCheckException.from_assertion_error(e, metadata=rule_metadata),
-                exec_id=exec_id,
-            )
-        except DataCheckException as e:
-            print(e)
-            self.on_failure(e, exec_id=exec_id)
-        self.after(**rule_metadata, exec_id=exec_id)
+            exec_id = self.before(**rule_metadata)
+            try:
+                rule_func(*params["args"], **params["kwargs"])
+                self.on_success(**rule_metadata, exec_id=exec_id)
+            except AssertionError as e:
+                print(e)
+                self.on_failure(
+                    DataCheckException.from_assertion_error(e, metadata=rule_metadata),
+                    exec_id=exec_id,
+                )
+            except DataCheckException as e:
+                print(e)
+                self.on_failure(e, exec_id=exec_id)
+            self.after(**rule_metadata, exec_id=exec_id)
+        except Exception as e:
+            sys.stdout = sys.__stdout__
+            raise e
 
     def run(self, rule: str):
         """
@@ -266,7 +270,8 @@ class Check(CheckBase, MetadataMixin):
                 kwargs["exec_id"]
             ].getvalue()
             sys.stdout = sys.__stdout__
-            print(logs)
+            if logs.strip() != "":
+                print(logs)
 
         self.update_execution(
             type="rule",
