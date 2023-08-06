@@ -11,18 +11,10 @@ class SuiteExecutionManager(BaseManager):
     def create_suite_execution(
         suite: Suite,
         status: Optional[str] = None,
-        params: Optional[str] = None,
-        logs: Optional[str] = None,
-        traceback: Optional[str] = None,
-        exception: Optional[str] = None,
     ) -> SuiteExecution:
         new_execution = SuiteExecution.create(
             suite=suite,
             status=status,
-            params=params,
-            logs=logs,
-            traceback=traceback,
-            exception=exception,
         )
         with session_scope() as session:
             session.add(new_execution)

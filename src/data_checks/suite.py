@@ -142,10 +142,12 @@ class Suite(SuiteBase):
         """
         pass
 
-    def on_failure(self, exception: Exception):
+    def on_failure(self, exception: Exception, should_ignore=True):
         """
         Called when a rule fails
         """
+        if should_ignore:
+            return
         raise exception
 
     def teardown(self):

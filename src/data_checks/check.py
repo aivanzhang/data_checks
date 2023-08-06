@@ -154,7 +154,7 @@ class Check(CheckBase, MetadataMixin):
         self._internal[
             "check_execution_model"
         ] = CheckExecutionManager.create_check_execution(
-            check=self._internal["check_model"]
+            check=self._internal["check_model"], status="running"
         )
 
     def before(self, rule: str, params: FunctionArgs) -> int:
@@ -169,6 +169,7 @@ class Check(CheckBase, MetadataMixin):
         )
         new_rule_execution = RuleExecutionManager.create_rule_execution(
             rule=new_rule,
+            status="running",
             params=json.dumps(params),
         )
 
@@ -240,6 +241,8 @@ class Check(CheckBase, MetadataMixin):
         """
         if type == "rule" and execution_id:
             RuleExecutionManager.update_execution(execution_id, **kwargs)
+        if type == "check" and execution_id:
+            CheckExecutionManager.update_execution(execution_id, **kwargs)
 
     def after(self, rule: str, params: FunctionArgs, **kwargs):
         """
@@ -262,9 +265,12 @@ class Check(CheckBase, MetadataMixin):
             logs="",
         )
 
-    def on_failure(self, exception: DataCheckException, **kwargs):
+    def on_failure(self, exception: DataCheckException, ignore_error=True, **kwargs):
         """
         Called when a rule fails
+        Parameters:
+            exception: the exception that was raised
+            ignore_error: if True, will not raise the exception and continue running
         """
         self.update_execution(
             type="rule",
@@ -276,6 +282,14 @@ class Check(CheckBase, MetadataMixin):
             else None,
             exception=exception.toJSON(),
         )
+        if ignore_error:
+            return
+        if self._internal["check_execution_model"]:
+            self.update_execution(
+                type="check",
+                execution_id=self._internal["check_execution_model"].id,
+                status="failure",
+            )
         raise exception
 
     def run_all(self, tags: Optional[Iterable] = None):
