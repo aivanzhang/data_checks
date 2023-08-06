@@ -2,6 +2,7 @@
 Exceptions for Data Checks
 """
 from typing import Optional
+import json
 
 
 class DataCheckException(Exception):
@@ -32,3 +33,12 @@ class DataCheckException(Exception):
         cls, e: AssertionError, *args, **kwargs
     ) -> "DataCheckException":
         return cls(exception=e, *args, **kwargs)
+
+    def toJSON(self):
+        return json.dumps(
+            {
+                "severity": self.severity,
+                "exception": str(self.exception),
+                "metadata": json.dumps(self.metadata),
+            }
+        )

@@ -2,6 +2,7 @@
 Check class
 """
 from typing import Iterable, Optional, Callable, Awaitable
+import traceback
 import time
 import asyncio
 import copy
@@ -270,11 +271,12 @@ class Check(CheckBase, MetadataMixin):
             execution_id=kwargs["exec_id"],
             status="failure",
             logs="",
-            traceback=exception.exception.__traceback__
+            traceback=traceback.format_tb(exception.exception.__traceback__)
             if exception.exception
             else None,
-            exception=exception,
+            exception=exception.toJSON(),
         )
+        raise exception
 
     def run_all(self, tags: Optional[Iterable] = None):
         """
