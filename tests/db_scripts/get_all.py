@@ -1,5 +1,5 @@
 from src.data_checks.database.managers.models import Base
-from src.data_checks.database.managers.utils.sessions import session_scope
+from data_checks.database.managers.utils.session_utils import session_scope
 
 for model in Base.__subclasses__():
     print(f"Model: {model.__name__}")
