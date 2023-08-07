@@ -14,6 +14,8 @@ Some reason you might use this library:
 - Connect any database to store data related to checks and executions
 - (WIP) Define before, after, on success and on failure actions based on data checks
 
+## Getting Started
+
 ## Features
 ### Suites
 ### Checks
