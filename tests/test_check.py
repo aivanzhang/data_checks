@@ -5,5 +5,4 @@ class TestCheck(Check):
     test_str: str = "test"
 
     def setup(self):
-        print("HI")
         return super().setup()

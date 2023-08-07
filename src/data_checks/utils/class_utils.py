@@ -33,7 +33,6 @@ def get_class_code(cls: type):
     source = ""
 
     for parent in parent_classes:
-        print(parent)
         if parent.__name__ == "Check" or parent.__name__ == "Suite":
             continue
         source += inspect.getsource(parent) + "\n"

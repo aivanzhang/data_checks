@@ -15,8 +15,7 @@ from .rule_types import RuleData
 from .suite_helper_types import SuiteInternal
 from .dataset import Dataset
 from .mixins.metadata_mixin import MetadataMixin
-from .utils.class_utils import get_all_methods
-from .utils import class_utils
+from .utils import class_utils, check_utils
 from .database import (
     CheckManager,
     CheckExecutionManager,
@@ -63,7 +62,7 @@ class Check(CheckBase, MetadataMixin):
         self.rules_context = dict()
         self.rules_params = rules_params
 
-        for class_method in get_all_methods(self):
+        for class_method in class_utils.get_all_methods(self):
             # Ensure all rules are stored in the rules dict
             method = getattr(self, class_method)
             if (
@@ -108,22 +107,33 @@ class Check(CheckBase, MetadataMixin):
         """
         self.dataset = dataset
 
-    def _get_rules_params(self, rule: str) -> FunctionArgs | list[FunctionArgs]:
+    def _get_rules_params(self, rule: str) -> list[FunctionArgs]:
         """
         Get the params for a rule
         """
         if rule not in self.rules_params:
-            return {
-                "args": tuple(),
-                "kwargs": dict(),
-            }
+            return [
+                {
+                    "args": tuple(),
+                    "kwargs": dict(),
+                }
+            ]
         else:
-            params: FunctionArgs | list[FunctionArgs] | Callable[
-                ..., FunctionArgs | list[FunctionArgs]
-            ] = self.rules_params[rule]
+            params = self.rules_params[rule]
+
             if callable(params):
                 params = params()
-            return params
+
+            if not isinstance(params, list):
+                params = [check_utils.as_func_args(params)]
+
+            new_params = []
+            for param in params:
+                if "args" not in param or "kwargs" not in param:
+                    param = check_utils.as_func_args(param)
+                new_params.append(param)
+
+            return new_params
 
     def get_rules_to_run(self, tags: Optional[Iterable]) -> set:
         """
@@ -224,11 +234,8 @@ class Check(CheckBase, MetadataMixin):
         """
         rule_func = self.rules[rule]
         rules_params = self._get_rules_params(rule)
-        if isinstance(rules_params, list):
-            for params in rules_params:
-                self._exec_rule(rule, rule_func, params)
-        else:
-            self._exec_rule(rule, rule_func, rules_params)
+        for params in rules_params:
+            self._exec_rule(rule, rule_func, params)
 
     def run_async(self, rule: str):
         """
@@ -237,14 +244,9 @@ class Check(CheckBase, MetadataMixin):
         rule_func = self.rules[rule]
         rules_params = self._get_rules_params(rule)
 
-        if isinstance(rules_params, list):
-            for params in rules_params:
-                yield asyncio.get_event_loop().run_in_executor(
-                    None, self._exec_rule, rule, rule_func, params
-                )
-        else:
+        for params in rules_params:
             yield asyncio.get_event_loop().run_in_executor(
-                None, self._exec_rule, rule, rule_func, rules_params
+                None, self._exec_rule, rule, rule_func, params
             )
 
     @staticmethod
