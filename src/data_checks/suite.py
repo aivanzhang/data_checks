@@ -5,7 +5,7 @@ from .check import Check
 from .dataset import Dataset
 from .suite_types import SuiteBase
 from .database import SuiteManager, SuiteExecutionManager
-from .utils import file_utils
+from .utils import class_utils
 
 
 class Suite(SuiteBase):
@@ -56,7 +56,7 @@ class Suite(SuiteBase):
         self._internal["suite_model"] = SuiteManager.create_suite(
             name=self.name,
             description=self.description,
-            code=file_utils.get_current_file_contents(__file__),
+            code=class_utils.get_class_code(self.__class__),
         )
         self._internal[
             "suite_execution_model"

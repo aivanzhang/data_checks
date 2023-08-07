@@ -1,12 +1,12 @@
 from src.data_checks.dataset import Dataset
-from src.data_checks.check import Check
 from src.data_checks.rule import rule
 from hamcrest import assert_that, equal_to
 import pandas as pd
 import os
+from .test_check import TestCheck
 
 
-class GeneralCompanyTransactionCheck(Check):
+class GeneralCompanyTransactionCheck(TestCheck):
     def __init__(self, dataset: Dataset | None = None):
         super().__init__(dataset=dataset)
         self.description = "General Company Transaction Check"

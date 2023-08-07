@@ -16,7 +16,7 @@ from .suite_helper_types import SuiteInternal
 from .dataset import Dataset
 from .mixins.metadata_mixin import MetadataMixin
 from .utils.class_utils import get_all_methods
-from .utils import file_utils, class_utils
+from .utils import class_utils
 from .database import (
     CheckManager,
     CheckExecutionManager,
@@ -152,7 +152,7 @@ class Check(CheckBase, MetadataMixin):
             description=self.description,
             tags=list(self.tags),
             excluded_rules=list(self.excluded_rules),
-            code=file_utils.get_current_file_contents(__file__),
+            code=class_utils.get_class_code(self.__class__),
         )
         self._internal[
             "check_execution_model"

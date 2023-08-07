@@ -26,3 +26,17 @@ def get_function_code(cls: object, function_name: str):
     function_obj: Any = extract_wrapped(getattr(cls, function_name))
     source_code = inspect.getsource(function_obj)
     return source_code
+
+
+def get_class_code(cls: type):
+    parent_classes = cls.__bases__
+    source = ""
+
+    for parent in parent_classes:
+        print(parent)
+        if parent.__name__ == "Check" or parent.__name__ == "Suite":
+            continue
+        source += inspect.getsource(parent) + "\n"
+
+    source += inspect.getsource(cls)
+    return source
