@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import TypedDict, Dict, Callable, Optional
+from typing import TypedDict, Dict, Callable, Optional, Union
 from io import StringIO
 from .rule_types import RuleContext
 from .constants import DEFAULT_RULE_CONTEXT
@@ -46,8 +46,12 @@ class CheckBase(ABC):
     rules_params: Dict[
         str,
         FunctionArgs
-        | list[FunctionArgs]
-        | Callable[..., FunctionArgs | list[FunctionArgs]],
+        | list[Union[FunctionArgs, dict, tuple]]
+        | Callable[
+            ..., FunctionArgs | dict | tuple | list[Union[FunctionArgs, dict, tuple]]
+        ]
+        | dict
+        | tuple,
     ]  # Stores the params for each rule. If params is a list of params then run the rule multiple times with each param element
     rules_context: Dict[
         str, RuleContext
