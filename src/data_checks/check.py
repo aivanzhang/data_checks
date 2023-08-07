@@ -173,7 +173,7 @@ class Check(CheckBase, MetadataMixin):
         new_rule_execution = RuleExecutionManager.create_rule_execution(
             rule=new_rule,
             status="running",
-            params=json.dumps(params),
+            params=json.dumps(params, default=str),
         )
 
         if self._internal["check_model"] is not None:
@@ -276,7 +276,7 @@ class Check(CheckBase, MetadataMixin):
         self.update_execution(
             type="rule",
             execution_id=kwargs["exec_id"],
-            params=json.dumps(params),
+            params=json.dumps(params, default=str),
             logs=logs,
         )
 

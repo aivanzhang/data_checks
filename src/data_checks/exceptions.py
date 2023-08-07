@@ -39,6 +39,6 @@ class DataCheckException(Exception):
             {
                 "severity": self.severity,
                 "exception": str(self.exception),
-                "metadata": json.dumps(self.metadata),
-            }
+                "metadata": json.dumps(self.metadata, default=str),
+            },
         )
