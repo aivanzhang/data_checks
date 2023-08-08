@@ -8,7 +8,6 @@ from .dataset import Dataset
 class SuiteBase(ABC):
     # Default rule context for rules missing fields
     _internal: SuiteInternal  # Internal suite state
-    _dataset: Dataset  # Dataset to be used in the suite
 
     verbose: bool
     name: str
