@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "data_checks"
-version = "0.0.17"
+version = "0.0.18"
 authors = [
   { name="SuperiorityComplex", email="ivanzhangofficial@gmail.com" },
 ]
