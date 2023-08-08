@@ -24,7 +24,7 @@ The execution flow of a suite of data checks goes as follows:
 ![Execution Order](./docs/img/execution_order.png)
 
 ## Getting Started
-In this tutorial, we will walk through how to define a suite of data checks, execute them, and view the results. Assume that we're an international organization called Team Rocket whose mission is to capture as many Pokémon as possible. The organization is growing very rapidly and our data is growing at an exponential rate. We have the following datasets:
+In this tutorial, we will walk through how to define a suite of data checks, execute them, and view the results. Assume that we're an international organization called Team Rocketwhose mission is to capture as many Pokémon as possible. The organization is growing very rapidly and our data is growing at an exponential rate. We have the following datasets:
 
 `pokemon_captures`: A table that contains information about the Pokémon that we've captured.
 | Pokemon ID | Species        | Capture Date | Location       | Capturing Agent |
@@ -48,6 +48,12 @@ In this tutorial, we will walk through how to define a suite of data checks, exe
 | 006      | Lucas Diamond  | 18  | Twinleaf Town | 210           | 2022-03-05        | 2023-07-29       |
 | ...      | ...             | ... | ...          | ...            | ...               | ...              |
 
+<!-- Missing bonus information.
+Invalid bonus IDs or trainer IDs.
+Negative bonus amounts.
+Inconsistent date formats.
+Unrecognized bonus reasons. -->
+
 `pokemon_sales`: A table that contains information about the sales of Pokémon.
 | Sale ID | Pokemon ID | Sale Date  | Sale Price (USD) | Buyer         | Seller       | Location      | Transaction Type | Payment Method |
 |---------|------------|------------|------------------|---------------|--------------|---------------|------------------|----------------|
@@ -58,6 +64,14 @@ In this tutorial, we will walk through how to define a suite of data checks, exe
 | 005     | 255        | 2023-06-05 | 35               | Trainer I     | Trainer J    | Littleroot Town| In-Person      | Cash           |
 | 006     | 001        | 2023-07-15 | 60               | Trainer K     | Trainer L    | Pallet Town   | Online           | Credit Card    |
 | ...     | ...        | ...        | ...              | ...           | ...          | ...           | ...              | ...            |
+
+Missing sale information.
+Inconsistent Pokémon IDs.
+Invalid sale prices (e.g., negative price).
+Misspelled buyer/seller names.
+Duplicate sale IDs.
+Inconsistent date formats.
+Out-of-range or future sale dates.
 
 `trainer_carbon_outputs`: A table that contains information about the carbon output of our trainers.
 | Bonus ID | Trainer ID | Bonus Amount (USD) | Bonus Date  | Reason                | Location       |
@@ -70,13 +84,22 @@ In this tutorial, we will walk through how to define a suite of data checks, exe
 | 006      | 006        | 320                | 2023-07-15  | Special Achievement   | Sandgem Town  |
 | ...      | ...        | ...                | ...         | ...                   | ...            |
 
+Missing trainer information.
+Invalid trainer IDs.
+Negative carbon output values.
+Inconsistent date formats.
+Out-of-range or future join/update dates.
+
+
+As the chief data officer, you want to ensure that the data in these tables is accurate and up-to-date. You want to write some data quality checks for this very reason. We will 
+
+### 0. Instantiate the Database
+Before importing the data_checks library, you need to instantiate the database. This database will be used to store information about the checks and their executions. The database can be any database supported by SQLAlchemy. In this example, we will use a PostgreSQL database. Inside our data checks repository (`data_quality/`) define a `__init__.py` file and instantiate the database as follows:
+
+```python
 
 
 
-As the chief data officer, you want to ensure that the data in these tables is accurate and up-to-date. You want to write some data quality checks for this very reason.
-
-### 1. Define a Suite
-Define a suite of tests 
 <!-- ```python
 from data_checks import Suite -->
 ## Features
