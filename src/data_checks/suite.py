@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 from typing import Iterable, Optional, Awaitable
 from .check import Check
 from .dataset import Dataset
@@ -13,40 +12,40 @@ class Suite(SuiteBase):
         self,
         name: Optional[str] = None,
         description: Optional[str] = None,
-        checks: list[Check] = [],
         check_rule_tags: dict[str, Iterable] = {},
-        _dataset: Optional[Dataset] = None,
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
-        self.checks = checks
-        if _dataset is not None:
-            self._dataset = _dataset
         self.check_rule_tags = check_rule_tags
         self._internal = {
             "suite_model": None,
             "suite_execution_model": None,
-            "dataset": _dataset,
+            "dataset": None,
         }
 
-    @property
-    def dataset(self):
-        return self._dataset
+    @classmethod
+    def dataset(cls) -> Optional[Dataset]:
+        """
+        Get the dataset for the suite
+        """
+        return None
 
-    @dataset.setter
-    def dataset(self, new_dataset):
-        self._internal["dataset"] = new_dataset
-        self._dataset = new_dataset
+    @classmethod
+    def checks(cls) -> list[Check]:
+        """
+        Get all checks in the suite
+        """
+        raise NotImplementedError
 
     def get_checks_with_tags(self, tags: Optional[Iterable]) -> list[Check]:
         """
         Get checks for a given set of tags
         """
         if tags is None:
-            return self.checks
+            return self.checks()
         else:
             return [
-                check for check in self.checks if set(tags).intersection(check.tags)
+                check for check in self.checks() if set(tags).intersection(check.tags)
             ]
 
     def setup(self):
@@ -69,6 +68,7 @@ class Suite(SuiteBase):
         """
         Run before each check
         """
+        self._internal["dataset"] = self.dataset()
         check._update_from_suite_internals(self._internal)
 
     def run(self, check_tags: Optional[Iterable] = None):
@@ -167,6 +167,6 @@ class Suite(SuiteBase):
         """
 
         suite_metadata = dict()
-        for check in self.checks:
+        for check in self.checks():
             suite_metadata[check.name] = check.metadata.copy()
         return suite_metadata
