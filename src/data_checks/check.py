@@ -312,12 +312,6 @@ class Check(CheckBase, MetadataMixin):
         )
         if ignore_error:
             return
-        if self._internal["check_execution_model"]:
-            self.update_execution(
-                type="check",
-                execution_id=self._internal["check_execution_model"].id,
-                status="failure",
-            )
         raise exception
 
     def run_all(self, tags: Optional[Iterable] = None):
@@ -373,8 +367,9 @@ class Check(CheckBase, MetadataMixin):
         check_execution = self._internal["check_execution_model"]
 
         if check_execution:
-            CheckExecutionManager.update_execution(
-                check_execution.id,
+            self.update_execution(
+                type="check",
+                execution_id=check_execution.id,
                 status="success",
             )
 
