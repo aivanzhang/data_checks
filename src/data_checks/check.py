@@ -36,6 +36,7 @@ class Check(CheckBase, MetadataMixin):
         tags: Iterable = [],
         verbose=False,
         dataset: Optional[Dataset] = None,
+        only_run_specified_rules=False,
     ):
         """
         Initialize a check object
@@ -84,6 +85,9 @@ class Check(CheckBase, MetadataMixin):
                         self.rules_context[class_method]["tags"] = {
                             f"{self.name}.{tag}" for tag in rule_tags
                         }
+
+        if only_run_specified_rules:
+            self.only_run_specified_rules()
 
     def _update_from_suite_internals(self, suite_internals: SuiteInternal):
         """
