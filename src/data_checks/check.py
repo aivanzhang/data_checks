@@ -92,6 +92,8 @@ class Check(CheckBase, MetadataMixin):
         self._internal["suite_model"] = suite_internals["suite_model"]
         if suite_internals["dataset"] is not None:
             self.dataset = suite_internals["dataset"]
+        if suite_internals["shared_params"] is not None:
+            self.shared_params = suite_internals["shared_params"]
 
     def only_run_specified_rules(self):
         """
