@@ -20,8 +20,8 @@ class Suite(SuiteBase):
         self._internal = {
             "suite_model": None,
             "suite_execution_model": None,
-            "dataset": None,
-            "shared_params": None,
+            "dataset": self.dataset(),
+            "shared_params": self.shared_params(),
         }
 
     @classmethod
@@ -34,7 +34,7 @@ class Suite(SuiteBase):
     @classmethod
     def shared_params(cls) -> Optional[dict]:
         """
-        Get the dataset for the suite
+        Get the shared parameters for the suite's checks
         """
         return None
 
@@ -76,8 +76,6 @@ class Suite(SuiteBase):
         """
         Run before each check
         """
-        self._internal["dataset"] = self.dataset()
-        self._internal["shared_params"] = self.shared_params()
         check._update_from_suite_internals(self._internal)
 
     def run(self, check_tags: Optional[Iterable] = None):
