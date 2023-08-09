@@ -1,8 +1,6 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Iterable, Dict
-from .check import Check
 from .suite_helper_types import SuiteInternal
-from .dataset import Dataset
 
 
 class SuiteBase(ABC):
@@ -15,4 +13,29 @@ class SuiteBase(ABC):
     check_rule_tags: Dict[
         str, Iterable
     ]  # Tags to be used to filter which rules are run in each check
+
+    @classmethod
+    @abstractmethod
+    def dataset(cls):
+        """
+        Get the dataset for the suite
+        """
+        pass
+
+    @classmethod
+    @abstractmethod
+    def shared_params(cls):
+        """
+        Get the shared parameters for the suite's checks
+        """
+        pass
+
+    @classmethod
+    @abstractmethod
+    def checks(cls):
+        """
+        Get all checks in the suite
+        """
+        pass
+
     ...

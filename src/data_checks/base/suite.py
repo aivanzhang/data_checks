@@ -3,8 +3,8 @@ from typing import Iterable, Optional, Awaitable
 from .check import Check
 from .dataset import Dataset
 from .suite_types import SuiteBase
-from .database import SuiteManager, SuiteExecutionManager
-from .utils import class_utils
+from ..database import SuiteManager, SuiteExecutionManager
+from ..utils import class_utils
 
 
 class Suite(SuiteBase):
@@ -29,14 +29,14 @@ class Suite(SuiteBase):
         """
         Get the dataset for the suite
         """
-        return None
+        raise NotImplementedError
 
     @classmethod
     def shared_params(cls) -> Optional[dict]:
         """
         Get the shared parameters for the suite's checks
         """
-        return None
+        raise NotImplementedError
 
     @classmethod
     def checks(cls) -> list[Check]:
