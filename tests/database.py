@@ -1,5 +1,5 @@
-from src.data_checks.database import *
-from src.data_checks.database.managers import (
+from src.data_checks.base.database import *
+from src.data_checks.base.database.managers import (
     CheckManager,
     RuleManager,
     SuiteManager,

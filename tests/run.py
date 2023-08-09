@@ -1,7 +1,7 @@
 from .consistency_suite import ConsistencySuite
 import asyncio
 from .general_company_check import GeneralCompanyTransactionCheck
-from src.data_checks.dataset import Dataset
+from src.data_checks.base.dataset import Dataset
 import pandas as pd
 import os
 
