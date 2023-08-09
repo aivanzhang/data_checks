@@ -4,7 +4,7 @@ from io import StringIO
 from .rule_types import RuleContext
 from .constants import DEFAULT_RULE_CONTEXT
 from .dataset import Dataset
-from .database.managers import models
+from ..database.managers import models
 
 
 # Function positional and keyword arguments
