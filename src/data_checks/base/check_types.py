@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import TypedDict, Dict, Callable, Optional, Union
 from io import StringIO
 from .rule_types import RuleContext
@@ -42,7 +42,6 @@ class CheckBase(ABC):
     dataset: Dataset
     shared_params: dict
     description: str
-    rules_prefix: str  # Prefix for all rules in the check to be automatically run
     rules: Dict[str, Callable[..., None]]  # Stores all the rules functions in the check
     rules_params: Dict[
         str,
@@ -61,4 +60,13 @@ class CheckBase(ABC):
     tags: set
 
     verbose: bool
+
+    @classmethod
+    @abstractmethod
+    def rules_prefix(cls) -> str:
+        """
+        Prefix to automatically detect rules in the check
+        """
+        pass
+
     ...

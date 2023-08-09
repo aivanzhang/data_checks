@@ -30,7 +30,6 @@ class Check(CheckBase, MetadataMixin):
         name: Optional[str] = None,
         metadata_dir: Optional[str] = None,
         description="",
-        rules_prefix="",
         rules_params=dict(),
         excluded_rules: Iterable = [],
         tags: Iterable = [],
@@ -58,7 +57,6 @@ class Check(CheckBase, MetadataMixin):
         }
         self.set_metadata_dir(metadata_dir)
 
-        self.rules_prefix = rules_prefix
         self.rules = dict()
         self.rules_context = dict()
         self.rules_params = rules_params
@@ -66,9 +64,10 @@ class Check(CheckBase, MetadataMixin):
         for class_method in class_utils.get_all_methods(self):
             # Ensure all rules are stored in the rules dict
             method = getattr(self, class_method)
-            if (
-                self.rules_prefix != "" and class_method.startswith(self.rules_prefix)
-            ) or getattr(method, "is_rule", False):
+            prefix = self.rules_prefix()
+            if (prefix is not None and class_method.startswith(prefix)) or getattr(
+                method, "is_rule", False
+            ):
                 self.rules[class_method] = method
                 self.rules_context[class_method] = copy.deepcopy(
                     self.DEFAULT_RULE_CONTEXT
@@ -88,6 +87,13 @@ class Check(CheckBase, MetadataMixin):
 
         if only_run_specified_rules:
             self.only_run_specified_rules()
+
+    @classmethod
+    def rules_prefix(cls) -> str | None:
+        """
+        Prefix to automatically detect rules in the check
+        """
+        raise NotImplementedError
 
     def _update_from_suite_internals(self, suite_internals: SuiteInternal):
         """
