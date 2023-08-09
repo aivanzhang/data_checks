@@ -14,9 +14,9 @@ from .check_types import FunctionArgs, CheckBase
 from .rule_types import RuleData
 from .suite_helper_types import SuiteInternal
 from .dataset import Dataset
-from .mixins.metadata_mixin import MetadataMixin
-from .utils import class_utils, check_utils
-from .database import (
+from ..mixins.metadata_mixin import MetadataMixin
+from ..utils import class_utils, check_utils
+from ..database import (
     CheckManager,
     CheckExecutionManager,
     RuleManager,
