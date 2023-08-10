@@ -1,4 +1,4 @@
-from src.data_checks.base.check import Check
+from data_checks.base.check import Check
 
 
 class TestCheck(Check):

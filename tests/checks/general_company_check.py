@@ -1,5 +1,5 @@
-from src.data_checks.base.dataset import Dataset
-from src.data_checks.base.rule import rule
+from data_checks.base.dataset import Dataset
+from data_checks.base.rule import rule
 from hamcrest import assert_that, equal_to
 import pandas as pd
 import os
@@ -48,6 +48,9 @@ class GeneralCompanyTransactionCheck(TestCheck):
     #         | Callable[
     #             ..., FunctionArgs  | list[Union[FunctionArgs, dict, tuple]]
     #         ]
+    @classmethod
+    def rules_prefix(cls):
+        return ""
 
     @staticmethod
     def should_run_rule():

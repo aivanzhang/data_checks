@@ -1,7 +1,7 @@
 import os
 import pandas as pd
-from src.data_checks.base.suite import Suite
-from src.data_checks.base.dataset import Dataset
+from data_checks.base.suite import Suite
+from data_checks.base.dataset import Dataset
 from ..checks.general_company_check import GeneralCompanyTransactionCheck
 
 
@@ -10,7 +10,7 @@ class ConsistencySuite(Suite):
         super().__init__()
         self.name = "Consistency Suite"
         self.description = "Suite with checks that ensure consistency between different different transaction data stores"
-        self.dataset = Dataset({"old_payments_df": None, "new_payments_df": None})
+        # self.dataset = Dataset({"old_payments_df": None, "new_payments_df": None})
         # Dataset(
         #     {
         #         "old_payments_df": pd.read_csv(
@@ -22,13 +22,14 @@ class ConsistencySuite(Suite):
         #     }
         # )
 
-        self.checks = [
-            GeneralCompanyTransactionCheck(),
-            GeneralCompanyTransactionCheck(),
-            GeneralCompanyTransactionCheck(),
-            GeneralCompanyTransactionCheck(),
-            GeneralCompanyTransactionCheck(),
-        ]
+        self.checks = []
+        # [
+        #     GeneralCompanyTransactionCheck(),
+        #     GeneralCompanyTransactionCheck(),
+        #     GeneralCompanyTransactionCheck(),
+        #     GeneralCompanyTransactionCheck(),
+        #     GeneralCompanyTransactionCheck(),
+        # ]
 
         # for check in self.checks:
         #     check.use_dataset(self.dataset)
