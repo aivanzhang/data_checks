@@ -1,10 +1,10 @@
 import asyncio
 from typing import Iterable, Optional, Awaitable
-from .check import Check
-from .dataset import Dataset
-from .suite_types import SuiteBase
-from ..database import SuiteManager, SuiteExecutionManager
-from ..utils import class_utils
+from data_checks.base.check import Check
+from data_checks.base.dataset import Dataset
+from data_checks.base.suite_types import SuiteBase
+from data_checks.database import SuiteManager, SuiteExecutionManager
+from data_checks.utils import class_utils
 
 
 class Suite(SuiteBase):

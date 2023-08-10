@@ -1,4 +1,4 @@
-from ..base.check_types import FunctionArgs
+from data_checks.base.check_types import FunctionArgs
 
 
 def as_func_args(params: dict | tuple | FunctionArgs) -> FunctionArgs:

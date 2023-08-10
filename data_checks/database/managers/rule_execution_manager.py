@@ -1,9 +1,9 @@
 from typing import Optional
 from datetime import datetime
-from .base_manager import BaseManager
-from .models import Rule, RuleExecution
-from .utils.session_utils import session_scope
-from .utils.database_utils import generate_update_object
+from data_checks.database.managers.base_manager import BaseManager
+from data_checks.database.managers.models import Rule, RuleExecution
+from data_checks.database.utils.session_utils import session_scope
+from data_checks.database.utils.database_utils import generate_update_object
 
 
 class RuleExecutionManager(BaseManager):

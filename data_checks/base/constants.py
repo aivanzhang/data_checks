@@ -1,4 +1,4 @@
-from .rule_types import RuleContext
+from data_checks.base.rule_types import RuleContext
 
 DEFAULT_RULE_CONTEXT: RuleContext = {
     "name": "",

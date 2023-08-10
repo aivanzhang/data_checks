@@ -1,7 +1,7 @@
 from typing import Callable, Iterable, Optional, TypeVar, ParamSpec, Concatenate
-from .globals import rule_registry
-from .check_types import CheckBase
-from .rule_types import RuleData
+from data_checks.base.globals import rule_registry
+from data_checks.base.check_types import CheckBase
+from data_checks.base.rule_types import RuleData
 
 CheckType = TypeVar("CheckType", bound=CheckBase)
 RuleReturnParameters = ParamSpec("RuleReturnParameters")

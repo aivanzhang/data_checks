@@ -9,14 +9,14 @@ import json
 import sys
 from typing import Iterable, Optional, Callable, Awaitable
 from io import StringIO
-from .exceptions import DataCheckException
-from .check_types import FunctionArgs, CheckBase
-from .rule_types import RuleData
-from .suite_helper_types import SuiteInternal
-from .dataset import Dataset
-from ..mixins.metadata_mixin import MetadataMixin
-from ..utils import class_utils, check_utils
-from ..database import (
+from data_checks.base.exceptions import DataCheckException
+from data_checks.base.check_types import FunctionArgs, CheckBase
+from data_checks.base.rule_types import RuleData
+from data_checks.base.suite_helper_types import SuiteInternal
+from data_checks.base.dataset import Dataset
+from data_checks.mixins.metadata_mixin import MetadataMixin
+from data_checks.utils import class_utils, check_utils
+from data_checks.database import (
     CheckManager,
     CheckExecutionManager,
     RuleManager,

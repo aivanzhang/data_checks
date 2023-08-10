@@ -1,1 +1,1 @@
-from .crud_mixin import CRUDMixin
+from data_checks.database.managers.models.mixins.crud_mixin import *

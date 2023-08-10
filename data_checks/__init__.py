@@ -1,9 +1,9 @@
 import os
 import importlib
 from typing import Any
-from .utils.start import init
-from .data_check import *
-from .data_suite import *
+from data_checks.utils.start import init
+from data_checks.data_check import *
+from data_checks.data_suite import *
 
 settings_module = os.environ.get("CHECK_SETTINGS_MODULE", None)
 try:

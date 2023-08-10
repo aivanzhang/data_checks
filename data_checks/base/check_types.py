@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import TypedDict, Dict, Callable, Optional, Union
 from io import StringIO
-from .rule_types import RuleContext
-from .constants import DEFAULT_RULE_CONTEXT
-from .dataset import Dataset
-from ..database.managers import models
+from data_checks.base.rule_types import RuleContext
+from data_checks.base.constants import DEFAULT_RULE_CONTEXT
+from data_checks.base.dataset import Dataset
+from data_checks.database.managers import models
 
 
 # Function positional and keyword arguments

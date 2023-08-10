@@ -1,7 +1,7 @@
 import datetime
 from sqlalchemy import ForeignKey, DateTime, String, UnicodeText
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from .classes import Base, Rule
+from data_checks.database.managers.models.classes import Base, Rule
 
 
 class RuleExecution(Base):

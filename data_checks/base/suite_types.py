@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, Dict
-from .suite_helper_types import SuiteInternal
+from data_checks.base.suite_helper_types import SuiteInternal
 
 
 class SuiteBase(ABC):

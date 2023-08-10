@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase
-from .mixins import CRUDMixin
+from data_checks.database.managers.models.mixins import CRUDMixin
 
 
 class Base(DeclarativeBase, CRUDMixin):

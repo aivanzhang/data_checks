@@ -1,6 +1,6 @@
-from src.data_checks.base.dataset import Dataset
-from src.data_checks.base.check import Check
-from src.data_checks.base.suite import Suite
+from data_checks.base.dataset import Dataset
+from data_checks.base.check import Check
+from data_checks.base.suite import Suite
 
 
 class DataSuite(Suite):

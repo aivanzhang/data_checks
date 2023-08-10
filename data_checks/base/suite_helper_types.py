@@ -1,6 +1,6 @@
 from typing import Optional, TypedDict
-from .dataset import Dataset
-from ..database.managers import models
+from data_checks.base.dataset import Dataset
+from data_checks.database.managers import models
 
 
 class SuiteInternal(TypedDict):

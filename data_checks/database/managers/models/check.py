@@ -2,7 +2,7 @@ from typing import List
 import datetime
 from sqlalchemy import String, UnicodeText, ARRAY, DateTime
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from .classes import Base, CheckExecution, Rule
+from data_checks.database.managers.models.classes import Base, CheckExecution, Rule
 
 
 class Check(Base):

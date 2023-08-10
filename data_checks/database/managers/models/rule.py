@@ -2,7 +2,12 @@ from typing import List
 import datetime
 from sqlalchemy import String, UnicodeText, ARRAY, ForeignKey, Numeric, DateTime
 from sqlalchemy.orm import relationship, mapped_column, Mapped
-from .classes import Base, RuleExecution, Check, Suite
+from data_checks.database.managers.models.classes import (
+    Base,
+    RuleExecution,
+    Check,
+    Suite,
+)
 
 
 class Rule(Base):

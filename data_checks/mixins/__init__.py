@@ -1,1 +1,1 @@
-from .metadata_mixin import MetadataMixin
+from data_checks.mixins.metadata_mixin import MetadataMixin
