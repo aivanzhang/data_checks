@@ -10,13 +10,12 @@ import sys
 from typing import Iterable, Optional, Callable, Awaitable
 from io import StringIO
 from data_checks.base.exceptions import DataCheckException
-from data_checks.base.rule import rule
 from data_checks.base.check_types import FunctionArgs, CheckBase
 from data_checks.base.rule_types import RuleData
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
 from data_checks.mixins.metadata_mixin import MetadataMixin
-from data_checks.utils import class_utils, check_utils, rule_utils
+from data_checks.utils import class_utils, check_utils
 from data_checks.database import (
     CheckManager,
     CheckExecutionManager,
@@ -97,8 +96,6 @@ class Check(CheckBase, MetadataMixin):
         for class_method in rule_methods:
             # Ensure all rules are stored in the rules dict
             method = getattr(self, class_method)
-            if not rule_utils.is_rule(method):
-                method = rule()(method)
             self.rules[class_method] = method
             self.rules_context[class_method] = copy.deepcopy(self.DEFAULT_RULE_CONTEXT)
 

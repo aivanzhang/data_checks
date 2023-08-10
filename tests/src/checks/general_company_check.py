@@ -59,10 +59,10 @@ class GeneralCompanyTransactionCheck(TestCheck):
     #             ..., FunctionArgs  | list[Union[FunctionArgs, dict, tuple]]
     #         ]
 
-    @rule(
-        name="Company Payments Size Increasing",
-        description="Size of the payments dataframe is increasing",
-    )
+    # @rule(
+    #     name="Company Payments Size Increasing",
+    #     description="Size of the payments dataframe is increasing",
+    # )
     def company_payments_size_increasing(
         self, company_name="company_name", days=[2, 5]
     ):

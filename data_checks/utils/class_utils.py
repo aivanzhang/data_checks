@@ -25,7 +25,9 @@ def extract_wrapped(decorated):
 
 
 def get_function_code(cls: object, function_name: str):
-    function_obj: Any = extract_wrapped(getattr(cls, function_name))
+    function_obj: Any = getattr(cls, function_name)
+    if function_obj.__closure__ is not None:
+        function_obj = extract_wrapped(function_obj)
     source_code = inspect.getsource(function_obj)
     return source_code
 
