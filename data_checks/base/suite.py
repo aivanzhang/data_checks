@@ -22,26 +22,25 @@ class Suite(SuiteBase):
             "suite_model": None,
             "suite_execution_model": None,
             "dataset": self.dataset(),
-            "shared_params": None
-            # self.shared_params(),
+            "checks_config": self.checks_config(),
         }
 
     @classmethod
-    def dataset(cls) -> Dataset:
+    def dataset(cls) -> Dataset | None:
         """
         Get the dataset for the suite
         """
         raise NotImplementedError
 
     @classmethod
-    def checks_overrides(cls) -> dict:
+    def checks_overrides(cls) -> dict | None:
         """
         Overrides for rules in checks
         """
         raise NotImplementedError
 
     @classmethod
-    def checks_config(cls) -> dict:
+    def checks_config(cls) -> dict | None:
         """
         Config shared across checks
         """

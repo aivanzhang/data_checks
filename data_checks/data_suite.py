@@ -5,14 +5,14 @@ from data_checks.base.suite import Suite
 
 class DataSuite(Suite):
     @classmethod
-    def dataset(cls) -> Dataset:
+    def dataset(cls) -> Dataset | None:
         """
         Dataset that is shared across all checks in the suite. Use this to define all the data needed for this suite's checks. Accessed by rules via cls.dataset() or self.dataset()
         """
-        raise NotImplementedError
+        return None
 
     @classmethod
-    def checks_overrides(cls) -> dict:
+    def checks_overrides(cls) -> dict | None:
         """
         Overrides for check parameters. Dictionary should be in the following format:
         {
@@ -24,14 +24,14 @@ class DataSuite(Suite):
             ...
         }
         """
-        raise NotImplementedError
+        return None
 
     @classmethod
-    def checks_config(cls) -> dict:
+    def checks_config(cls) -> dict | None:
         """
         Config that is shared across all checks in the suite. Use this to define all configuration details needed for this suite's checks. Accessed by rules via cls.config() or self.config()
         """
-        raise NotImplementedError
+        return None
 
     @classmethod
     def checks(cls) -> list[Check | str]:

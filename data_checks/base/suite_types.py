@@ -24,7 +24,7 @@ class SuiteBase(ABC):
 
     @classmethod
     @abstractmethod
-    def checks_overrides(cls) -> dict:
+    def checks_overrides(cls):
         """
         Overrides for rules in checks
         """
