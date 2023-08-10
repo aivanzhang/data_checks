@@ -1,5 +1,3 @@
 import os
 
-os.environ[
-    "CHECKS_DATABASE_URL"
-] = "postgresql://ivanzhang:@localhost:5432/test_data_checks_2"
+os.environ["CHECK_SETTINGS_MODULE"] = "tests.check_settings"
