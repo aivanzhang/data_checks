@@ -3,7 +3,7 @@ from src.data_checks.base.rule import rule
 from hamcrest import assert_that, equal_to
 import pandas as pd
 import os
-from .test_check import TestCheck
+from ..test_check import TestCheck
 
 
 class GeneralCompanyTransactionCheck(TestCheck):
