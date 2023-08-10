@@ -24,17 +24,23 @@ class SuiteBase(ABC):
 
     @classmethod
     @abstractmethod
-    def shared_params(cls):
+    def checks_overrides(cls) -> dict:
         """
-        Get the shared parameters for the suite's checks
+        Overrides for rules in checks
         """
         pass
 
     @classmethod
-    @abstractmethod
+    def checks_config(cls):
+        """
+        Config shared across checks
+        """
+        pass
+
+    @classmethod
     def checks(cls):
         """
-        Get all checks in the suite
+        Checks to be run by the suite
         """
         pass
 
