@@ -1,7 +1,7 @@
-from data_checks.base.check import Check
+from data_checks.data_check import DataCheck
 
 
-class TestCheck(Check):
+class TestCheck(DataCheck):
     test_str: str = "test"
 
     def setup(self):

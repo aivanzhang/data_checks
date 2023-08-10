@@ -11,6 +11,16 @@ class GeneralCompanyTransactionCheck(TestCheck):
         super().__init__(dataset=dataset)
         self.description = "General Company Transaction Check"
         self.category = "Consistency"
+        self.dataset = Dataset(
+            {
+                "old_payments_df": pd.read_csv(
+                    os.path.dirname(os.path.realpath(__file__)) + "/old_payments.csv"
+                ),
+                "new_payments_df": pd.read_csv(
+                    os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
+                ),
+            }
+        )
         self.rules_params = {
             "company_payments_size_increasing": lambda: {
                 "args": ("company_name1",),
@@ -48,13 +58,6 @@ class GeneralCompanyTransactionCheck(TestCheck):
     #         | Callable[
     #             ..., FunctionArgs  | list[Union[FunctionArgs, dict, tuple]]
     #         ]
-    @classmethod
-    def rules_prefix(cls):
-        return ""
-
-    @staticmethod
-    def should_run_rule():
-        return False
 
     @rule(
         name="Company Payments Size Increasing",

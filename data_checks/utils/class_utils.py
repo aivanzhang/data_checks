@@ -30,6 +30,20 @@ def get_function_code(cls: object, function_name: str):
     return source_code
 
 
+def get_current_class_specific_methods(cls):
+    """
+    Get list of methods (excluding magic methods) specifically defined by the current class and not any of its parents.
+    """
+
+    return [
+        func_name
+        for func_name in dir(cls)
+        if callable(getattr(cls, func_name))
+        and not func_name.startswith("__")
+        and func_name not in get_all_methods(cls.__bases__[0])
+    ]
+
+
 def get_class_code(cls: type):
     parent_classes = cls.__bases__
     source = ""

@@ -10,12 +10,13 @@ import sys
 from typing import Iterable, Optional, Callable, Awaitable
 from io import StringIO
 from data_checks.base.exceptions import DataCheckException
+from data_checks.base.rule import rule
 from data_checks.base.check_types import FunctionArgs, CheckBase
 from data_checks.base.rule_types import RuleData
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
 from data_checks.mixins.metadata_mixin import MetadataMixin
-from data_checks.utils import class_utils, check_utils
+from data_checks.utils import class_utils, check_utils, rule_utils
 from data_checks.database import (
     CheckManager,
     CheckExecutionManager,
@@ -62,32 +63,25 @@ class Check(CheckBase, MetadataMixin):
         self.rules_context = dict()
         self.rules_params = rules_params
 
-        for class_method in class_utils.get_all_methods(self):
-            # Ensure all rules are stored in the rules dict
-            method = getattr(self, class_method)
-            prefix = self.rules_prefix()
-            if (prefix is not None and class_method.startswith(prefix)) or getattr(
-                method, "is_rule", False
-            ):
-                self.rules[class_method] = method
-                self.rules_context[class_method] = copy.deepcopy(
-                    self.DEFAULT_RULE_CONTEXT
-                )
-
-                rule_data = getattr(method, "data", None)
-                if rule_data:
-                    rule_data = RuleData(**rule_data)
-                    self.rules_context[class_method].update(rule_data)
-                    # Ensure all tags are stored in the rules_context dict
-                    rule_tags = rule_data["tags"]
-                    self.rules_context[class_method]["tags"] = rule_tags
-                    if getattr(method, "should_prefix_tags", False):
-                        self.rules_context[class_method]["tags"] = {
-                            f"{self.name}.{tag}" for tag in rule_tags
-                        }
-
+        self._set_rules(self.defined_rules())
         if only_run_specified_rules:
             self.only_run_specified_rules()
+
+    @classmethod
+    def defined_rules(cls) -> list[str]:
+        """
+        Generate rules based off of the decorator and rules_prefix
+        """
+        prefix = cls.rules_prefix()
+        return list(
+            filter(
+                lambda method_name: (
+                    prefix is not None and method_name.startswith(prefix)
+                )
+                or getattr(getattr(cls, method_name), "is_rule", False),
+                class_utils.get_all_methods(cls()),
+            )
+        )
 
     @classmethod
     def rules_prefix(cls) -> str | None:
@@ -95,6 +89,30 @@ class Check(CheckBase, MetadataMixin):
         Prefix to automatically detect rules in the check
         """
         raise NotImplementedError
+
+    def _set_rules(self, rule_methods: list[str]):
+        """
+        Internal: Set the rules for the check
+        """
+        for class_method in rule_methods:
+            # Ensure all rules are stored in the rules dict
+            method = getattr(self, class_method)
+            if not rule_utils.is_rule(method):
+                method = rule()(method)
+            self.rules[class_method] = method
+            self.rules_context[class_method] = copy.deepcopy(self.DEFAULT_RULE_CONTEXT)
+
+            rule_data = getattr(method, "data", None)
+            if rule_data:
+                rule_data = RuleData(**rule_data)
+                self.rules_context[class_method].update(rule_data)
+                # Ensure all tags are stored in the rules_context dict
+                rule_tags = rule_data["tags"]
+                self.rules_context[class_method]["tags"] = rule_tags
+                if getattr(method, "should_prefix_tags", False):
+                    self.rules_context[class_method]["tags"] = {
+                        f"{self.name}.{tag}" for tag in rule_tags
+                    }
 
     def _update_from_suite_internals(self, suite_internals: SuiteInternal):
         """

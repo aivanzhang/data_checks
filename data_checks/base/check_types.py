@@ -63,6 +63,14 @@ class CheckBase(ABC):
 
     @classmethod
     @abstractmethod
+    def defined_rules(cls) -> list[str]:
+        """
+        Rules to be run by the check. Each rule should be a function in the check class.
+        """
+        pass
+
+    @classmethod
+    @abstractmethod
     def rules_prefix(cls) -> str:
         """
         Prefix to automatically detect rules in the check
