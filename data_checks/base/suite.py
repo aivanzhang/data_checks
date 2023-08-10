@@ -5,6 +5,7 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
 from data_checks.database import SuiteManager, SuiteExecutionManager
 from data_checks.utils import class_utils
+from data_checks.conf import settings
 
 
 class Suite(SuiteBase):
@@ -21,39 +22,64 @@ class Suite(SuiteBase):
             "suite_model": None,
             "suite_execution_model": None,
             "dataset": self.dataset(),
-            "shared_params": self.shared_params(),
+            "shared_params": None
+            # self.shared_params(),
         }
 
     @classmethod
-    def dataset(cls) -> Optional[Dataset]:
+    def dataset(cls) -> Dataset:
         """
         Get the dataset for the suite
         """
         raise NotImplementedError
 
     @classmethod
-    def shared_params(cls) -> Optional[dict]:
+    def checks_overrides(cls) -> dict:
         """
-        Get the shared parameters for the suite's checks
+        Overrides for rules in checks
         """
         raise NotImplementedError
 
     @classmethod
-    def checks(cls) -> list[Check]:
+    def checks_config(cls) -> dict:
         """
-        Get all checks in the suite
+        Config shared across checks
         """
         raise NotImplementedError
+
+    @classmethod
+    def checks(cls) -> list[Check | str]:
+        """
+        Checks to be run by the suite
+        """
+        raise NotImplementedError
+
+    @classmethod
+    def get_checks(cls) -> list[Check]:
+        checks = []
+        for check in cls.checks():
+            if isinstance(check, str):
+                check = Check.check_class_from_string(check)
+                if check is None:
+                    raise Exception(
+                        f"Could not find check class {check} in {settings['CHECKS_DIR']}"
+                    )
+                checks.append(check)
+            else:
+                checks.append(check)
+        return checks
 
     def get_checks_with_tags(self, tags: Optional[Iterable]) -> list[Check]:
         """
         Get checks for a given set of tags
         """
         if tags is None:
-            return self.checks()
+            return self.get_checks()
         else:
             return [
-                check for check in self.checks() if set(tags).intersection(check.tags)
+                check
+                for check in self.get_checks()
+                if set(tags).intersection(check.tags)
             ]
 
     def setup(self):
@@ -174,6 +200,6 @@ class Suite(SuiteBase):
         """
 
         suite_metadata = dict()
-        for check in self.checks():
+        for check in self.get_checks():
             suite_metadata[check.name] = check.metadata.copy()
         return suite_metadata

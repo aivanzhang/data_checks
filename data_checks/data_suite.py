@@ -36,6 +36,6 @@ class DataSuite(Suite):
     @classmethod
     def checks(cls) -> list[Check | str]:
         """
-        Checks to be run by the suite. Can be specified by class or name (if os.environ["CHECK_DIR"] is defined) Each check should be a subclass of Check.
+        Checks to be run by the suite. Can be specified by class or name (if CHECKS_DIR is defined) Each check should be a subclass of Check.
         """
         raise NotImplementedError
