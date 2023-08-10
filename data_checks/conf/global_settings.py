@@ -1,0 +1,5 @@
+CHECKS_DIR = None
+
+DATABASE_URL = None
+
+SUITES_DIR = None
