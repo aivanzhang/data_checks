@@ -22,7 +22,6 @@ from data_checks.database import (
     RuleManager,
     RuleExecutionManager,
 )
-from data_checks.conf import settings
 
 
 class Check(CheckBase, MetadataMixin):
@@ -286,15 +285,6 @@ class Check(CheckBase, MetadataMixin):
             RuleExecutionManager.update_execution(execution_id, **kwargs)
         if type == "check" and execution_id:
             CheckExecutionManager.update_execution(execution_id, **kwargs)
-
-    @staticmethod
-    def check_class_from_string(class_name: str) -> type | None:
-        file_path = settings["CHECKS_DIR"]
-        if file_path is None:
-            raise ValueError(
-                "CHECKS_DIR setting must be set when looking up checks by name"
-            )
-        return class_utils.get_class_in_dir(class_name, file_path)
 
     def after(self, rule: str, params: FunctionArgs, **kwargs):
         """
