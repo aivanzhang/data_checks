@@ -4,10 +4,6 @@ This module contains functions for working with classes.
 from types import FunctionType
 from typing import Any
 import inspect
-import pkgutil
-import inspect
-import importlib
-import importlib.util
 
 
 def get_all_methods(cls: object) -> list[str]:
@@ -58,40 +54,3 @@ def get_class_code(cls: type):
         source += inspect.getsource(parent) + "\n"
     source += inspect.getsource(cls)
     return source
-
-
-def import_submodules(package, recursive=True):
-    """Import all submodules of a module, recursively, including subpackages
-
-    :param package: package (name or actual module)
-    :type package: str | module
-    :rtype: dict[str, types.ModuleType]
-    """
-    if isinstance(package, str):
-        package = importlib.import_module(package)
-    results = {}
-    for loader, name, is_pkg in pkgutil.walk_packages(package.__path__):
-        full_name = package.__name__ + "." + name
-        results[full_name] = importlib.import_module(full_name)
-        if recursive and is_pkg:
-            results.update(import_submodules(full_name))
-    return results
-
-
-def classes_for_directory(module, parent_class):
-    """
-    Returns a list of Classes in the module that are a subclass
-
-    """
-    submodules_dict = import_submodules(module)
-    classes: list[type] = []
-    for key, value in submodules_dict.items():
-        for attr in dir(value):
-            class_attr = getattr(value, attr)
-            if (
-                inspect.isclass(class_attr)
-                and issubclass(class_attr, parent_class)
-                and class_attr != parent_class
-            ):
-                classes.append(class_attr)
-    return classes

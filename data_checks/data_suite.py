@@ -1,5 +1,4 @@
 from data_checks.base.dataset import Dataset
-from data_checks.base.check import Check
 from data_checks.base.suite import Suite
 
 
@@ -42,7 +41,7 @@ class DataSuite(Suite):
         return None
 
     @classmethod
-    def checks(cls) -> list[type]:
+    def checks(cls) -> list[type | str]:
         """
         Checks to be run by the suite. Can be specified by class. Each check should be a subclass of Check.
         """
