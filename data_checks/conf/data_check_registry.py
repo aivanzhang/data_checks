@@ -6,9 +6,7 @@ from data_checks import DataCheck
 class DataCheckRegistry:
     def __init__(self):
         if settings["CHECKS_MODULE"] is None:
-            raise ImportError(
-                "No checks found. Please specify CHECKS_MODULE in your settings module."
-            )
+            raise ImportError("Please specify CHECKS_MODULE in your settings module.")
         else:
             checks = class_utils.classes_for_directory(
                 settings["CHECKS_MODULE"], DataCheck

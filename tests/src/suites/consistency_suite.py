@@ -1,11 +1,11 @@
 import os
 import pandas as pd
-from data_checks.base.suite import Suite
 from data_checks.base.dataset import Dataset
+from data_checks import DataSuite
 from tests.src.checks.general_company_check import GeneralCompanyTransactionCheck
 
 
-class ConsistencySuite(Suite):
+class ConsistencySuite(DataSuite):
     @classmethod
     def checks(cls) -> list[type]:
         return [
