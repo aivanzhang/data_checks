@@ -56,32 +56,3 @@ def get_class_code(cls: type):
         source += inspect.getsource(parent) + "\n"
     source += inspect.getsource(cls)
     return source
-
-
-def get_class_in_dir(
-    class_name: str,
-    dir_path: str,
-):
-    """
-    Get a class from a directory.
-    """
-
-    for root, _, files in os.walk(dir_path):
-        for file in files:
-            if file.endswith(".py") and not file.startswith("__"):
-                file_path = os.path.join(root, file)
-                project_root = os.path.dirname(os.path.abspath(__file__))
-                relative_path = os.path.relpath(file_path, project_root)
-                spec = importlib.util.spec_from_file_location(
-                    relative_path.replace("../", "")
-                    .replace(".py", "")
-                    .replace(os.path.sep, "."),
-                    file_path,
-                )
-                if spec is None or spec.loader is None:
-                    continue
-                module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(module)
-                return module.__dict__.get(class_name)
-
-    return None

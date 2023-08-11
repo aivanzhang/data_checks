@@ -99,15 +99,6 @@ class Check(CheckBase, MetadataMixin):
         if type == "check" and execution_id:
             CheckExecutionManager.update_execution(execution_id, **kwargs)
 
-    @staticmethod
-    def check_class_from_string(class_name: str) -> type | None:
-        file_path = settings["CHECKS_DIR"]
-        if file_path is None:
-            raise ValueError(
-                "CHECKS_DIR setting must be set when looking up checks by name"
-            )
-        return class_utils.get_class_in_dir(class_name, file_path)
-
     def _set_rules(self, rule_methods: list[str]):
         """
         Internal: Set the rules for the check

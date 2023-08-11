@@ -1,5 +1,1 @@
-CHECKS_DIR = None
-
 CHECKS_DATABASE_URL = None
-
-SUITES_DIR = None

@@ -7,9 +7,9 @@ from tests.src.checks.general_company_check import GeneralCompanyTransactionChec
 
 class ConsistencySuite(Suite):
     @classmethod
-    def checks(cls) -> list[type | str]:
+    def checks(cls) -> list[type]:
         return [
-            "GeneralCompanyTransactionCheck",
+            GeneralCompanyTransactionCheck,
         ]
 
     @classmethod
