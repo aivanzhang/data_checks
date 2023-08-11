@@ -3,7 +3,7 @@ from data_checks.utils import class_utils
 from data_checks import DataCheck
 
 
-class CheckRegistry:
+class DataCheckRegistry:
     def __init__(self):
         if settings["CHECKS_MODULE"] is None:
             raise ImportError(
@@ -23,4 +23,4 @@ class CheckRegistry:
         return f"{self.__dict__}"
 
 
-check_registry = CheckRegistry()
+data_check_registry = DataCheckRegistry()

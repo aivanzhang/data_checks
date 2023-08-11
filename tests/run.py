@@ -2,7 +2,7 @@
 import asyncio
 
 # from tests.src.checks.general_company_check import GeneralCompanyTransactionCheck
-from data_checks.conf.check_registry import check_registry
+from data_checks.conf.data_check_registry import data_check_registry
 from data_checks.conf.settings import settings
 from tests.src.suites.consistency_suite import ConsistencySuite
 
@@ -12,7 +12,7 @@ import os
 from data_checks.utils import rule_utils
 
 
-print(check_registry)
+print(data_check_registry)
 print(settings)
 ConsistencySuite().run()
 # asyncio.run(ConsistencySuite().run_async())

@@ -5,7 +5,7 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
 from data_checks.database import SuiteManager, SuiteExecutionManager
 from data_checks.utils import class_utils
-from data_checks.conf.check_registry import check_registry
+from data_checks.conf.data_check_registry import data_check_registry
 
 
 class Suite(SuiteBase):
@@ -64,7 +64,7 @@ class Suite(SuiteBase):
                     check if isinstance(check, str) else check.__name__, {}
                 )
             if isinstance(check, str):
-                checks.append(check_registry[check](rules_params=overrides))
+                checks.append(data_check_registry[check](rules_params=overrides))
             elif issubclass(check, Check):
                 checks.append(check(rules_params=overrides))
 
