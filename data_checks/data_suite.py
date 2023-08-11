@@ -16,9 +16,17 @@ class DataSuite(Suite):
         """
         Overrides for check parameters. Dictionary should be in the following format:
         {
-            CheckClass.rule_name: {
-                "param1": value1,
-                "param2": value2,
+            "CheckClass": {
+                rule_1: {
+                    "param1": value1,
+                    "param2": value2,
+                    ...
+                },
+                rule_2: {
+                    "param1": value1,
+                    "param2": value2,
+                    ...
+                }
                 ...
             },
             ...
@@ -34,7 +42,7 @@ class DataSuite(Suite):
         return None
 
     @classmethod
-    def checks(cls) -> list[Check | str]:
+    def checks(cls) -> list[type | str]:
         """
         Checks to be run by the suite. Can be specified by class or name (if CHECKS_DIR is defined) Each check should be a subclass of Check.
         """

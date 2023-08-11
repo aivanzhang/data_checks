@@ -47,7 +47,7 @@ class Suite(SuiteBase):
         raise NotImplementedError
 
     @classmethod
-    def checks(cls) -> list[Check | str]:
+    def checks(cls) -> list[type | str]:
         """
         Checks to be run by the suite
         """
@@ -55,17 +55,23 @@ class Suite(SuiteBase):
 
     @classmethod
     def get_checks(cls) -> list[Check]:
-        checks = []
+        checks: list[Check] = []
+        checks_overrides = cls.checks_overrides()
         for check in cls.checks():
+            overrides = {}
+            if checks_overrides is not None:
+                overrides = checks_overrides.get(
+                    check if isinstance(check, str) else check.__name__, {}
+                )
             if isinstance(check, str):
-                check = Check.check_class_from_string(check)
-                if check is None:
+                CustomCheck = Check.check_class_from_string(check)
+                if CustomCheck is None:
                     raise Exception(
                         f"Could not find check class {check} in {settings['CHECKS_DIR']}"
                     )
-                checks.append(check)
-            else:
-                checks.append(check)
+                checks.append(CustomCheck(rules_params=overrides))
+            elif issubclass(check, Check):
+                checks.append(check(rules_params=overrides))
         return checks
 
     def get_checks_with_tags(self, tags: Optional[Iterable]) -> list[Check]:
