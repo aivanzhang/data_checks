@@ -16,6 +16,7 @@ from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
 from data_checks.mixins.metadata_mixin import MetadataMixin
 from data_checks.utils import class_utils, check_utils
+from data_checks.conf import settings
 from data_checks.database import (
     CheckManager,
     CheckExecutionManager,
@@ -87,6 +88,25 @@ class Check(CheckBase, MetadataMixin):
         Prefix to automatically detect rules in the check
         """
         return None
+
+    @staticmethod
+    def update_execution(type: str, execution_id: int | None, **kwargs):
+        """
+        Update the execution of a rule
+        """
+        if type == "rule" and execution_id:
+            RuleExecutionManager.update_execution(execution_id, **kwargs)
+        if type == "check" and execution_id:
+            CheckExecutionManager.update_execution(execution_id, **kwargs)
+
+    @staticmethod
+    def check_class_from_string(class_name: str) -> type | None:
+        file_path = settings["CHECKS_DIR"]
+        if file_path is None:
+            raise ValueError(
+                "CHECKS_DIR setting must be set when looking up checks by name"
+            )
+        return class_utils.get_class_in_dir(class_name, file_path)
 
     def _set_rules(self, rule_methods: list[str]):
         """
@@ -275,16 +295,6 @@ class Check(CheckBase, MetadataMixin):
             yield asyncio.get_event_loop().run_in_executor(
                 None, self._exec_rule, rule, rule_func, params
             )
-
-    @staticmethod
-    def update_execution(type: str, execution_id: int | None, **kwargs):
-        """
-        Update the execution of a rule
-        """
-        if type == "rule" and execution_id:
-            RuleExecutionManager.update_execution(execution_id, **kwargs)
-        if type == "check" and execution_id:
-            CheckExecutionManager.update_execution(execution_id, **kwargs)
 
     def after(self, rule: str, params: FunctionArgs, **kwargs):
         """

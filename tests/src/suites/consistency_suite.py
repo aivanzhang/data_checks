@@ -7,9 +7,9 @@ from tests.src.checks.general_company_check import GeneralCompanyTransactionChec
 
 class ConsistencySuite(Suite):
     @classmethod
-    def checks(cls) -> list[type]:
+    def checks(cls) -> list[type | str]:
         return [
-            GeneralCompanyTransactionCheck,
+            "GeneralCompanyTransactionCheck",
         ]
 
     @classmethod
@@ -31,4 +31,8 @@ class ConsistencySuite(Suite):
 
     @classmethod
     def checks_overrides(cls) -> dict | None:
-        return {}
+        return {
+            "GeneralCompanyTransactionCheck": {
+                "company_payments_size_increasing": {"days": [100, 200]}
+            }
+        }
