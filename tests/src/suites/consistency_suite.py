@@ -2,7 +2,7 @@ import os
 import pandas as pd
 from data_checks.base.suite import Suite
 from data_checks.base.dataset import Dataset
-from ..checks.general_company_check import GeneralCompanyTransactionCheck
+from tests.src.checks.general_company_check import GeneralCompanyTransactionCheck
 
 
 class ConsistencySuite(Suite):
