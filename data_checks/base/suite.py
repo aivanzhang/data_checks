@@ -5,6 +5,7 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
 from data_checks.database import SuiteManager, SuiteExecutionManager
 from data_checks.utils import class_utils
+from data_checks.conf.check_registry import check_registry
 
 
 class Suite(SuiteBase):
@@ -46,7 +47,7 @@ class Suite(SuiteBase):
         raise NotImplementedError
 
     @classmethod
-    def checks(cls) -> list[type]:
+    def checks(cls) -> list[type | str]:
         """
         Checks to be run by the suite
         """
@@ -59,9 +60,12 @@ class Suite(SuiteBase):
         for check in cls.checks():
             overrides = {}
             if checks_overrides is not None:
-                overrides = checks_overrides.get(check.__name__, {})
-
-            if issubclass(check, Check):
+                overrides = checks_overrides.get(
+                    check if isinstance(check, str) else check.__name__, {}
+                )
+            if isinstance(check, str):
+                checks.append(check_registry[check](rules_params=overrides))
+            elif issubclass(check, Check):
                 checks.append(check(rules_params=overrides))
 
         return checks
