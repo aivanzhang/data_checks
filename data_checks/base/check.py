@@ -87,7 +87,7 @@ class Check(CheckBase, MetadataMixin):
         """
         Prefix to automatically detect rules in the check
         """
-        raise NotImplementedError
+        return None
 
     def _set_rules(self, rule_methods: list[str]):
         """
