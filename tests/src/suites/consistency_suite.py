@@ -6,30 +6,29 @@ from tests.src.checks.general_company_check import GeneralCompanyTransactionChec
 
 
 class ConsistencySuite(Suite):
-    def __init__(self):
-        super().__init__()
-        self.name = "Consistency Suite"
-        self.description = "Suite with checks that ensure consistency between different different transaction data stores"
-        # self.dataset = Dataset({"old_payments_df": None, "new_payments_df": None})
-        # Dataset(
-        #     {
-        #         "old_payments_df": pd.read_csv(
-        #             os.path.dirname(os.path.realpath(__file__)) + "/old_payments.csv"
-        #         ),
-        #         "new_payments_df": pd.read_csv(
-        #             os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
-        #         ),
-        #     }
-        # )
+    @classmethod
+    def checks(cls) -> list[type]:
+        return [
+            GeneralCompanyTransactionCheck,
+        ]
 
-        self.checks = []
-        # [
-        #     GeneralCompanyTransactionCheck(),
-        #     GeneralCompanyTransactionCheck(),
-        #     GeneralCompanyTransactionCheck(),
-        #     GeneralCompanyTransactionCheck(),
-        #     GeneralCompanyTransactionCheck(),
-        # ]
+    @classmethod
+    def dataset(cls) -> Dataset | None:
+        return Dataset(
+            {
+                "old_payments_df": pd.read_csv(
+                    os.path.dirname(os.path.realpath(__file__)) + "/old_payments.csv"
+                ),
+                "new_payments_df": pd.read_csv(
+                    os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
+                ),
+            }
+        )
 
-        # for check in self.checks:
-        #     check.use_dataset(self.dataset)
+    @classmethod
+    def checks_config(cls) -> dict | None:
+        return {}
+
+    @classmethod
+    def checks_overrides(cls) -> dict | None:
+        return {}

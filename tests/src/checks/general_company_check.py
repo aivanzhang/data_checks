@@ -65,7 +65,7 @@ class GeneralCompanyTransactionCheck(DataCheck):
     # #     description="Size of the payments dataframe is increasing",
     # # )
     def company_payments_size_increasing(
-        self, id, company_name="company_name", days=[2, 5], time_of_day=10
+        self, company_name="company_name", days=[2, 5], time_of_day=10
     ):
         # old_payments_df = pd.read_csv(
         #     os.path.dirname(os.path.realpath(__file__)) + "/old_payments.csv"
