@@ -1,13 +1,17 @@
 # from .suites.consistency_suite import ConsistencySuite
 import asyncio
-from tests.src.checks.general_company_check import GeneralCompanyTransactionCheck
+
+# from tests.src.checks.general_company_check import GeneralCompanyTransactionCheck
+from data_checks.conf import registry
 from tests.src.suites.consistency_suite import ConsistencySuite
 
-from data_checks.base.dataset import Dataset
+# from data_checks.base.dataset import Dataset
 import pandas as pd
 import os
 from data_checks.utils import rule_utils
 
+
+print(registry)
 ConsistencySuite().run()
 # asyncio.run(ConsistencySuite().run_async())
 # asyncio.run(

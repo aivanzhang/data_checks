@@ -16,7 +16,6 @@ from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
 from data_checks.mixins.metadata_mixin import MetadataMixin
 from data_checks.utils import class_utils, check_utils
-from data_checks.conf import settings
 from data_checks.database import (
     CheckManager,
     CheckExecutionManager,

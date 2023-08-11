@@ -5,7 +5,6 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
 from data_checks.database import SuiteManager, SuiteExecutionManager
 from data_checks.utils import class_utils
-from data_checks.conf import settings
 
 
 class Suite(SuiteBase):

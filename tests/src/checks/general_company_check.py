@@ -4,7 +4,6 @@ from data_checks import DataCheck
 from hamcrest import assert_that, equal_to
 import pandas as pd
 import os
-from tests.src.checks.test_check import TestCheck
 
 
 class GeneralCompanyTransactionCheck(DataCheck):
