@@ -69,4 +69,12 @@ class CheckBase(ABC):
         """
         pass
 
+    @classmethod
+    @abstractmethod
+    def check_config(cls) -> dict:
+        """
+        Configuration for the check
+        """
+        pass
+
     ...

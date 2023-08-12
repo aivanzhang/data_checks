@@ -79,8 +79,20 @@ class Check(CheckBase, MetadataMixin):
             )
         )
 
-    # @classmethod
-    # def defined_rules(cls) -> list[str]:
+    @classmethod
+    def check_config(cls) -> dict:
+        """
+        Default configuration for the check execution. In the following format:
+        {
+            "schedule": "0 8 * * *", # Cron schedule for each rule
+            "rules_schedule": {
+                "rule_name_1": "0 8 * * *", # Rule-specific cron schedule
+                "rule_name_2": "0 8 * * *", # Rule-specific cron schedule
+                ...
+            }
+        }
+        """
+        raise NotImplementedError
 
     @staticmethod
     def update_execution(type: str, execution_id: int | None, **kwargs):

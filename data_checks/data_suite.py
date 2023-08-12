@@ -41,6 +41,10 @@ class DataSuite(Suite):
         return None
 
     @classmethod
+    def suite_config(cls) -> dict:
+        return {}
+
+    @classmethod
     def checks(cls) -> list[type | str]:
         """
         Checks to be run by the suite. Can be specified by class. Each check should be a subclass of Check.

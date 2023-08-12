@@ -33,7 +33,14 @@ class SuiteBase(ABC):
     @classmethod
     def checks_config(cls):
         """
-        Config shared across checks
+        Configuration shared across checks
+        """
+        pass
+
+    @classmethod
+    def suite_config(cls):
+        """
+        Configurations for the suite
         """
         pass
 

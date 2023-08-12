@@ -47,6 +47,23 @@ class Suite(SuiteBase):
         raise NotImplementedError
 
     @classmethod
+    def suite_config(cls) -> dict:
+        """
+        Configurations for the suite. In the following format:
+        {
+            "schedules": { # Overrides for check schedules
+                "CheckClass": "0 8 * * *", # Overrides the schedule for CheckClass and all its rules
+                "CheckClass1": {
+                    "rule_1": "0 8 * * *", # Overrides the schedule for rule_1 in CheckClass1
+                    ...
+                },
+                ...
+            }
+        }
+        """
+        raise NotImplementedError
+
+    @classmethod
     def checks(cls) -> list[type | str]:
         """
         Checks to be run by the suite
