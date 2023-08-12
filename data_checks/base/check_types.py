@@ -34,8 +34,8 @@ class CheckSchedule(TypedDict):
     Check schedule
     """
 
-    schedule: str | None
-    rule_schedules: dict[str, str] | None
+    schedule: str
+    rule_schedules: dict[str, str]
 
 
 class CheckBase(ABC):

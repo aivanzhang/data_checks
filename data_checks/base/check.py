@@ -61,8 +61,8 @@ class Check(CheckBase, MetadataMixin):
         self.rules_context = dict()
         self.rules_params = rules_params
         self.schedule = {
-            "schedule": self.check_config().get("schedule", None),
-            "rule_schedules": self.check_config().get("rule_schedules", None),
+            "schedule": self.check_config().get("schedule", "0 8 * * *"),
+            "rule_schedules": self.check_config().get("rule_schedules", {}),
         }
 
         self._set_rules(self.defined_rules())
@@ -96,9 +96,7 @@ class Check(CheckBase, MetadataMixin):
             }
         }
         """
-        return {
-            "schedule": "0 8 * * *",
-        }
+        return {}
 
     @staticmethod
     def update_execution(type: str, execution_id: int | None, **kwargs):
