@@ -151,8 +151,6 @@ class Check(CheckBase, MetadataMixin):
                     self.schedule["rule_schedules"] = dict()
                 self.schedule["rule_schedules"].update(schedule_overrides)
 
-        print(self.schedule)
-
     def only_run_specified_rules(self):
         """
         Appends to self.exclude_rules so that only rules in self.rules_params.keys() are run
