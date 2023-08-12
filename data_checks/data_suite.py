@@ -28,7 +28,7 @@ class DataSuite(Suite):
                 }
                 ...
             },
-            ...
+            "..."
         }
         """
         return None
@@ -36,12 +36,25 @@ class DataSuite(Suite):
     @classmethod
     def checks_config(cls) -> dict | None:
         """
-        Config that is shared across all checks in the suite. Use this to define all configuration details needed for this suite's checks. Accessed by rules via cls.config() or self.config()
+        Shared fields across all checks in the suite. Use this to define all configuration details needed for this suite's checks. Accessed by rules via cls.config() or self.config()
         """
         return None
 
     @classmethod
     def suite_config(cls) -> dict:
+        """
+        System configurations for the suite. In the following format:
+        {
+            "schedules": { # Overrides for check schedules.
+                "CheckClass": "0 8 * * *", # Overrides the schedule for CheckClass and all its rules
+                "CheckClass1": {
+                    "rule_1": "0 8 * * *", # Overrides the schedule for rule_1 in CheckClass1
+                    ...
+                },
+                ...
+            }
+        }
+        """
         return {}
 
     @classmethod

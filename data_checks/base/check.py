@@ -60,6 +60,10 @@ class Check(CheckBase, MetadataMixin):
         self.rules = dict()
         self.rules_context = dict()
         self.rules_params = rules_params
+        self.schedule = {
+            "schedule": self.check_config().get("schedule", None),
+            "rule_schedules": self.check_config().get("rule_schedules", None),
+        }
 
         self._set_rules(self.defined_rules())
         if only_run_specified_rules:
@@ -82,17 +86,19 @@ class Check(CheckBase, MetadataMixin):
     @classmethod
     def check_config(cls) -> dict:
         """
-        Default configuration for the check execution. In the following format:
+        Default system configuration for the check. In the following format:
         {
-            "schedule": "0 8 * * *", # Cron schedule for each rule
-            "rules_schedule": {
+            "schedule": "0 8 * * *", # Cron schedule for all rule.
+            "rule_schedules": {
                 "rule_name_1": "0 8 * * *", # Rule-specific cron schedule
                 "rule_name_2": "0 8 * * *", # Rule-specific cron schedule
                 ...
             }
         }
         """
-        raise NotImplementedError
+        return {
+            "schedule": "0 8 * * *",
+        }
 
     @staticmethod
     def update_execution(type: str, execution_id: int | None, **kwargs):
@@ -126,7 +132,9 @@ class Check(CheckBase, MetadataMixin):
                         f"{self.name}.{tag}" for tag in rule_tags
                     }
 
-    def _update_from_suite_internals(self, suite_internals: SuiteInternal):
+    def _update_from_suite_internals(
+        self, suite_internals: SuiteInternal, schedule_overrides: Optional[dict] = None
+    ):
         """
         Internal: Set the suite model for the check
         """
@@ -135,6 +143,15 @@ class Check(CheckBase, MetadataMixin):
             self.dataset = suite_internals["dataset"]
         if suite_internals["checks_config"] is not None:
             self.config = suite_internals["checks_config"]
+        if schedule_overrides is not None:
+            if isinstance(schedule_overrides, str):
+                self.schedule["schedule"] = schedule_overrides
+            elif isinstance(schedule_overrides, dict):
+                if self.schedule["rule_schedules"] is None:
+                    self.schedule["rule_schedules"] = dict()
+                self.schedule["rule_schedules"].update(schedule_overrides)
+
+        print(self.schedule)
 
     def only_run_specified_rules(self):
         """
@@ -213,9 +230,9 @@ class Check(CheckBase, MetadataMixin):
             check=self._internal["check_model"], status="running"
         )
 
-    def before(self, rule: str, params: FunctionArgs) -> int:
+    def before(self, rule: str, params: FunctionArgs) -> int | None:
         """
-        Run before each rule
+        Run before each rule. If None, the rule will not be run
         """
         new_rule = RuleManager.create_rule(
             name=self.rules_context[rule]["name"],
@@ -254,6 +271,8 @@ class Check(CheckBase, MetadataMixin):
         rule_metadata = {"rule": rule, "params": params}
         try:
             exec_id = self.before(**rule_metadata)
+            if exec_id is None:
+                return
             try:
                 rule_func(*params["args"], **params["kwargs"])
                 self.on_success(**rule_metadata, exec_id=exec_id)

@@ -1,4 +1,5 @@
 import asyncio
+import copy
 from typing import Iterable, Optional, Awaitable
 from data_checks.base.check import Check
 from data_checks.base.dataset import Dataset
@@ -42,14 +43,14 @@ class Suite(SuiteBase):
     @classmethod
     def checks_config(cls) -> dict | None:
         """
-        Config shared across checks
+        Shared fields across checks
         """
         raise NotImplementedError
 
     @classmethod
     def suite_config(cls) -> dict:
         """
-        Configurations for the suite. In the following format:
+        System configurations for the suite. In the following format:
         {
             "schedules": { # Overrides for check schedules
                 "CheckClass": "0 8 * * *", # Overrides the schedule for CheckClass and all its rules
@@ -61,7 +62,7 @@ class Suite(SuiteBase):
             }
         }
         """
-        raise NotImplementedError
+        return {}
 
     @classmethod
     def checks(cls) -> list[type | str]:
@@ -122,7 +123,10 @@ class Suite(SuiteBase):
         """
         self._internal["dataset"] = self.dataset()
         self._internal["checks_config"] = self.checks_config()
-        check._update_from_suite_internals(self._internal)
+        schedule_overrides = (
+            self.suite_config().get("schedules", {}).get(check.name, None)
+        )
+        check._update_from_suite_internals(self._internal, schedule_overrides)
 
     def run(self, check_tags: Optional[Iterable] = None):
         self.setup()

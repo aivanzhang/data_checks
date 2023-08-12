@@ -29,6 +29,15 @@ class CheckInternal(TypedDict):
     rule_execution_id_to_output: Dict[int, StringIO]
 
 
+class CheckSchedule(TypedDict):
+    """
+    Check schedule
+    """
+
+    schedule: str | None
+    rule_schedules: dict[str, str] | None
+
+
 class CheckBase(ABC):
     """
     Base class for all checks
@@ -57,6 +66,7 @@ class CheckBase(ABC):
         str, RuleContext
     ]  # Stores any metadata generated when a rule runs
     excluded_rules: set
+    schedule: CheckSchedule
     tags: set
 
     verbose: bool
@@ -73,7 +83,7 @@ class CheckBase(ABC):
     @abstractmethod
     def check_config(cls) -> dict:
         """
-        Configuration for the check
+        System configuration for the check
         """
         pass
 

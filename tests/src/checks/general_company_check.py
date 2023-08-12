@@ -59,6 +59,24 @@ class GeneralCompanyTransactionCheck(DataCheck):
     # #             ..., FunctionArgs  | list[Union[FunctionArgs, dict, tuple]]
     # #         ]
 
+    @classmethod
+    def check_config(cls) -> dict:
+        """
+        System configuration for the check. In the following format:
+        {
+            "schedule": "0 8 * * *", # Cron schedule for all rule. If undefined runs just once.
+            "rule_schedules": {
+                "rule_name_1": "0 8 * * *", # Rule-specific cron schedule
+                "rule_name_2": "0 8 * * *", # Rule-specific cron schedule
+                ...
+            }
+        }
+        """
+        return {
+            "schedule": "0 8 * * *",
+            "rule_schedules": {"company_payments_size_increasing": "0 10 * * *"},
+        }
+
     # # @rule(
     # #     name="Company Payments Size Increasing",
     # #     description="Size of the payments dataframe is increasing",
