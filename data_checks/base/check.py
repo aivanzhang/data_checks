@@ -70,23 +70,17 @@ class Check(CheckBase, MetadataMixin):
         """
         Generate rules based off of the decorator and rules_prefix
         """
-        prefix = cls.rules_prefix()
         return list(
             filter(
-                lambda method_name: (
-                    prefix is not None and method_name.startswith(prefix)
-                )
-                or getattr(getattr(cls, method_name), "is_rule", False),
+                lambda method_name: getattr(
+                    getattr(cls, method_name), "is_rule", False
+                ),
                 class_utils.get_all_methods(cls()),
             )
         )
 
-    @classmethod
-    def rules_prefix(cls) -> str | None:
-        """
-        Prefix to automatically detect rules in the check
-        """
-        return None
+    # @classmethod
+    # def defined_rules(cls) -> list[str]:
 
     @staticmethod
     def update_execution(type: str, execution_id: int | None, **kwargs):

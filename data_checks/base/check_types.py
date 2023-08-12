@@ -69,12 +69,4 @@ class CheckBase(ABC):
         """
         pass
 
-    @classmethod
-    @abstractmethod
-    def rules_prefix(cls) -> str:
-        """
-        Prefix to automatically detect rules in the check
-        """
-        pass
-
     ...
