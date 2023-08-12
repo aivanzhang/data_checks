@@ -107,7 +107,7 @@ class Check(CheckBase, MetadataMixin):
             method = getattr(self, class_method)
             self.rules[class_method] = method
             self.rules_context[class_method] = copy.deepcopy(self.DEFAULT_RULE_CONTEXT)
-
+            self.rules_context[class_method]["name"] = class_method
             rule_data = getattr(method, "data", None)
             if rule_data:
                 rule_data = RuleData(**rule_data)
