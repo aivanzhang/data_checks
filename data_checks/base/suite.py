@@ -21,8 +21,8 @@ class Suite(SuiteBase):
         self._internal = {
             "suite_model": None,
             "suite_execution_model": None,
-            "dataset": self.dataset(),
-            "checks_config": self.checks_config(),
+            "dataset": None,
+            "checks_config": None,
         }
 
     @classmethod
@@ -103,6 +103,8 @@ class Suite(SuiteBase):
         """
         Run before each check
         """
+        self._internal["dataset"] = self.dataset()
+        self._internal["checks_config"] = self.checks_config()
         check._update_from_suite_internals(self._internal)
 
     def run(self, check_tags: Optional[Iterable] = None):
