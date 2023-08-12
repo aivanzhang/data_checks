@@ -16,12 +16,12 @@ class DataSuite(Suite):
         Overrides for check parameters. Dictionary should be in the following format:
         {
             "CheckClass": {
-                rule_1: {
+                "rule_1": {
                     "param1": value1,
                     "param2": value2,
                     ...
                 },
-                rule_2: {
+                "rule_2": {
                     "param1": value1,
                     "param2": value2,
                     ...
