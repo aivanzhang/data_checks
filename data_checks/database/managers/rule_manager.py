@@ -12,16 +12,18 @@ class RuleManager(BaseManager):
         readable_name: Optional[str] = None,
         description: Optional[str] = None,
         severity: float = 0.0,
+        schedule: Optional[str] = None,
         tags: list[str] = [],
         executions: list["RuleExecution"] = [],
     ) -> Rule:
         new_rule = Rule.create(
             name=name,
+            code=code,
             readable_name=readable_name,
             description=description,
-            code=code,
-            tags=tags,
             severity=severity,
+            schedule=schedule,
+            tags=tags,
             executions=executions,
         )
         with session_scope() as session:

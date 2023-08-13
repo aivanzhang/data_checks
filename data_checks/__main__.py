@@ -34,6 +34,15 @@ parser.add_argument(
     default=False,
 )
 
+parser.add_argument(
+    "--scheduling",
+    "-sc",
+    action="store_true",
+    help="Runs the suites in schedule mode. Suites don't execute checks, but instead schedule them.",
+    default=False,
+)
+
+
 args = parser.parse_args()
 
 suites_to_run = deepcopy(data_suite_registry.suites)
@@ -44,16 +53,21 @@ if len(args.exclude) > 0:
     for suite_name in args.exclude:
         del suites_to_run[suite_name]
 
+
 if args.suite is not None:
-    print(f"Running {args.suite}")
+    print(f"{'Scheduling' if args.scheduling else 'Running'} {args.suite}")
     data_suite_registry[args.suite]().run()
 else:
-    print(f"Running the following data suites: {list(suites_to_run.keys())}")
+    print(
+        f"{'Scheduling' if args.scheduling else 'Running'} the following data suites: {list(suites_to_run.keys())}"
+    )
     if args.exec_async:
-        run_suites_async(list(suites_to_run.values()))
+        run_suites_async(
+            list(suites_to_run.values()), should_schedule_runs=args.scheduling
+        )
     else:
         count = 1
         for suite_name, suite in suites_to_run.items():
             print(f"[{count}/{len(suites_to_run)} Suites] {suite_name}")
-            suite().run()
+            suite(should_schedule_runs=args.scheduling).run()
             count += 1

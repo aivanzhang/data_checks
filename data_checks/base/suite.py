@@ -1,5 +1,4 @@
 import asyncio
-import copy
 from typing import Iterable, Optional, Awaitable
 from data_checks.base.check import Check
 from data_checks.base.dataset import Dataset
@@ -15,6 +14,7 @@ class Suite(SuiteBase):
         name: Optional[str] = None,
         description: Optional[str] = None,
         check_rule_tags: dict[str, Iterable] = {},
+        should_schedule_runs: bool = False,
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
@@ -25,6 +25,7 @@ class Suite(SuiteBase):
             "dataset": None,
             "checks_config": None,
         }
+        self.should_schedule_runs = should_schedule_runs
 
     @classmethod
     def dataset(cls) -> Dataset | None:
@@ -71,20 +72,29 @@ class Suite(SuiteBase):
         """
         raise NotImplementedError
 
-    @classmethod
-    def get_checks(cls) -> list[Check]:
+    def get_checks(self) -> list[Check]:
         checks: list[Check] = []
-        checks_overrides = cls.checks_overrides()
-        for check in cls.checks():
+        checks_overrides = self.checks_overrides()
+        for check in self.checks():
             overrides = {}
             if checks_overrides is not None:
                 overrides = checks_overrides.get(
                     check if isinstance(check, str) else check.__name__, {}
                 )
             if isinstance(check, str):
-                checks.append(data_check_registry[check](rules_params=overrides))
+                checks.append(
+                    data_check_registry[check](
+                        rules_params=overrides,
+                        should_schedule_runs=self.should_schedule_runs,
+                    )
+                )
             elif issubclass(check, Check):
-                checks.append(check(rules_params=overrides))
+                checks.append(
+                    check(
+                        rules_params=overrides,
+                        should_schedule_runs=self.should_schedule_runs,
+                    )
+                )
 
         return checks
 
@@ -110,6 +120,8 @@ class Suite(SuiteBase):
             description=self.description,
             code=class_utils.get_class_code(self.__class__),
         )
+        if self.should_schedule_runs:
+            return
         self._internal[
             "suite_execution_model"
         ] = SuiteExecutionManager.create_suite_execution(

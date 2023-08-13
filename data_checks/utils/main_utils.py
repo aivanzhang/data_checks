@@ -4,13 +4,13 @@ This module contains utility functions for running data checks and used in the _
 from data_checks.data_suite import DataSuite
 
 
-def run_suites_async(suites: list[type[DataSuite]]):
+def run_suites_async(suites: list[type[DataSuite]], should_schedule_runs: bool = False):
     import asyncio
 
     loop = asyncio.get_event_loop()
 
     async def run_suite_async(index: int, suite: type[DataSuite]):
-        suite_obj = suite()
+        suite_obj = suite(should_schedule_runs=should_schedule_runs)
         print(f"[{index}/{len(suites)} Suites] {suite_obj.name}")
         await suite_obj.run_async()
 
