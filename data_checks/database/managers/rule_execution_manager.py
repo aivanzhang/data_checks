@@ -11,7 +11,7 @@ class RuleExecutionManager(BaseManager):
 
     @staticmethod
     def create_rule_execution(
-        rule: Rule,
+        main_model: Rule,
         status: Optional[str] = None,
         params: Optional[str] = None,
         logs: Optional[str] = None,
@@ -19,7 +19,7 @@ class RuleExecutionManager(BaseManager):
         exception: Optional[str] = None,
     ) -> RuleExecution:
         new_execution = RuleExecution.create(
-            rule=rule,
+            main_model=main_model,
             status=status,
             params=params,
             logs=logs,

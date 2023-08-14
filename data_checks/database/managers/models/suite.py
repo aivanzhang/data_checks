@@ -1,26 +1,21 @@
 from typing import List
-import datetime
-from sqlalchemy import String, UnicodeText, ARRAY, DateTime
+from sqlalchemy import String, UnicodeText, ARRAY
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from data_checks.database.managers.models.classes import Base, Rule, SuiteExecution
+from data_checks.database.managers.models.mixins import MainMixin
 
 
-class Suite(Base):
+class Suite(Base, MainMixin):
     __tablename__ = "suites"
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    name: Mapped[str] = mapped_column(String(255))
-    readable_name: Mapped[str] = mapped_column(String(255), nullable=True)
-    description: Mapped[str] = mapped_column(String(1024), nullable=True)
     excluded_check_tags: Mapped[List[str]] = mapped_column(
         ARRAY(String(255)), default=[]
     )
     code: Mapped[str] = mapped_column(UnicodeText())
-    created_at: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), default=datetime.datetime.utcnow()
-    )
 
     rules: Mapped[List["Rule"]] = relationship(back_populates="suite")
-    executions: Mapped[List["SuiteExecution"]] = relationship(back_populates="suite")
+    executions: Mapped[List["SuiteExecution"]] = relationship(
+        back_populates="main_model"
+    )
 
     def __repr__(self) -> str:
         return (

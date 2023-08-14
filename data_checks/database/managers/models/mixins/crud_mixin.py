@@ -1,7 +1,7 @@
 from data_checks.database.utils.session_utils import session_scope
 
 
-class CRUDMixin(object):
+class CRUDMixin:
     @classmethod
     def create(cls, **kwargs):
         instance = cls(**kwargs)

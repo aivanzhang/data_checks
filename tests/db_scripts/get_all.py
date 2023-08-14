@@ -10,8 +10,11 @@ for model in Base.__subclasses__():
                 for key in record.__dict__
                 if not key.startswith("_") and not key == "code"
             }
-            print(record_dict)
+            # print(record_dict)
             if (model.__name__ == "Suite" or model.__name__ == "Check") and hasattr(
                 record, "rules"
             ):
                 print(record.rules)
+
+            if hasattr(record, "executions"):
+                print(record.executions)

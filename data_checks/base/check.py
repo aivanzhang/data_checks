@@ -227,7 +227,7 @@ class Check(CheckBase, MetadataMixin):
         self._internal[
             "check_execution_model"
         ] = CheckExecutionManager.create_check_execution(
-            check=self._internal["check_model"], status="running"
+            main_model=self._internal["check_model"], status="running"
         )
 
     def before(self, rule: str, params: FunctionArgs) -> int | None:
@@ -246,7 +246,7 @@ class Check(CheckBase, MetadataMixin):
         if self.should_schedule_runs:
             return None
         new_rule_execution = RuleExecutionManager.create_rule_execution(
-            rule=new_rule,
+            main_model=new_rule,
             status="running",
             params=json.dumps(params, default=str),
         )

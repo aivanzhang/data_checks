@@ -11,11 +11,11 @@ class SuiteExecutionManager(BaseManager):
 
     @staticmethod
     def create_suite_execution(
-        suite: Suite,
+        main_model: Suite,
         status: Optional[str] = None,
     ) -> SuiteExecution:
         new_execution = SuiteExecution.create(
-            suite=suite,
+            main_model=main_model,
             status=status,
         )
         with session_scope() as session:

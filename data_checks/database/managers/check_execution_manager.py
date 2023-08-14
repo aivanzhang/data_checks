@@ -11,11 +11,11 @@ class CheckExecutionManager(BaseManager):
 
     @staticmethod
     def create_check_execution(
-        check: Check,
+        main_model: Check,
         status: Optional[str] = None,
     ) -> CheckExecution:
         new_execution = CheckExecution.create(
-            check=check,
+            main_model=main_model,
             status=status,
         )
         with session_scope() as session:
