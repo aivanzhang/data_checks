@@ -10,11 +10,10 @@ from data_checks.database.utils.database_utils import generate_update_object
 
 
 class RuleExecutionManager(BaseManager, ExecutionManagerMixin):
-    model: type[RuleExecution] = RuleExecution
+    model = RuleExecution
 
-    @classmethod
+    @staticmethod
     def create_execution(
-        cls,
         main_model: Rule,
         status: Optional[str] = None,
         params: Optional[str] = None,
@@ -34,9 +33,8 @@ class RuleExecutionManager(BaseManager, ExecutionManagerMixin):
             session.add(new_execution)
         return new_execution
 
-    @classmethod
+    @staticmethod
     def update_execution(
-        cls,
         execution_id: int,
         finished_at: datetime = datetime.now(),
         status: Optional[str] = None,
