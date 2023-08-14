@@ -1,20 +1,20 @@
 from sqlalchemy import func
-from data_checks.database.managers.models.mixins import ExecutionMixin
+from data_checks.database.managers.models.mixins import MainMixin
 from data_checks.database.utils.session_utils import session_scope
 
 
-class ExecutionManagerMixin:
-    model: type[ExecutionMixin]
+class MainManagerMixin:
+    model: type[MainMixin]
 
     @classmethod
-    def latest(cls) -> list[ExecutionMixin]:
+    def latest(cls) -> list[MainMixin]:
         with session_scope() as session:
             subquery = (
                 session.query(
-                    cls.model.main_id,
+                    cls.model.name,
                     func.max(cls.model.created_at).label("max_created_at"),
                 )
-                .group_by(cls.model.main_id)
+                .group_by(cls.model.name)
                 .subquery()
             )
 
@@ -22,7 +22,7 @@ class ExecutionManagerMixin:
                 session.query(cls.model)
                 .join(
                     subquery,
-                    (cls.model.main_id == subquery.c.name)
+                    (cls.model.name == subquery.c.name)
                     & (cls.model.created_at == subquery.c.max_created_at),
                 )
                 .all()
