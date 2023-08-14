@@ -1,9 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from data_checks.database.managers.base_manager import BaseManager
-from data_checks.database.managers.mixins.execution_manager_mixins import (
-    ExecutionManagerMixin,
-)
+from data_checks.database.managers.mixins import ExecutionManagerMixin
 from data_checks.database.managers.models import Check, CheckExecution
 from data_checks.database.utils.session_utils import session_scope
 from data_checks.database.utils.database_utils import generate_update_object
