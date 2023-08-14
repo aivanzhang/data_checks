@@ -124,7 +124,7 @@ class Suite(SuiteBase):
             return
         self._internal[
             "suite_execution_model"
-        ] = SuiteExecutionManager.create_suite_execution(
+        ] = SuiteExecutionManager.create_execution(
             main_model=self._internal["suite_model"],
             status="running",
         )
