@@ -7,6 +7,8 @@ from data_checks.database.utils.database_utils import generate_update_object
 
 
 class CheckExecutionManager(BaseManager):
+    model = CheckExecution
+
     @staticmethod
     def create_check_execution(
         check: Check,

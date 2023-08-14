@@ -5,6 +5,8 @@ from data_checks.database.utils.session_utils import session_scope
 
 
 class CheckManager(BaseManager):
+    model = Check
+
     @staticmethod
     def create_check(
         name: str,

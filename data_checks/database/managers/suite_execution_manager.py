@@ -7,6 +7,8 @@ from data_checks.database.utils.database_utils import generate_update_object
 
 
 class SuiteExecutionManager(BaseManager):
+    model = SuiteExecution
+
     @staticmethod
     def create_suite_execution(
         suite: Suite,

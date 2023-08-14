@@ -5,6 +5,8 @@ from data_checks.database.utils.session_utils import session_scope
 
 
 class RuleManager(BaseManager):
+    model = Rule
+
     @staticmethod
     def create_rule(
         name: str,

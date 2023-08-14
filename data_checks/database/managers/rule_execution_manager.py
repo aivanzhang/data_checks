@@ -7,6 +7,8 @@ from data_checks.database.utils.database_utils import generate_update_object
 
 
 class RuleExecutionManager(BaseManager):
+    model = RuleExecution
+
     @staticmethod
     def create_rule_execution(
         rule: Rule,

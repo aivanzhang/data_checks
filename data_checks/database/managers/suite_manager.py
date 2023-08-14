@@ -5,6 +5,8 @@ from data_checks.database.utils.session_utils import session_scope
 
 
 class SuiteManager(BaseManager):
+    model = Suite
+
     @staticmethod
     def create_suite(
         name: str,
