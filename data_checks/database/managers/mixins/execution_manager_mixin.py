@@ -22,12 +22,10 @@ class ExecutionManagerMixin:
                 session.query(cls.model)
                 .join(
                     subquery,
-                    (cls.model.main_id == subquery.c.name)
+                    (cls.model.main_id == subquery.c.main_id)
                     & (cls.model.created_at == subquery.c.max_created_at),
                 )
                 .all()
             )
 
-        print(latest_items)
-
-        return latest_items
+            return latest_items

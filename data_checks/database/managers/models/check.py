@@ -18,6 +18,4 @@ class Check(Base, MainMixin):
     )
 
     def __repr__(self) -> str:
-        return (
-            f"Check(id={self.id!r}, name={self.name!r}, executions={self.executions!r})"
-        )
+        return f"Check(id={self.id!r}, name={self.name!r})"

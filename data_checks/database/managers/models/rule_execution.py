@@ -13,4 +13,4 @@ class RuleExecution(Base, ExecutionMixin):
     exception = mapped_column(UnicodeText(), nullable=True)
 
     def __repr__(self) -> str:
-        return f"RuleExecution(id={self.id!r}, check={self.main_model!r})"
+        return f"RuleExecution(id={self.id!r})"

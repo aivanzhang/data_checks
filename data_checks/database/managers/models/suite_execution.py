@@ -6,4 +6,4 @@ class SuiteExecution(Base, ExecutionMixin):
     __tablename__ = "suite_executions"
 
     def __repr__(self) -> str:
-        return f"SuiteExecution(id={self.id!r}, check={self.main_model!r})"
+        return f"SuiteExecution(id={self.id!r})"

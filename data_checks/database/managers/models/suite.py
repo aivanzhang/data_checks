@@ -18,6 +18,4 @@ class Suite(Base, MainMixin):
     )
 
     def __repr__(self) -> str:
-        return (
-            f"Suite(id={self.id!r}, name={self.name!r}, executions={self.executions!r})"
-        )
+        return f"Suite(id={self.id!r}, name={self.name!r})"

@@ -28,6 +28,4 @@ class MainManagerMixin:
                 .all()
             )
 
-        print(latest_items)
-
         return latest_items

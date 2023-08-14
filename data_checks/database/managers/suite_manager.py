@@ -1,10 +1,11 @@
 from typing import Optional
 from data_checks.database.managers.base_manager import BaseManager
+from data_checks.database.managers.mixins import MainManagerMixin
 from data_checks.database.managers.models import Rule, Suite, SuiteExecution
 from data_checks.database.utils.session_utils import session_scope
 
 
-class SuiteManager(BaseManager):
+class SuiteManager(BaseManager, MainManagerMixin):
     model = Suite
 
     @staticmethod

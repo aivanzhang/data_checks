@@ -6,4 +6,4 @@ class CheckExecution(Base, ExecutionMixin):
     __tablename__ = "check_executions"
 
     def __repr__(self) -> str:
-        return f"CheckExecution(id={self.id!r}, check={self.main_model!r})"
+        return f"CheckExecution(id={self.id!r})"
