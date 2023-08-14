@@ -2,6 +2,7 @@ import argparse
 from copy import deepcopy
 from data_checks.conf.data_suite_registry import data_suite_registry
 from data_checks.utils.main_utils import run_suites_async
+from data_checks.utils.scheduling_utils import deploy_scheduled_suites
 
 parser = argparse.ArgumentParser(
     prog="python -m data_checks", description="Run a project's data checks."
@@ -42,6 +43,13 @@ parser.add_argument(
     default=False,
 )
 
+parser.add_argument(
+    "--deploy",
+    "-d",
+    action="store_true",
+    help="Deploy the existing scheduled data checks.",
+    default=False,
+)
 
 args = parser.parse_args()
 
@@ -61,13 +69,16 @@ else:
     print(
         f"{'Scheduling' if args.scheduling else 'Running'} the following data suites: {list(suites_to_run.keys())}"
     )
-    if args.exec_async:
-        run_suites_async(
-            list(suites_to_run.values()), should_schedule_runs=args.scheduling
-        )
+    if not args.deploy or args.scheduling:
+        if args.exec_async:
+            run_suites_async(
+                list(suites_to_run.values()), should_schedule_runs=args.scheduling
+            )
+        else:
+            count = 1
+            for suite_name, suite in suites_to_run.items():
+                print(f"[{count}/{len(suites_to_run)} Suites] {suite_name}")
+                suite(should_schedule_runs=args.scheduling).run()
+                count += 1
     else:
-        count = 1
-        for suite_name, suite in suites_to_run.items():
-            print(f"[{count}/{len(suites_to_run)} Suites] {suite_name}")
-            suite(should_schedule_runs=args.scheduling).run()
-            count += 1
+        deploy_scheduled_suites()
