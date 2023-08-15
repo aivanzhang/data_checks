@@ -12,21 +12,15 @@ class RuleManager(BaseManager, MainManagerMixin):
     def create_rule(
         name: str,
         code: str,
-        readable_name: Optional[str] = None,
-        description: Optional[str] = None,
         severity: float = 0.0,
         schedule: Optional[str] = None,
-        tags: list[str] = [],
         executions: list["RuleExecution"] = [],
     ) -> Rule:
         new_rule = Rule.create(
             name=name,
             code=code,
-            readable_name=readable_name,
-            description=description,
             severity=severity,
             schedule=schedule,
-            tags=tags,
             executions=executions,
         )
         with session_scope() as session:

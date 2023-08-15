@@ -7,6 +7,8 @@ from data_checks.database.managers.models.mixins import MainMixin
 
 class Suite(Base, MainMixin):
     __tablename__ = "suites"
+
+    description: Mapped[str] = mapped_column(String(1024), nullable=True)
     excluded_check_tags: Mapped[List[str]] = mapped_column(
         ARRAY(String(255)), default=[]
     )

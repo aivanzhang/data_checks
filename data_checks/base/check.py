@@ -1,17 +1,12 @@
 """
 Check class
 """
-import traceback
-import time
-import asyncio
 import copy
-import json
 import sys
-from typing import Iterable, Optional, Callable, Awaitable
-from io import StringIO
+from typing import Iterable, Optional, Callable
+from multiprocessing import Process
 from data_checks.base.exceptions import DataCheckException
 from data_checks.base.check_types import FunctionArgs, CheckBase
-from data_checks.base.rule_types import RuleData
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
 from data_checks.base.mixins.metadata_mixin import MetadataMixin
@@ -53,7 +48,6 @@ class Check(CheckBase, MetadataMixin):
         self.set_metadata_dir(metadata_dir)
         self.actions = [DatabaseAction]
         self.rules = dict()
-        self.rules_context = dict()
         self.rules_params = rules_params
         self.schedule = {
             "schedule": self.check_config().get("schedule", "0 8 * * *"),
@@ -101,19 +95,6 @@ class Check(CheckBase, MetadataMixin):
             # Ensure all rules are stored in the rules dict
             method = getattr(self, class_method)
             self.rules[class_method] = method
-            self.rules_context[class_method] = copy.deepcopy(self.DEFAULT_RULE_CONTEXT)
-            self.rules_context[class_method]["name"] = class_method
-            rule_data = getattr(method, "data", None)
-            if rule_data:
-                rule_data = RuleData(**rule_data)
-                self.rules_context[class_method].update(rule_data)
-                # Ensure all tags are stored in the rules_context dict
-                rule_tags = rule_data["tags"]
-                self.rules_context[class_method]["tags"] = rule_tags
-                if getattr(method, "should_prefix_tags", False):
-                    self.rules_context[class_method]["tags"] = {
-                        f"{self.name}.{tag}" for tag in rule_tags
-                    }
 
     def _update_from_suite_internals(
         self, suite_internals: SuiteInternal, schedule_overrides: Optional[dict] = None
@@ -176,22 +157,13 @@ class Check(CheckBase, MetadataMixin):
 
             return new_params
 
-    def get_rules_to_run(self, tags: Optional[Iterable]) -> set:
+    def get_rules_to_run(self) -> set[str]:
         """
-        Find rules by tags and exclude rules
+        Find rules and exclude certain rules
         """
-
-        included_rules = [
-            rule for rule in self.rules.keys() if rule not in self.excluded_rules
-        ]
-
-        if tags is None:
-            return set(included_rules)
-        return {
-            rule
-            for rule in included_rules
-            if set(tags).intersection(self.rules_context[rule]["tags"])
-        }
+        return set(
+            [rule for rule in self.rules.keys() if rule not in self.excluded_rules]
+        )
 
     def _exec_actions(self, action_type: str, context: dict, **kwargs):
         """
@@ -254,17 +226,25 @@ class Check(CheckBase, MetadataMixin):
         for params in rules_params:
             self._exec_rule(rule, rule_func, params)
 
-    def run_async(self, rule: str):
+    def run_async(self, rule: str, wait_for_completion=True) -> list[Process]:
         """
         Asynchronously runs a rule once with one set of params or multiple times with multiple sets of params
         """
         rule_func = self.rules[rule]
         rules_params = self._get_rules_params(rule)
 
+        running_rule_processes = []
         for params in rules_params:
-            yield asyncio.get_event_loop().run_in_executor(
-                None, self._exec_rule, rule, rule_func, params
-            )
+            process = Process(target=self._exec_rule, args=(rule, rule_func, params))
+            process.start()
+            running_rule_processes.append(process)
+
+        if wait_for_completion:
+            for process in running_rule_processes:
+                process.join()
+            return []
+        else:
+            return running_rule_processes
 
     def after(self, context: dict):
         """
@@ -284,50 +264,41 @@ class Check(CheckBase, MetadataMixin):
         """
         self._exec_actions("on_failure", context)
 
-    def run_all(self, tags: Optional[Iterable] = None):
+    def run_all(self):
         """
         Run all the rules in the check
-        Parameters:
-            tags: only run rules with these tags will be run
         """
         self.setup()
 
-        rules_to_run = self.get_rules_to_run(tags)
+        rules_to_run = self.get_rules_to_run()
 
         for index, rule in enumerate(rules_to_run):
-            print(
-                f"\t[{index + 1}/{len(rules_to_run)} Rules] {self.rules_context[rule]['name']}"
-            )
-            start_time = time.time()
+            print(f"\t[{index + 1}/{len(rules_to_run)} Rules] {rule}")
             self.run(rule)
-            print(f"\t{time.time() - start_time:.2f} seconds")
 
         self.teardown()
 
-    def _generate_async_rule_runs(
-        self, tags: Optional[Iterable] = None
-    ) -> list[Awaitable]:
-        """
-        Generate a list of coroutines that can be awaited
-        """
-        return [
-            async_rule
-            for rule_name in self.get_rules_to_run(tags)
-            for async_rule in self.run_async(rule_name)
-        ]
-
-    async def run_all_async(self, tags: Optional[Iterable] = None, should_run=True):
+    def run_all_async(self, tags: Optional[Iterable] = None):
         """
         Run all the rules in the check asynchronously. Note that order of execution is not guaranteed (aside from setup and teardown).
         Parameters:
             tags: only run rules with these tags will be run
-            should_run: if False, will only generate async rules that can be awaited. Skips setup and teardown.
         """
-        if not should_run:
-            return self._generate_async_rule_runs(tags)
 
         self.setup()
-        await asyncio.gather(*self._generate_async_rule_runs(tags))
+        rules_to_run = self.get_rules_to_run()
+        running_rule_processes: list[tuple[str, list[Process]]] = []
+        for index, rule in enumerate(rules_to_run):
+            running_rule_processes.append(
+                (rule, self.run_async(rule, wait_for_completion=False))
+            )
+
+        for index, (rule, processes) in enumerate(running_rule_processes):
+            print(f"\t[{index + 1}/{len(rules_to_run)} Rules] {rule}")
+            for process in processes:
+                process.join()
+
+        # await asyncio.gather(*self._generate_async_rule_runs(tags))
         self.teardown()
 
     def teardown(self):

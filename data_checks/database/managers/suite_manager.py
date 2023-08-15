@@ -12,7 +12,6 @@ class SuiteManager(BaseManager, MainManagerMixin):
     def create_suite(
         name: str,
         code: str,
-        readable_name: Optional[str] = None,
         description: Optional[str] = None,
         excluded_check_tags: list[str] = [],
         rules: list["Rule"] = [],
@@ -20,7 +19,6 @@ class SuiteManager(BaseManager, MainManagerMixin):
     ) -> Suite:
         new_suite = Suite.create(
             name=name,
-            readable_name=readable_name,
             description=description,
             code=code,
             rules=rules,

@@ -8,6 +8,7 @@ from data_checks.database.managers.models.mixins import MainMixin
 class Check(Base, MainMixin):
     __tablename__ = "checks"
 
+    description: Mapped[str] = mapped_column(String(1024), nullable=True)
     code: Mapped[str] = mapped_column(UnicodeText())
     tags: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])
     excluded_rules: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])

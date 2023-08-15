@@ -12,7 +12,6 @@ class CheckManager(BaseManager, MainManagerMixin):
     def create_check(
         name: str,
         code: str,
-        readable_name: Optional[str] = None,
         description: Optional[str] = None,
         tags: list[str] = [],
         excluded_rules: list[str] = [],
@@ -21,7 +20,6 @@ class CheckManager(BaseManager, MainManagerMixin):
     ) -> Check:
         new_check = Check.create(
             name=name,
-            readable_name=readable_name,
             description=description,
             code=code,
             tags=tags,

@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import TypedDict, Dict, Callable, Optional, Union
 from io import StringIO
-from data_checks.base.rule_types import RuleContext
-from data_checks.base.constants import DEFAULT_RULE_CONTEXT
 from data_checks.base.dataset import Dataset
 from data_checks.base.actions.action_types import ActionBase
 from data_checks.database.managers import models
@@ -44,9 +42,6 @@ class CheckBase(ABC):
     Base class for all checks
     """
 
-    # Default rule context for rules missing fields
-    DEFAULT_RULE_CONTEXT: RuleContext = DEFAULT_RULE_CONTEXT
-
     _internal: CheckInternal
     name: str
     dataset: Dataset
@@ -63,9 +58,6 @@ class CheckBase(ABC):
         | dict
         | tuple,
     ]  # Stores the params for each rule. If params is a list of params then run the rule multiple times with each param element
-    rules_context: Dict[
-        str, RuleContext
-    ]  # Stores any metadata generated when a rule runs
     excluded_rules: set
     schedule: CheckSchedule
     tags: set

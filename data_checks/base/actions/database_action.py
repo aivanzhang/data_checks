@@ -55,9 +55,7 @@ class DatabaseAction(CheckAction):
         params = context["params"]
 
         new_rule = RuleManager.create_rule(
-            name=check.rules_context[rule]["name"],
-            description=check.rules_context[rule]["description"],
-            tags=list(check.rules_context[rule]["tags"]),
+            name=rule,
             code=class_utils.get_function_code(check, rule),
             schedule=check.schedule["rule_schedules"][rule]
             if rule in check.schedule["rule_schedules"]
