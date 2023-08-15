@@ -88,34 +88,6 @@ class Check(CheckBase, MetadataMixin):
         """
         return {}
 
-    def _set_rules(self, rule_methods: list[str]):
-        """
-        Internal: Set the rules for the check
-        """
-        for class_method in rule_methods:
-            # Ensure all rules are stored in the rules dict
-            method = getattr(self, class_method)
-            self.rules[class_method] = method
-
-    def _update_from_suite_internals(
-        self, suite_internals: SuiteInternal, schedule_overrides: Optional[dict] = None
-    ):
-        """
-        Internal: Set the suite model for the check
-        """
-        self._internal["suite_model"] = suite_internals["suite_model"]
-        if suite_internals["dataset"] is not None:
-            self.dataset = suite_internals["dataset"]
-        if suite_internals["checks_config"] is not None:
-            self.config = suite_internals["checks_config"]
-        if schedule_overrides is not None:
-            if isinstance(schedule_overrides, str):
-                self.schedule["schedule"] = schedule_overrides
-            elif isinstance(schedule_overrides, dict):
-                if self.schedule["rule_schedules"] is None:
-                    self.schedule["rule_schedules"] = dict()
-                self.schedule["rule_schedules"].update(schedule_overrides)
-
     def only_run_specified_rules(self):
         """
         Appends to self.exclude_rules so that only rules in self.rules_params.keys() are run
@@ -130,34 +102,6 @@ class Check(CheckBase, MetadataMixin):
         """
         self.dataset = dataset
 
-    def _get_rules_params(self, rule: str) -> list[FunctionArgs]:
-        """
-        Get the params for a rule
-        """
-        if rule not in self.rules_params:
-            return [
-                {
-                    "args": tuple(),
-                    "kwargs": dict(),
-                }
-            ]
-        else:
-            params = self.rules_params[rule]
-
-            if callable(params):
-                params = params()
-
-            if not isinstance(params, list):
-                params = [check_utils.as_func_args(params)]
-
-            new_params = []
-            for param in params:
-                if "args" not in param or "kwargs" not in param:
-                    param = check_utils.as_func_args(param)
-                new_params.append(param)
-
-            return new_params
-
     def get_rules_to_run(self) -> set[str]:
         """
         Find rules and exclude certain rules
@@ -165,16 +109,6 @@ class Check(CheckBase, MetadataMixin):
         return set(
             [rule for rule in self.rules.keys() if rule not in self.excluded_rules]
         )
-
-    def _exec_actions(self, action_type: str, context: dict, **kwargs):
-        """
-        Execute an action
-        """
-        context[action_type] = {}
-        for action in self.actions:
-            action_func = getattr(action, action_type, None)
-            if action_func is not None:
-                action_func(self, context, **kwargs)
 
     def setup(self):
         """
@@ -310,3 +244,69 @@ class Check(CheckBase, MetadataMixin):
 
     def __str__(self):
         return self.name
+
+    def _set_rules(self, rule_methods: list[str]):
+        """
+        Internal: Set the rules for the check
+        """
+        for class_method in rule_methods:
+            # Ensure all rules are stored in the rules dict
+            method = getattr(self, class_method)
+            self.rules[class_method] = method
+
+    def _update_from_suite_internals(
+        self, suite_internals: SuiteInternal, schedule_overrides: Optional[dict] = None
+    ):
+        """
+        Internal: Set the suite model for the check
+        """
+        self._internal["suite_model"] = suite_internals["suite_model"]
+        if suite_internals["dataset"] is not None:
+            self.dataset = suite_internals["dataset"]
+        if suite_internals["checks_config"] is not None:
+            self.config = suite_internals["checks_config"]
+        if schedule_overrides is not None:
+            if isinstance(schedule_overrides, str):
+                self.schedule["schedule"] = schedule_overrides
+            elif isinstance(schedule_overrides, dict):
+                if self.schedule["rule_schedules"] is None:
+                    self.schedule["rule_schedules"] = dict()
+                self.schedule["rule_schedules"].update(schedule_overrides)
+
+    def _get_rules_params(self, rule: str) -> list[FunctionArgs]:
+        """
+        Get the params for a rule
+        """
+        if rule not in self.rules_params:
+            return [
+                {
+                    "args": tuple(),
+                    "kwargs": dict(),
+                }
+            ]
+        else:
+            params = self.rules_params[rule]
+
+            if callable(params):
+                params = params()
+
+            if not isinstance(params, list):
+                params = [check_utils.as_func_args(params)]
+
+            new_params = []
+            for param in params:
+                if "args" not in param or "kwargs" not in param:
+                    param = check_utils.as_func_args(param)
+                new_params.append(param)
+
+            return new_params
+
+    def _exec_actions(self, action_type: str, context: dict, **kwargs):
+        """
+        Execute an action
+        """
+        context[action_type] = {}
+        for action in self.actions:
+            action_func = getattr(action, action_type, None)
+            if action_func is not None:
+                action_func(self, context, **kwargs)

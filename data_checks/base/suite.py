@@ -151,20 +151,6 @@ class Suite(SuiteBase):
 
         self.teardown()
 
-    def _exec_async_check(self, check: Check):
-        """
-        Execute a check
-        """
-        self.before(check)
-        try:
-            start_time = time.time()
-            check.run_all_async()
-            print(f"{check} finished in {time.time() - start_time} seconds")
-            self.on_success(check)
-        except Exception as e:
-            self.on_failure(e)
-        self.after(check)
-
     def run_async(self, check_tags: Optional[Iterable] = None):
         """
         Run all checks in the suite asynchronously. Note that order of execution is not guaranteed (aside from setup and teardown).
@@ -225,3 +211,17 @@ class Suite(SuiteBase):
         for check in self.get_checks():
             suite_metadata[check.name] = check.metadata.copy()
         return suite_metadata
+
+    def _exec_async_check(self, check: Check):
+        """
+        Execute a check
+        """
+        self.before(check)
+        try:
+            start_time = time.time()
+            check.run_all_async()
+            print(f"{check} finished in {time.time() - start_time} seconds")
+            self.on_success(check)
+        except Exception as e:
+            self.on_failure(e)
+        self.after(check)
