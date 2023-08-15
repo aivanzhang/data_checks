@@ -10,7 +10,6 @@ class SuiteBase(ABC):
     verbose: bool
     name: str
     description: str
-    should_schedule_runs: bool  # Whether the suite should just schedule runs and not run them
     check_rule_tags: Dict[
         str, Iterable
     ]  # Tags to be used to filter which rules are run in each check

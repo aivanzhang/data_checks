@@ -36,7 +36,6 @@ class Check(CheckBase, MetadataMixin):
         verbose=False,
         dataset: Optional[Dataset] = None,
         only_run_specified_rules=False,
-        should_schedule_runs=False,
     ):
         """
         Initialize a check object
@@ -65,7 +64,6 @@ class Check(CheckBase, MetadataMixin):
             "schedule": self.check_config().get("schedule", "0 8 * * *"),
             "rule_schedules": self.check_config().get("rule_schedules", {}),
         }
-        self.should_schedule_runs = should_schedule_runs
 
         self._set_rules(self.defined_rules())
         if only_run_specified_rules:
@@ -222,8 +220,6 @@ class Check(CheckBase, MetadataMixin):
             excluded_rules=list(self.excluded_rules),
             code=class_utils.get_class_code(self.__class__),
         )
-        if self.should_schedule_runs:
-            return None
         self._internal[
             "check_execution_model"
         ] = CheckExecutionManager.create_execution(
@@ -243,8 +239,6 @@ class Check(CheckBase, MetadataMixin):
             if rule in self.schedule["rule_schedules"]
             else self.schedule["schedule"],
         )
-        if self.should_schedule_runs:
-            return None
         new_rule_execution = RuleExecutionManager.create_execution(
             main_model=new_rule,
             status="running",

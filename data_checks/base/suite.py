@@ -14,7 +14,6 @@ class Suite(SuiteBase):
         name: Optional[str] = None,
         description: Optional[str] = None,
         check_rule_tags: dict[str, Iterable] = {},
-        should_schedule_runs: bool = False,
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
@@ -25,7 +24,6 @@ class Suite(SuiteBase):
             "dataset": None,
             "checks_config": None,
         }
-        self.should_schedule_runs = should_schedule_runs
 
     @classmethod
     def dataset(cls) -> Dataset | None:
@@ -85,14 +83,12 @@ class Suite(SuiteBase):
                 checks.append(
                     data_check_registry[check](
                         rules_params=overrides,
-                        should_schedule_runs=self.should_schedule_runs,
                     )
                 )
             elif issubclass(check, Check):
                 checks.append(
                     check(
                         rules_params=overrides,
-                        should_schedule_runs=self.should_schedule_runs,
                     )
                 )
 
@@ -120,8 +116,6 @@ class Suite(SuiteBase):
             description=self.description,
             code=class_utils.get_class_code(self.__class__),
         )
-        if self.should_schedule_runs:
-            return
         self._internal[
             "suite_execution_model"
         ] = SuiteExecutionManager.create_execution(

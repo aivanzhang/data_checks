@@ -51,7 +51,6 @@ class CheckBase(ABC):
     dataset: Dataset
     config: dict
     description: str
-    should_schedule_runs: bool  # Whether the check should just schedule runs and not run them
     rules: Dict[str, Callable[..., None]]  # Stores all the rules functions in the check
     rules_params: Dict[
         str,
