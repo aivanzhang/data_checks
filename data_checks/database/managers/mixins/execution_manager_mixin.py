@@ -18,7 +18,7 @@ class ExecutionManagerMixin:
                 .subquery()
             )
 
-            latest_items = (
+            return (
                 session.query(cls.model)
                 .join(
                     subquery,
@@ -27,5 +27,3 @@ class ExecutionManagerMixin:
                 )
                 .all()
             )
-
-            return latest_items

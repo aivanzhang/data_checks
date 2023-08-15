@@ -18,7 +18,7 @@ class MainManagerMixin:
                 .subquery()
             )
 
-            latest_items = (
+            return (
                 session.query(cls.model)
                 .join(
                     subquery,
@@ -28,4 +28,7 @@ class MainManagerMixin:
                 .all()
             )
 
-        return latest_items
+    @classmethod
+    def filter_by(cls, **kwargs) -> list[MainMixin]:
+        with session_scope() as session:
+            return session.query(cls.model).filter_by(**kwargs).all()
