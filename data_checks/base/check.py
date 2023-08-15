@@ -14,14 +14,9 @@ from data_checks.base.check_types import FunctionArgs, CheckBase
 from data_checks.base.rule_types import RuleData
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
-from data_checks.mixins.metadata_mixin import MetadataMixin
+from data_checks.base.mixins.metadata_mixin import MetadataMixin
 from data_checks.utils import class_utils, check_utils
-from data_checks.database import (
-    CheckManager,
-    CheckExecutionManager,
-    RuleManager,
-    RuleExecutionManager,
-)
+from data_checks.base.actions.database_action import DatabaseAction
 
 
 class Check(CheckBase, MetadataMixin):
@@ -56,7 +51,7 @@ class Check(CheckBase, MetadataMixin):
             "rule_execution_id_to_output": dict(),
         }
         self.set_metadata_dir(metadata_dir)
-
+        self.actions = [DatabaseAction]
         self.rules = dict()
         self.rules_context = dict()
         self.rules_params = rules_params
@@ -97,16 +92,6 @@ class Check(CheckBase, MetadataMixin):
         }
         """
         return {}
-
-    @staticmethod
-    def update_execution(type: str, execution_id: int | None, **kwargs):
-        """
-        Update the execution of a rule
-        """
-        if type == "rule" and execution_id:
-            RuleExecutionManager.update_execution(execution_id, **kwargs)
-        if type == "check" and execution_id:
-            CheckExecutionManager.update_execution(execution_id, **kwargs)
 
     def _set_rules(self, rule_methods: list[str]):
         """
@@ -208,58 +193,27 @@ class Check(CheckBase, MetadataMixin):
             if set(tags).intersection(self.rules_context[rule]["tags"])
         }
 
+    def _exec_actions(self, action_type: str, context: dict, **kwargs):
+        """
+        Execute an action
+        """
+        context[action_type] = {}
+        for action in self.actions:
+            action_func = getattr(action, action_type, None)
+            if action_func is not None:
+                action_func(self, context, **kwargs)
+
     def setup(self):
         """
-        One time setup for all rules in the check
+        Runs all the setup functions
         """
+        self._exec_actions("setup", {})
 
-        self._internal["check_model"] = CheckManager.create_check(
-            name=self.name,
-            description=self.description,
-            tags=list(self.tags),
-            excluded_rules=list(self.excluded_rules),
-            code=class_utils.get_class_code(self.__class__),
-        )
-        self._internal[
-            "check_execution_model"
-        ] = CheckExecutionManager.create_execution(
-            main_model=self._internal["check_model"], status="running"
-        )
-
-    def before(self, rule: str, params: FunctionArgs) -> int | None:
+    def before(self, context: dict):
         """
         Run before each rule. If None, the rule will not be run
         """
-        new_rule = RuleManager.create_rule(
-            name=self.rules_context[rule]["name"],
-            description=self.rules_context[rule]["description"],
-            tags=list(self.rules_context[rule]["tags"]),
-            code=class_utils.get_function_code(self, rule),
-            schedule=self.schedule["rule_schedules"][rule]
-            if rule in self.schedule["rule_schedules"]
-            else self.schedule["schedule"],
-        )
-        new_rule_execution = RuleExecutionManager.create_execution(
-            main_model=new_rule,
-            status="running",
-            params=json.dumps(params, default=str),
-        )
-
-        if self._internal["check_model"] is not None:
-            RuleManager.update_check_id(new_rule.id, self._internal["check_model"].id)
-
-        if self._internal["suite_model"] is not None:
-            RuleManager.update_suite_id(new_rule.id, self._internal["suite_model"].id)
-
-        self._internal["rule_models"][rule] = new_rule
-
-        rule_output = StringIO()
-        self._internal["rule_execution_id_to_output"][
-            new_rule_execution.id
-        ] = rule_output
-        sys.stdout = rule_output
-
-        return new_rule_execution.id
+        self._exec_actions("before", context)
 
     def _exec_rule(
         self, rule: str, rule_func: Callable[..., None], params: FunctionArgs
@@ -268,23 +222,25 @@ class Check(CheckBase, MetadataMixin):
         Execute a rule
         """
         rule_metadata = {"rule": rule, "params": params}
+        context = copy.deepcopy(rule_metadata)
         try:
-            exec_id = self.before(**rule_metadata)
-            if exec_id is None:
-                return
+            self.before(context)
             try:
                 rule_func(*params["args"], **params["kwargs"])
-                self.on_success(**rule_metadata, exec_id=exec_id)
+                self.on_success(context)
             except AssertionError as e:
                 print(e)
+                context["exception"] = DataCheckException.from_assertion_error(
+                    e, metadata=rule_metadata
+                )
                 self.on_failure(
-                    DataCheckException.from_assertion_error(e, metadata=rule_metadata),
-                    exec_id=exec_id,
+                    context,
                 )
             except DataCheckException as e:
                 print(e)
-                self.on_failure(e, exec_id=exec_id)
-            self.after(**rule_metadata, exec_id=exec_id)
+                context["exception"] = e
+                self.on_failure(context)
+            self.after(context)
         except Exception as e:
             sys.stdout = sys.__stdout__
             raise e
@@ -310,66 +266,23 @@ class Check(CheckBase, MetadataMixin):
                 None, self._exec_rule, rule, rule_func, params
             )
 
-    def after(self, rule: str, params: FunctionArgs, **kwargs):
+    def after(self, context: dict):
         """
         Runs after each rule
         """
-        logs = ""
-        if (
-            kwargs["exec_id"]
-            and self._internal["rule_execution_id_to_output"][kwargs["exec_id"]]
-        ):
-            logs = self._internal["rule_execution_id_to_output"][
-                kwargs["exec_id"]
-            ].getvalue()
-            sys.stdout = sys.__stdout__
-            if logs.strip() != "":
-                print(logs)
+        self._exec_actions("after", context)
 
-        self.update_execution(
-            type="rule",
-            execution_id=kwargs["exec_id"],
-            params=json.dumps(params, default=str),
-            logs=logs,
-        )
-
-    def on_success(self, rule: str, params: FunctionArgs, **kwargs):
+    def on_success(self, context: dict):
         """
         Called when a rule succeeds
         """
-        self.update_execution(
-            type="rule",
-            execution_id=kwargs["exec_id"],
-            status="success",
-            logs="",
-        )
+        self._exec_actions("on_success", context)
 
-    def on_failure(self, exception: DataCheckException, ignore_error=True, **kwargs):
+    def on_failure(self, context: dict):
         """
         Called when a rule fails
-        Parameters:
-            exception: the exception that was raised
-            ignore_error: if True, will not raise the exception and continue running
         """
-        self.update_execution(
-            type="rule",
-            execution_id=kwargs["exec_id"],
-            status="failure",
-            logs="",
-            traceback=traceback.format_tb(exception.exception.__traceback__)
-            if exception.exception
-            else None,
-            exception=exception.toJSON(),
-        )
-        if ignore_error:
-            return
-        if self._internal["check_execution_model"]:
-            self.update_execution(
-                type="check",
-                execution_id=self._internal["check_execution_model"].id,
-                status="failure",
-            )
-        raise exception
+        self._exec_actions("on_failure", context)
 
     def run_all(self, tags: Optional[Iterable] = None):
         """
@@ -421,13 +334,7 @@ class Check(CheckBase, MetadataMixin):
         """
         One time teardown after all rules are run
         """
-        check_execution = self._internal["check_execution_model"]
-
-        if check_execution:
-            CheckExecutionManager.update_execution(
-                check_execution.id,
-                status="success",
-            )
+        self._exec_actions("teardown", {})
 
     def __str__(self):
         return self.name

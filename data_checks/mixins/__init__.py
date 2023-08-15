@@ -1,1 +1,0 @@
-from data_checks.mixins.metadata_mixin import MetadataMixin

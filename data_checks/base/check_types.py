@@ -4,6 +4,7 @@ from io import StringIO
 from data_checks.base.rule_types import RuleContext
 from data_checks.base.constants import DEFAULT_RULE_CONTEXT
 from data_checks.base.dataset import Dataset
+from data_checks.base.actions.action_types import ActionBase
 from data_checks.database.managers import models
 
 
@@ -68,6 +69,7 @@ class CheckBase(ABC):
     excluded_rules: set
     schedule: CheckSchedule
     tags: set
+    actions: list[type[ActionBase]]
 
     verbose: bool
 
