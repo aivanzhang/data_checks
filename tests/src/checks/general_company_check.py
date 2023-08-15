@@ -1,5 +1,4 @@
 from data_checks.base.dataset import Dataset
-from data_checks.base.rule import rule
 from data_checks import DataCheck
 from hamcrest import assert_that, equal_to
 import pandas as pd
@@ -100,11 +99,7 @@ class GeneralCompanyTransactionCheck(DataCheck):
         #     f"Size of the payments dataframe has decreased in the last few days",
         # )
 
-    @rule(
-        name="Company Payments Size Increasing 2",
-        description="Size of the payments dataframe is increasing",
-    )
-    def company_payments_size_increasing_2(self, company_name, days=[2, 5]):
+    def company_payments_size_increasing_2(self, company_name="company_2", days=[2, 5]):
         # old_payments_df = pd.read_csv(
         #     os.path.dirname(os.path.realpath(__file__)) + "/old_payments.csv"
         # )
