@@ -1,7 +1,7 @@
 import argparse
 from copy import deepcopy
+from multiprocessing import Process
 from data_checks.conf.data_suite_registry import data_suite_registry
-from data_checks.utils.main_utils import run_suites_async
 
 parser = argparse.ArgumentParser(
     prog="python -m data_checks", description="Run a project's data checks."
@@ -65,9 +65,16 @@ if args.suite is not None:
     print("Running {args.suite}")
     data_suite_registry[args.suite]().run()
 else:
-    print(f"Running the following data suites: {', '.join(list(suites_to_run.keys()))}")
+    print(f"Running the following data suites: {','.join(list(suites_to_run.keys()))}")
     if getattr(args, "async"):
-        run_suites_async(list(suites_to_run.values()))
+        running_suite_processes = []
+        for suite_name, suite in suites_to_run.items():
+            print(f"ASYNC RUN {suite_name}")
+            process = Process(target=suite().run_async)
+            process.start()
+            running_suite_processes.append(process)
+        for process in running_suite_processes:
+            process.join()
     else:
         count = 1
         for suite_name, suite in suites_to_run.items():

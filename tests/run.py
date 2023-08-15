@@ -6,16 +6,17 @@ from data_checks.conf.data_check_registry import data_check_registry
 from data_checks.conf.data_suite_registry import data_suite_registry
 from data_checks.conf.settings import settings
 from tests.src.suites.consistency_suite import ConsistencySuite
+from tests.src.checks.general_company_check import GeneralCompanyTransactionCheck
 
 # from data_checks.base.dataset import Dataset
+from multiprocessing import freeze_support
 import pandas as pd
 import os
-from data_checks.utils import rule_utils
 
 
-print(data_suite_registry)
-print(settings)
-ConsistencySuite().run()
+# print(data_suite_registry)
+# print(settings)
+# ConsistencySuite().run()
 # asyncio.run(ConsistencySuite().run_async())
 # asyncio.run(
 #     GeneralCompanyTransactionCheck(
@@ -50,3 +51,6 @@ ConsistencySuite().run()
 #     ),
 # )
 # ).run_all()
+if __name__ == "__main__":
+    freeze_support()
+    GeneralCompanyTransactionCheck().run_all_async()

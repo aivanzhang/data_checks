@@ -1,5 +1,6 @@
-import asyncio
-from typing import Iterable, Optional, Awaitable
+from typing import Iterable, Optional
+import time
+from multiprocessing import Process
 from data_checks.base.check import Check
 from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
@@ -13,11 +14,9 @@ class Suite(SuiteBase):
         self,
         name: Optional[str] = None,
         description: Optional[str] = None,
-        check_rule_tags: dict[str, Iterable] = {},
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
-        self.check_rule_tags = check_rule_tags
         self._internal = {
             "suite_model": None,
             "suite_execution_model": None,
@@ -142,7 +141,9 @@ class Suite(SuiteBase):
             print(f"[{index + 1}/{len(checks_to_run)} Checks] {check}")
             self.before(check)
             try:
-                check.run_all(tags=self.check_rule_tags.get(check.name, None))
+                start_time = time.time()
+                check.run_all()
+                print(f"{check} finished in {time.time() - start_time} seconds")
                 self.on_success(check)
             except Exception as e:
                 self.on_failure(e)
@@ -150,48 +151,39 @@ class Suite(SuiteBase):
 
         self.teardown()
 
-    async def _exec_async_check(self, check: Check):
+    def _exec_async_check(self, check: Check):
         """
         Execute a check
         """
         self.before(check)
         try:
-            await check.run_all_async(tags=self.check_rule_tags.get(check.name, None))
+            start_time = time.time()
+            check.run_all_async()
+            print(f"{check} finished in {time.time() - start_time} seconds")
             self.on_success(check)
         except Exception as e:
             self.on_failure(e)
         self.after(check)
 
-    def _generate_async_check_runs(
-        self, check_tags: Optional[Iterable] = None
-    ) -> list[Awaitable]:
-        """
-        Generate a list of coroutines that can be awaited
-        """
-        return [
-            self._exec_async_check(check)
-            for check in self.get_checks_with_tags(check_tags)
-        ]
-
-    async def run_async(
-        self, check_tags: Optional[Iterable] = None, should_run: bool = True
-    ):
+    def run_async(self, check_tags: Optional[Iterable] = None):
         """
         Run all checks in the suite asynchronously. Note that order of execution is not guaranteed (aside from setup and teardown).
         Parameters:
             check_tags: Tags to filter checks by
-            should_run: If False, will only generate async check runs that can be awaited. Skips setup and teardown.
         """
-        if not should_run:
-            return self._generate_async_check_runs(check_tags)
-
+        checks = self.get_checks_with_tags(check_tags)
+        running_check_processes = []
         self.setup()
-        await asyncio.gather(
-            *[
-                self._exec_async_check(check)
-                for check in self.get_checks_with_tags(check_tags)
-            ]
-        )
+
+        for index, check in enumerate(checks):
+            print(f"[{index + 1}/{len(checks)} Checks] ASYNC RUN {check}")
+            process = Process(target=self._exec_async_check, args=(check,))
+            process.start()
+            running_check_processes.append(process)
+
+        for process in running_check_processes:
+            process.join()
+
         self.teardown()
 
     def after(self, check: Check):

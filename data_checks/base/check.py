@@ -3,6 +3,7 @@ Check class
 """
 import copy
 import sys
+import time
 from typing import Iterable, Optional, Callable
 from multiprocessing import Process
 from data_checks.base.exceptions import DataCheckException
@@ -198,7 +199,9 @@ class Check(CheckBase, MetadataMixin):
         try:
             self.before(context)
             try:
+                start_time = time.time()
                 rule_func(*params["args"], **params["kwargs"])
+                print(f"\t\t{rule} took {time.time() - start_time} seconds")
                 self.on_success(context)
             except AssertionError as e:
                 print(e)
@@ -278,23 +281,21 @@ class Check(CheckBase, MetadataMixin):
 
         self.teardown()
 
-    def run_all_async(self, tags: Optional[Iterable] = None):
+    def run_all_async(self):
         """
         Run all the rules in the check asynchronously. Note that order of execution is not guaranteed (aside from setup and teardown).
-        Parameters:
-            tags: only run rules with these tags will be run
         """
 
         self.setup()
         rules_to_run = self.get_rules_to_run()
         running_rule_processes: list[tuple[str, list[Process]]] = []
         for index, rule in enumerate(rules_to_run):
+            print(f"\t[{index + 1}/{len(rules_to_run)} Rules] ASYNC RUN {rule}")
             running_rule_processes.append(
                 (rule, self.run_async(rule, wait_for_completion=False))
             )
 
-        for index, (rule, processes) in enumerate(running_rule_processes):
-            print(f"\t[{index + 1}/{len(rules_to_run)} Rules] {rule}")
+        for rule, processes in running_rule_processes:
             for process in processes:
                 process.join()
 

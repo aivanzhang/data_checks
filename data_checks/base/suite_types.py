@@ -10,9 +10,6 @@ class SuiteBase(ABC):
     verbose: bool
     name: str
     description: str
-    check_rule_tags: Dict[
-        str, Iterable
-    ]  # Tags to be used to filter which rules are run in each check
 
     @classmethod
     @abstractmethod
