@@ -128,7 +128,6 @@ class DatabaseAction(CheckAction):
         """
         Executes after each child run
         """
-        print(context)
         logs = ""
         exec_id = context["exec_id"]
         params = context["params"]
