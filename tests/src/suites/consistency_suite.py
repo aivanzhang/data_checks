@@ -10,6 +10,7 @@ class ConsistencySuite(DataSuite):
     def checks(cls) -> list[type]:
         return [
             GeneralCompanyTransactionCheck,
+            # GeneralCompanyTransactionCheck,
         ]
 
     @classmethod
@@ -57,6 +58,23 @@ class ConsistencySuite(DataSuite):
     def checks_overrides(cls) -> dict | None:
         return {
             "GeneralCompanyTransactionCheck": {
-                "company_payments_size_increasing": {"days": [100, 200]}
+                "company_payments_size_increasing": [
+                    {
+                        "company_name": "test",
+                        "days": [50, 100],
+                    },
+                    {
+                        "company_name": "test1",
+                        "days": [51, 101],
+                    },
+                    {
+                        "company_name": "test2",
+                        "days": [52, 102],
+                    },
+                ],
+                "company_payments_size_increasing_2": {
+                    "company_name": "test",
+                    "days": [100, 200],
+                },
             }
         }

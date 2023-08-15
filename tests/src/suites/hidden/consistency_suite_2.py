@@ -5,7 +5,7 @@ from data_checks import DataSuite
 from tests.src.checks.general_company_check import GeneralCompanyTransactionCheck
 
 
-class ConsistencySuite3(DataSuite):
+class ConsistencySuite2(DataSuite):
     @classmethod
     def checks(cls) -> list[type]:
         return [
@@ -33,6 +33,10 @@ class ConsistencySuite3(DataSuite):
     def checks_overrides(cls) -> dict | None:
         return {
             "GeneralCompanyTransactionCheck": {
-                "company_payments_size_increasing": {"days": [100, 200]}
+                "company_payments_size_increasing": {"days": [100, 200]},
+                "company_payments_size_increasing_2": {
+                    "company_name": "test",
+                    "days": [100, 200],
+                },
             }
         }
