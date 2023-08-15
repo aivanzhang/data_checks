@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import TypedDict, Dict, Callable, Optional, Union
-from io import StringIO
 from data_checks.base.dataset import Dataset
 from data_checks.base.actions.action_types import ActionBase
 from data_checks.database.managers import models
@@ -24,8 +23,6 @@ class CheckInternal(TypedDict):
     suite_model: Optional[models.Suite]
     check_model: Optional[models.Check]
     check_execution_model: Optional[models.CheckExecution]
-    rule_models: Dict[str, models.Rule]
-    rule_execution_id_to_output: Dict[int, StringIO]
 
 
 class CheckSchedule(TypedDict):

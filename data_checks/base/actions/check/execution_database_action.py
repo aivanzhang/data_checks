@@ -2,7 +2,7 @@ import json
 import sys
 import traceback
 from io import StringIO
-from data_checks.base.actions.check_action import CheckAction
+from data_checks.base.actions.check.check_action import CheckAction
 from data_checks.base.exceptions import DataCheckException
 from data_checks.database.managers import (
     CheckManager,
@@ -10,14 +10,13 @@ from data_checks.database.managers import (
     RuleManager,
     RuleExecutionManager,
 )
-from data_checks.utils import class_utils
 
 """
-Check action that modifies the database
+Action that deals with creating the rows related to the execution of check and rules in the database
 """
 
 
-class DatabaseAction(CheckAction):
+class ExecutionDatabaseAction(CheckAction):
     @staticmethod
     def update_execution(type: str, execution_id: int | None, **kwargs):
         """
@@ -29,17 +28,12 @@ class DatabaseAction(CheckAction):
             CheckExecutionManager.update_execution(execution_id, **kwargs)
 
     @staticmethod
-    def setup(check, context: dict):
+    def setup(check, context):
         """
         One time setup for check
         """
-        check._internal["check_model"] = CheckManager.create_check(
-            name=check.name,
-            description=check.description,
-            tags=list(check.tags),
-            excluded_rules=list(check.excluded_rules),
-            code=class_utils.get_class_code(check.__class__),
-        )
+        check._internal["check_model"] = CheckManager.latest_version(check.name)
+
         check._internal[
             "check_execution_model"
         ] = CheckExecutionManager.create_execution(
@@ -47,49 +41,48 @@ class DatabaseAction(CheckAction):
         )
 
     @staticmethod
-    def before(check, context: dict):
+    def before(check, context):
         """
         Executes before each child run
         """
         rule = context["rule"]
         params = context["params"]
 
-        new_rule = RuleManager.create_rule(
-            name=rule,
-            code=class_utils.get_function_code(check, rule),
-            schedule=check.schedule["rule_schedules"][rule]
-            if rule in check.schedule["rule_schedules"]
-            else check.schedule["schedule"],
-        )
+        if "rule_model" in context:
+            main_model = context["rule_model"]
+
+        elif check._internal["check_model"] is not None:
+            main_model = RuleManager.latest_version(
+                rule,
+                check_id=check._internal["check_model"].id,
+                suite_id=check._internal["suite_model"].id
+                if check._internal["suite_model"]
+                else None,
+            )
+
+        else:
+            return
+
+        # new_rule = latest of the check found in DB
         new_rule_execution = RuleExecutionManager.create_execution(
-            main_model=new_rule,
+            main_model=main_model,
             status="running",
             params=json.dumps(params, default=str),
         )
 
-        if check._internal["check_model"] is not None:
-            RuleManager.update_check_id(new_rule.id, check._internal["check_model"].id)
-
-        if check._internal["suite_model"] is not None:
-            RuleManager.update_suite_id(new_rule.id, check._internal["suite_model"].id)
-
-        check._internal["rule_models"][rule] = new_rule
-
         rule_output = StringIO()
-        check._internal["rule_execution_id_to_output"][
-            new_rule_execution.id
-        ] = rule_output
-        sys.stdout = rule_output
 
+        context["output"] = rule_output
+        sys.stdout = rule_output
         context["exec_id"] = new_rule_execution.id
 
     @staticmethod
-    def on_success(check, context: dict):
+    def on_success(check, context):
         """
         Executes after each successful child run
         """
         exec_id = context["exec_id"]
-        DatabaseAction.update_execution(
+        ExecutionDatabaseAction.update_execution(
             type="rule",
             execution_id=exec_id,
             status="success",
@@ -97,14 +90,14 @@ class DatabaseAction(CheckAction):
         )
 
     @staticmethod
-    def on_failure(check, context: dict):
+    def on_failure(check, context):
         """
         Executes after each failed child run
         """
         exec_id = context["exec_id"]
         exception: DataCheckException = context["exception"]
 
-        DatabaseAction.update_execution(
+        ExecutionDatabaseAction.update_execution(
             type="rule",
             execution_id=exec_id,
             status="failure",
@@ -114,28 +107,29 @@ class DatabaseAction(CheckAction):
             else None,
             exception=exception.toJSON(),
         )
+
         if check._internal["check_execution_model"]:
-            DatabaseAction.update_execution(
+            ExecutionDatabaseAction.update_execution(
                 type="check",
                 execution_id=check._internal["check_execution_model"].id,
                 status="failure",
             )
 
     @staticmethod
-    def after(check, context: dict):
+    def after(check, context):
         """
         Executes after each child run
         """
         logs = ""
         exec_id = context["exec_id"]
         params = context["params"]
-        if exec_id and check._internal["rule_execution_id_to_output"][exec_id]:
-            logs = check._internal["rule_execution_id_to_output"][exec_id].getvalue()
+        if exec_id and context["output"]:
+            logs = context["output"].getvalue()
             sys.stdout = sys.__stdout__
             if logs.strip() != "":
                 print(logs)
 
-        DatabaseAction.update_execution(
+        ExecutionDatabaseAction.update_execution(
             type="rule",
             execution_id=exec_id,
             params=json.dumps(params, default=str),
@@ -143,7 +137,7 @@ class DatabaseAction(CheckAction):
         )
 
     @staticmethod
-    def teardown(check, context: dict):
+    def teardown(check, context):
         """
         One time teardown for parent run
         """

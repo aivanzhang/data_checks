@@ -11,11 +11,14 @@ from data_checks.base.check_types import FunctionArgs, CheckBase
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
 from data_checks.base.mixins.metadata_mixin import MetadataMixin
+from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.utils import class_utils, check_utils
-from data_checks.base.actions.database_action import DatabaseAction
+from data_checks.base.actions.check import CheckAction
 
 
-class Check(CheckBase, MetadataMixin):
+class Check(CheckBase, MetadataMixin, ActionMixin):
+    actions: list[type[CheckAction]] = []
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -43,11 +46,9 @@ class Check(CheckBase, MetadataMixin):
             "suite_model": None,
             "check_model": None,
             "check_execution_model": None,
-            "rule_models": dict(),
-            "rule_execution_id_to_output": dict(),
         }
         self.set_metadata_dir(metadata_dir)
-        self.actions = [DatabaseAction]
+        self.actions = []
         self.rules = dict()
         self.rules_params = rules_params
         self.schedule = {
@@ -110,18 +111,6 @@ class Check(CheckBase, MetadataMixin):
             [rule for rule in self.rules.keys() if rule not in self.excluded_rules]
         )
 
-    def setup(self):
-        """
-        Runs all the setup functions
-        """
-        self._exec_actions("setup", {})
-
-    def before(self, context: dict):
-        """
-        Run before each rule. If None, the rule will not be run
-        """
-        self._exec_actions("before", context)
-
     def run(self, rule: str):
         """
         Runs a rule once with one set of params or multiple times with multiple sets of params
@@ -150,24 +139,6 @@ class Check(CheckBase, MetadataMixin):
             return []
         else:
             return running_rule_processes
-
-    def after(self, context: dict):
-        """
-        Runs after each rule
-        """
-        self._exec_actions("after", context)
-
-    def on_success(self, context: dict):
-        """
-        Called when a rule succeeds
-        """
-        self._exec_actions("on_success", context)
-
-    def on_failure(self, context: dict):
-        """
-        Called when a rule fails
-        """
-        self._exec_actions("on_failure", context)
 
     def run_all(self):
         """
@@ -203,12 +174,6 @@ class Check(CheckBase, MetadataMixin):
 
         # await asyncio.gather(*self._generate_async_rule_runs(tags))
         self.teardown()
-
-    def teardown(self):
-        """
-        One time teardown after all rules are run
-        """
-        self._exec_actions("teardown", {})
 
     def __str__(self):
         return self.name
@@ -301,12 +266,5 @@ class Check(CheckBase, MetadataMixin):
 
             return new_params
 
-    def _exec_actions(self, action_type: str, context: dict, **kwargs):
-        """
-        Execute an action
-        """
-        context[action_type] = {}
-        for action in self.actions:
-            action_func = getattr(action, action_type, None)
-            if action_func is not None:
-                action_func(self, context, **kwargs)
+    def add_action(self, action: type[CheckAction]):
+        self.actions.append(action)
