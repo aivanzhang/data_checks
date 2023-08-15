@@ -7,7 +7,7 @@ class MainManagerMixin:
     model: type[MainMixin]
 
     @classmethod
-    def latest(cls) -> list[MainMixin]:
+    def latest(cls) -> list:
         with session_scope() as session:
             subquery = (
                 session.query(
@@ -27,8 +27,3 @@ class MainManagerMixin:
                 )
                 .all()
             )
-
-    @classmethod
-    def filter_by(cls, **kwargs) -> list[MainMixin]:
-        with session_scope() as session:
-            return session.query(cls.model).filter_by(**kwargs).all()

@@ -7,7 +7,7 @@ class ExecutionManagerMixin:
     model: type[ExecutionMixin]
 
     @classmethod
-    def latest(cls) -> list[ExecutionMixin]:
+    def latest(cls) -> list:
         with session_scope() as session:
             subquery = (
                 session.query(
