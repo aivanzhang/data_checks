@@ -122,38 +122,6 @@ class Check(CheckBase, MetadataMixin):
         """
         self._exec_actions("before", context)
 
-    def _exec_rule(
-        self, rule: str, rule_func: Callable[..., None], params: FunctionArgs
-    ):
-        """
-        Execute a rule
-        """
-        rule_metadata = {"rule": rule, "params": params}
-        context = copy.deepcopy(rule_metadata)
-        try:
-            self.before(context)
-            try:
-                start_time = time.time()
-                rule_func(*params["args"], **params["kwargs"])
-                print(f"\t\t{rule} took {time.time() - start_time} seconds")
-                self.on_success(context)
-            except AssertionError as e:
-                print(e)
-                context["exception"] = DataCheckException.from_assertion_error(
-                    e, metadata=rule_metadata
-                )
-                self.on_failure(
-                    context,
-                )
-            except DataCheckException as e:
-                print(e)
-                context["exception"] = e
-                self.on_failure(context)
-            self.after(context)
-        except Exception as e:
-            sys.stdout = sys.__stdout__
-            raise e
-
     def run(self, rule: str):
         """
         Runs a rule once with one set of params or multiple times with multiple sets of params
@@ -244,6 +212,38 @@ class Check(CheckBase, MetadataMixin):
 
     def __str__(self):
         return self.name
+
+    def _exec_rule(
+        self, rule: str, rule_func: Callable[..., None], params: FunctionArgs
+    ):
+        """
+        Execute a rule
+        """
+        rule_metadata = {"rule": rule, "params": params}
+        context = copy.deepcopy(rule_metadata)
+        try:
+            self.before(context)
+            try:
+                start_time = time.time()
+                rule_func(*params["args"], **params["kwargs"])
+                print(f"\t\t{rule} took {time.time() - start_time} seconds")
+                self.on_success(context)
+            except AssertionError as e:
+                print(e)
+                context["exception"] = DataCheckException.from_assertion_error(
+                    e, metadata=rule_metadata
+                )
+                self.on_failure(
+                    context,
+                )
+            except DataCheckException as e:
+                print(e)
+                context["exception"] = e
+                self.on_failure(context)
+            self.after(context)
+        except Exception as e:
+            sys.stdout = sys.__stdout__
+            raise e
 
     def _set_rules(self, rule_methods: list[str]):
         """
