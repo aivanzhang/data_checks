@@ -27,7 +27,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--exec_async",
+    "--async",
     "-a",
     action="store_true",
     help="Run data suites asynchronously. This is useful for running suites in parallel. Order is not guaranteed.",
@@ -65,8 +65,8 @@ if args.suite is not None:
     print("Running {args.suite}")
     data_suite_registry[args.suite]().run()
 else:
-    print("Running the following data suites: {list(suites_to_run.keys())}")
-    if args.exec_async:
+    print(f"Running the following data suites: {', '.join(list(suites_to_run.keys()))}")
+    if getattr(args, "async"):
         run_suites_async(list(suites_to_run.values()))
     else:
         count = 1
