@@ -14,16 +14,17 @@ class Suite(SuiteBase, ActionMixin):
         self,
         name: Optional[str] = None,
         description: Optional[str] = None,
+        actions: list[type[SuiteAction]] = [],
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
+        self.actions: list[type[SuiteAction]] = actions
         self._internal = {
             "suite_model": None,
             "suite_execution_model": None,
             "dataset": None,
             "checks_config": None,
         }
-        self.actions: list[type[SuiteAction]] = []
 
     @classmethod
     def dataset(cls) -> Dataset | None:

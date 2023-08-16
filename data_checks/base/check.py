@@ -25,6 +25,7 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         rules_params=dict(),
         excluded_rules: Iterable = [],
         tags: Iterable = [],
+        actions: list[type[CheckAction]] = [],
         verbose=False,
         dataset: Optional[Dataset] = None,
         only_run_specified_rules=False,
@@ -46,7 +47,7 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
             "check_execution_model": None,
         }
         self.set_metadata_dir(metadata_dir)
-        self.actions: list[type[CheckAction]] = []
+        self.actions: list[type[CheckAction]] = actions
         self.rules = dict()
         self.rules_params = rules_params
         self.schedule = {
