@@ -178,3 +178,9 @@ class Suite(SuiteBase, ActionMixin):
             context["exception"] = e
             self.on_failure(context)
         self.after(context)
+
+    def add_actions(self, *actions: type[SuiteAction]):
+        return super().add_actions(*actions)
+
+    def remove_actions(self, *actions: type[SuiteAction]):
+        return super().remove_actions(*actions)

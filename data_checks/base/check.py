@@ -268,3 +268,9 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
                 new_params.append(param)
 
             return new_params
+
+    def add_actions(self, *actions: type[CheckAction]):
+        return super().add_actions(*actions)
+
+    def remove_actions(self, *actions: type[CheckAction]):
+        return super().remove_actions(*actions)
