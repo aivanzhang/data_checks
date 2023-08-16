@@ -64,9 +64,7 @@ class Suite(SuiteBase, ActionMixin):
             "schedule": "0 8 * * *", # cron schedule for the suite
         }
         """
-        return {
-            "schedule": "0 8 * * *",  # default to run every day at 8am
-        }
+        return {}
 
     @classmethod
     def checks(cls) -> list[type | str]:

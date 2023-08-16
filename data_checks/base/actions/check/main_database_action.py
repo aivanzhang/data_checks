@@ -26,11 +26,7 @@ class MainDatabaseAction(CheckAction):
         rule = context["rule"]
 
         new_rule = RuleManager.create_rule(
-            name=rule,
-            code=class_utils.get_function_code(check, rule),
-            schedule=check.schedule["rule_schedules"][rule]
-            if rule in check.schedule["rule_schedules"]
-            else check.schedule["schedule"],
+            name=rule, code=class_utils.get_function_code(check, rule)
         )
 
         if check._internal["check_model"] is not None:

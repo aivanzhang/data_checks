@@ -12,12 +12,14 @@ class SuiteManager(BaseManager, MainManagerMixin):
     def create_suite(
         name: str,
         code: str,
+        schedule: Optional[str] = None,
         description: Optional[str] = None,
         excluded_check_tags: list[str] = [],
         rules: list["Rule"] = [],
     ) -> Suite:
         new_suite = Suite.create(
             name=name,
+            schedule=schedule,
             description=description,
             code=code,
             rules=rules,

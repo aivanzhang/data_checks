@@ -13,14 +13,12 @@ class RuleManager(BaseManager, MainManagerMixin):
         name: str,
         code: str,
         severity: float = 0.0,
-        schedule: Optional[str] = None,
         executions: list["RuleExecution"] = [],
     ) -> Rule:
         new_rule = Rule.create(
             name=name,
             code=code,
             severity=severity,
-            schedule=schedule,
             executions=executions,
         )
         with session_scope() as session:
