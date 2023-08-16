@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, Dict
 from data_checks.base.suite_helper_types import SuiteInternal
+from data_checks.base.actions.action_types import ActionBase
 
 
 class SuiteBase(ABC):
@@ -10,6 +10,7 @@ class SuiteBase(ABC):
     verbose: bool
     name: str
     description: str
+    actions: list[type[ActionBase]]
 
     @classmethod
     @abstractmethod

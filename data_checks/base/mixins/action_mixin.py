@@ -5,7 +5,8 @@ from data_checks.base.actions import ActionBase
 
 
 class ActionMixin:
-    actions: list[type[ActionBase]] = []
+    def __init__(self):
+        self.actions: list[type[ActionBase]] = []
 
     def _exec_actions(self, action_type: str, context: dict, **kwargs):
         """
@@ -53,14 +54,16 @@ class ActionMixin:
         """
         self._exec_actions("teardown", {})
 
-    def add_action(self, action: type[ActionBase]):
+    def add_actions(self, *actions: type[ActionBase]):
         """
-        Add an action to the check
+        Add actions to the check
         """
-        self.actions.append(action)
+        for action in actions:
+            self.actions.append(action)
 
-    def remove_action(self, action: type[ActionBase]):
+    def remove_actions(self, *actions: type[ActionBase]):
         """
-        Remove an action from the check
+        Remove actions from the check
         """
-        self.actions.remove(action)
+        for action in actions:
+            self.actions.remove(action)

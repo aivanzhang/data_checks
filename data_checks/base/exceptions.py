@@ -29,9 +29,13 @@ class DataCheckException(Exception):
         return f"DataCheckException(severity={self.severity}, exception={self.exception}, metadata={self.metadata})"
 
     @classmethod
-    def from_assertion_error(
+    def from_assertion_exception(
         cls, e: AssertionError, *args, **kwargs
     ) -> "DataCheckException":
+        return cls(exception=e, *args, **kwargs)
+
+    @classmethod
+    def from_exception(cls, e, *args, **kwargs) -> "DataCheckException":
         return cls(exception=e, *args, **kwargs)
 
     def toJSON(self):

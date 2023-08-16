@@ -4,12 +4,12 @@ from multiprocessing import Process
 from data_checks.base.check import Check
 from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
-from data_checks.database import SuiteManager, SuiteExecutionManager
-from data_checks.utils import class_utils
 from data_checks.conf.data_check_registry import data_check_registry
+from data_checks.base.mixins.action_mixin import ActionMixin
+from data_checks.base.actions.suite import SuiteAction
 
 
-class Suite(SuiteBase):
+class Suite(SuiteBase, ActionMixin):
     def __init__(
         self,
         name: Optional[str] = None,
@@ -23,6 +23,7 @@ class Suite(SuiteBase):
             "dataset": None,
             "checks_config": None,
         }
+        self.actions: list[type[SuiteAction]] = []
 
     @classmethod
     def dataset(cls) -> Dataset | None:
@@ -106,48 +107,25 @@ class Suite(SuiteBase):
                 if set(tags).intersection(check.tags)
             ]
 
-    def setup(self):
-        """
-        One time setup for all checks in the suites
-        """
-        self._internal["suite_model"] = SuiteManager.create_suite(
-            name=self.name,
-            description=self.description,
-            code=class_utils.get_class_code(self.__class__),
-        )
-        self._internal[
-            "suite_execution_model"
-        ] = SuiteExecutionManager.create_execution(
-            main_model=self._internal["suite_model"],
-            status="running",
-        )
-
-    def before(self, check: Check):
-        """
-        Run before each check
-        """
-        self._internal["dataset"] = self.dataset()
-        self._internal["checks_config"] = self.checks_config()
-        schedule_overrides = (
-            self.suite_config().get("schedules", {}).get(check.name, None)
-        )
-        check._update_from_suite_internals(self._internal, schedule_overrides)
-
     def run(self, check_tags: Optional[Iterable] = None):
         self.setup()
 
         checks_to_run = self.get_checks_with_tags(check_tags)
         for index, check in enumerate(checks_to_run):
             print(f"[{index + 1}/{len(checks_to_run)} Checks] {check}")
-            self.before(check)
+            context: dict = {
+                "check": check,
+            }
+            self.before(context)
             try:
                 start_time = time.time()
                 check.run_all()
                 print(f"{check} finished in {time.time() - start_time} seconds")
-                self.on_success(check)
+                self.on_success(context)
             except Exception as e:
-                self.on_failure(e)
-            self.after(check)
+                context["exception"] = e
+                self.on_failure(context)
+            self.after(context)
 
         self.teardown()
 
@@ -172,36 +150,6 @@ class Suite(SuiteBase):
 
         self.teardown()
 
-    def after(self, check: Check):
-        """
-        Runs after each check
-        """
-        return
-
-    def on_success(self, check: Check):
-        """
-        Called when a rule succeeds
-        """
-        pass
-
-    def on_failure(self, exception: Exception):
-        """
-        Called when a rule fails
-        """
-        raise exception
-
-    def teardown(self):
-        """
-        One time teardown after all checks are run
-        """
-        suite_execution = self._internal["suite_execution_model"]
-
-        if suite_execution:
-            SuiteExecutionManager.update_execution(
-                suite_execution.id,
-                status="success",
-            )
-
     def get_all_metadata(self):
         """
         Get all metadata from all checks
@@ -216,12 +164,16 @@ class Suite(SuiteBase):
         """
         Execute a check
         """
-        self.before(check)
+        context: dict = {
+            "check": check,
+        }
+        self.before(context)
         try:
             start_time = time.time()
             check.run_all_async()
             print(f"{check} finished in {time.time() - start_time} seconds")
-            self.on_success(check)
+            self.on_success(context)
         except Exception as e:
-            self.on_failure(e)
-        self.after(check)
+            context["exception"] = e
+            self.on_failure(context)
+        self.after(context)

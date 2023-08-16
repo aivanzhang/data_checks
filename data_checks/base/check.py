@@ -17,8 +17,6 @@ from data_checks.base.actions.check import CheckAction
 
 
 class Check(CheckBase, MetadataMixin, ActionMixin):
-    actions: list[type[CheckAction]] = []
-
     def __init__(
         self,
         name: Optional[str] = None,
@@ -48,7 +46,7 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
             "check_execution_model": None,
         }
         self.set_metadata_dir(metadata_dir)
-        self.actions = []
+        self.actions: list[type[CheckAction]] = []
         self.rules = dict()
         self.rules_params = rules_params
         self.schedule = {
@@ -186,29 +184,33 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         """
         rule_metadata = {"rule": rule, "params": params}
         context = copy.deepcopy(rule_metadata)
+
+        self.before(context)
         try:
-            self.before(context)
-            try:
-                start_time = time.time()
-                rule_func(*params["args"], **params["kwargs"])
-                print(f"\t\t{rule} took {time.time() - start_time} seconds")
-                self.on_success(context)
-            except AssertionError as e:
-                print(e)
-                context["exception"] = DataCheckException.from_assertion_error(
-                    e, metadata=rule_metadata
-                )
-                self.on_failure(
-                    context,
-                )
-            except DataCheckException as e:
-                print(e)
-                context["exception"] = e
-                self.on_failure(context)
-            self.after(context)
+            start_time = time.time()
+            rule_func(*params["args"], **params["kwargs"])
+            print(f"\t\t{rule} took {time.time() - start_time} seconds")
+            self.on_success(context)
+        except AssertionError as e:
+            print(e)
+            context["exception"] = DataCheckException.from_assertion_exception(
+                e, metadata=rule_metadata
+            )
+            self.on_failure(
+                context,
+            )
+        except DataCheckException as e:
+            print(e)
+            context["exception"] = e
+            self.on_failure(context)
         except Exception as e:
             sys.stdout = sys.__stdout__
-            raise e
+            print(e)
+            context["exception"] = DataCheckException.from_exception(e)
+            self.on_failure(
+                context,
+            )
+        self.after(context)
 
     def _set_rules(self, rule_methods: list[str]):
         """
@@ -265,6 +267,3 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
                 new_params.append(param)
 
             return new_params
-
-    def add_action(self, action: type[CheckAction]):
-        self.actions.append(action)
