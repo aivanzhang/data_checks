@@ -6,10 +6,16 @@ from multiprocessing import Process
 from data_checks.conf.settings import settings
 from data_checks.conf.data_suite_registry import data_suite_registry
 from data_checks.base.suite import Suite
-from data_checks.base.actions.suite import SuiteAction, MainDatabaseAction
+from data_checks.base.actions.suite import (
+    SuiteAction,
+    MainDatabaseAction,
+    DefaultSuiteAction,
+)
 from data_checks.base.actions.check import (
     MainDatabaseAction as CheckMainDatabaseAction,
+    FindRuleModelAction,
     ExecutionDatabaseAction,
+    DefaultCheckAction,
 )
 from data_checks.base.suite import CheckActions
 
@@ -111,10 +117,12 @@ def run_suite():
 
 if args.scheduling:
     print("Scheduling suites")
-    suite_actions = [MainDatabaseAction]
-    check_actions["default"] = [CheckMainDatabaseAction, ExecutionDatabaseAction]
+    suite_actions = [DefaultSuiteAction, MainDatabaseAction]
+    check_actions["default"] = [DefaultCheckAction, CheckMainDatabaseAction]
     run_suite()
 elif args.deploy:
+    suite_actions = []
+    check_actions["default"] = [FindRuleModelAction, ExecutionDatabaseAction]
     print("Deploying scheduled suites")
     scheduler = BackgroundScheduler()
     for suite_name, suite in suites_to_run.items():
@@ -139,6 +147,8 @@ elif args.deploy:
     # check_actions["default"] = [CheckMainDatabaseAction, ExecutionDatabaseAction]
 
 else:
+    suite_actions = [DefaultSuiteAction]
+    check_actions["default"] = [DefaultCheckAction]
     run_suite()
 
     # getattr(suite(), "schedule")()

@@ -6,3 +6,4 @@ from data_checks.base.actions.suite.main_database_action import MainDatabaseActi
 from data_checks.base.actions.suite.setup_check_actions_action import (
     SetupCheckActionsAction,
 )
+from data_checks.base.actions.suite.default_suite_action import DefaultSuiteAction
