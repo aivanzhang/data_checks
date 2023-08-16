@@ -6,6 +6,7 @@ from data_checks.base.suite import Suite
 from data_checks.base.actions.suite import SuiteAction, MainDatabaseAction
 from data_checks.base.actions.check import (
     MainDatabaseAction as CheckMainDatabaseAction,
+    ExecutionDatabaseAction,
 )
 from data_checks.base.suite import CheckActions
 
@@ -108,7 +109,7 @@ def run_suite():
 if args.scheduling:
     print("Scheduling suites")
     suite_actions = [MainDatabaseAction]
-    check_actions["default"] = [CheckMainDatabaseAction]
+    check_actions["default"] = [CheckMainDatabaseAction, ExecutionDatabaseAction]
     run_suite()
 
     # getattr(suite(), "schedule")()

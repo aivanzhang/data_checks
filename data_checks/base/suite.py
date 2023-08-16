@@ -8,7 +8,11 @@ from data_checks.base.suite_types import SuiteBase
 from data_checks.base.exceptions import SkipExecutionException
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.base.actions.check import CheckAction
-from data_checks.base.actions.suite import SuiteAction, DefaultSuiteAction
+from data_checks.base.actions.suite import (
+    SuiteAction,
+    SetupCheckActionsAction,
+    SetupInternalsAction,
+)
 
 
 class CheckActions(TypedDict):
@@ -25,7 +29,10 @@ class Suite(SuiteBase, ActionMixin):
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
-        self.actions: list[type[SuiteAction]] = [DefaultSuiteAction] + actions
+        self.actions: list[type[SuiteAction]] = [
+            SetupCheckActionsAction,
+            SetupInternalsAction,
+        ] + actions
         self.check_actions: CheckActions = {
             "default": [],
             "checks": {},

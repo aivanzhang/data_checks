@@ -1,12 +1,12 @@
 """
-Default action that all suites start with
+Action that sets up the check actions for all checks in the suite
 """
 from data_checks.base.actions.suite.suite_action import SuiteAction
 from data_checks.base.suite_types import SuiteBase
 from data_checks.base.check import Check
 
 
-class DefaultSuiteAction(SuiteAction):
+class SetupCheckActionsAction(SuiteAction):
     @staticmethod
     def before(suite: SuiteBase, context: dict) -> None:
         check: Check = context["check"]

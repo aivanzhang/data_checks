@@ -1,11 +1,11 @@
 """
-Action that deals with creating the rows related to the execution of suites in the database
+Action that deals with setting up the internals of the suite and its checks
 """
 from data_checks.base.check import Check
 from data_checks.base.actions.suite.suite_action import SuiteAction
 
 
-class ExecutionDatabaseAction(SuiteAction):
+class SetupInternalsAction(SuiteAction):
     @staticmethod
     def before(suite, context):
         """
