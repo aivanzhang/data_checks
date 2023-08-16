@@ -6,7 +6,7 @@ import sys
 import time
 from typing import Iterable, Optional, Callable
 from multiprocessing import Process
-from data_checks.base.exceptions import DataCheckException
+from data_checks.base.exceptions import DataCheckException, SkipExecutionException
 from data_checks.base.check_types import FunctionArgs, CheckBase
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
@@ -186,7 +186,11 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         rule_metadata = {"rule": rule, "params": params}
         context = copy.deepcopy(rule_metadata)
 
-        self.before(context)
+        try:
+            self.before(context)
+        except SkipExecutionException as e:
+            return
+
         try:
             start_time = time.time()
             rule_func(*params["args"], **params["kwargs"])

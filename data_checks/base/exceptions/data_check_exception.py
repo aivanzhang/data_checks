@@ -6,7 +6,8 @@ import json
 
 
 class DataCheckException(Exception):
-    """Exception raised for errors related to data checks.
+    """
+    Exception raised for errors related to data checks.
 
     Attributes:
         severity = 1.0 -- severity of the error on a scale from 0 to 1

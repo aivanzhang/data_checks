@@ -1,15 +1,19 @@
-from typing import Iterable, Optional
+from typing import Iterable, Optional, TypedDict
 import time
 from multiprocessing import Process
+from data_checks.conf.data_check_registry import data_check_registry
 from data_checks.base.check import Check
 from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
-from data_checks.conf.data_check_registry import data_check_registry
+from data_checks.base.exceptions import SkipExecutionException
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.base.actions.check import CheckAction
 from data_checks.base.actions.suite import SuiteAction, DefaultSuiteAction
 
-CheckActions = dict[type[Check], list[type[CheckAction]]]
+
+class CheckActions(TypedDict):
+    default: list[type[CheckAction]]
+    checks: dict[type[Check], list[type[CheckAction]]]
 
 
 class Suite(SuiteBase, ActionMixin):
@@ -22,7 +26,10 @@ class Suite(SuiteBase, ActionMixin):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
         self.actions: list[type[SuiteAction]] = [DefaultSuiteAction] + actions
-        self.check_actions: CheckActions = dict()
+        self.check_actions: CheckActions = {
+            "default": [],
+            "checks": {},
+        }
         self._internal = {
             "suite_model": None,
             "suite_execution_model": None,
@@ -121,7 +128,10 @@ class Suite(SuiteBase, ActionMixin):
             context: dict = {
                 "check": check,
             }
-            self.before(context)
+            try:
+                self.before(context)
+            except SkipExecutionException as e:
+                return
             try:
                 start_time = time.time()
                 check.run_all()
@@ -172,7 +182,10 @@ class Suite(SuiteBase, ActionMixin):
         context: dict = {
             "check": check,
         }
-        self.before(context)
+        try:
+            self.before(context)
+        except SkipExecutionException as e:
+            return
         try:
             start_time = time.time()
             check.run_all_async()
