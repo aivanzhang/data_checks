@@ -22,9 +22,7 @@ class Rule(Base, MainMixin):
     suite: Mapped["Suite"] = relationship(back_populates="rules")
     check_id: Mapped[int] = mapped_column(ForeignKey("checks.id"), nullable=True)
     check: Mapped["Check"] = relationship(back_populates="rules")
-    executions: Mapped[List["RuleExecution"]] = relationship(
-        back_populates="main_model"
-    )
+    executions: Mapped[List["RuleExecution"]] = relationship(back_populates="rule")
 
     def __repr__(self) -> str:
         return f"Rule(id={self.id!r}, name={self.name!r})"

@@ -18,13 +18,5 @@ class Check:
     pass
 
 
-class CheckExecution:
-    pass
-
-
 class Suite:
-    pass
-
-
-class SuiteExecution:
     pass

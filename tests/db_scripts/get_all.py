@@ -1,5 +1,5 @@
 # from data_checks.database.managers.models import Base
-from data_checks.database.managers import CheckManager, CheckExecutionManager
+from data_checks.database.managers import CheckManager
 from data_checks.database.utils.session_utils import session_scope
 
 # for model in Base.__subclasses__():
@@ -21,4 +21,3 @@ from data_checks.database.utils.session_utils import session_scope
 #                 print(record.executions)
 
 # print(CheckManager.latest())
-print(CheckExecutionManager.latest())

@@ -1,6 +1,6 @@
 from typing import Optional
 from data_checks.database.managers.base_manager import BaseManager
-from data_checks.database.managers.models import Check, CheckExecution, Rule
+from data_checks.database.managers.models import Check, Rule
 from data_checks.database.managers.mixins import MainManagerMixin
 from data_checks.database.utils.session_utils import session_scope
 
@@ -16,7 +16,6 @@ class CheckManager(BaseManager, MainManagerMixin):
         tags: list[str] = [],
         excluded_rules: list[str] = [],
         rules: list["Rule"] = [],
-        executions: list["CheckExecution"] = [],
     ) -> Check:
         new_check = Check.create(
             name=name,
@@ -25,7 +24,6 @@ class CheckManager(BaseManager, MainManagerMixin):
             tags=tags,
             excluded_rules=excluded_rules,
             rules=rules,
-            executions=executions,
         )
         with session_scope() as session:
             session.add(new_check)

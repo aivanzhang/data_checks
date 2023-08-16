@@ -1,18 +1,17 @@
 from typing import Optional
 from datetime import datetime
 from data_checks.database.managers.base_manager import BaseManager
-from data_checks.database.managers.mixins import ExecutionManagerMixin
 from data_checks.database.managers.models import Rule, RuleExecution
 from data_checks.database.utils.session_utils import session_scope
 from data_checks.database.utils.database_utils import generate_update_object
 
 
-class RuleExecutionManager(BaseManager, ExecutionManagerMixin):
+class RuleExecutionManager(BaseManager):
     model = RuleExecution
 
     @staticmethod
     def create_execution(
-        main_model: Rule,
+        rule: Rule,
         status: Optional[str] = None,
         params: Optional[str] = None,
         logs: Optional[str] = None,
@@ -20,7 +19,7 @@ class RuleExecutionManager(BaseManager, ExecutionManagerMixin):
         exception: Optional[str] = None,
     ) -> RuleExecution:
         new_execution = RuleExecution.create(
-            main_model=main_model,
+            rule=rule,
             status=status,
             params=params,
             logs=logs,

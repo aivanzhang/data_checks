@@ -44,7 +44,6 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         self._internal = {
             "suite_model": None,
             "check_model": None,
-            "check_execution_model": None,
         }
         self.set_metadata_dir(metadata_dir)
         self.actions: list[type[CheckAction]] = actions

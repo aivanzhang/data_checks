@@ -22,7 +22,6 @@ class CheckInternal(TypedDict):
 
     suite_model: Optional[models.Suite]
     check_model: Optional[models.Check]
-    check_execution_model: Optional[models.CheckExecution]
 
 
 class CheckSchedule(TypedDict):

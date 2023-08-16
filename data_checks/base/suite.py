@@ -32,7 +32,6 @@ class Suite(SuiteBase, ActionMixin):
         }
         self._internal = {
             "suite_model": None,
-            "suite_execution_model": None,
             "dataset": None,
             "checks_config": None,
         }
