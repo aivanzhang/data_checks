@@ -26,10 +26,6 @@ class ConsistencySuite3(DataSuite):
         )
 
     @classmethod
-    def checks_config(cls) -> dict | None:
-        return {}
-
-    @classmethod
     def checks_overrides(cls) -> dict | None:
         return {
             "GeneralCompanyTransactionCheck": {

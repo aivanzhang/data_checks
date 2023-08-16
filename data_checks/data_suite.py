@@ -34,13 +34,6 @@ class DataSuite(Suite):
         return None
 
     @classmethod
-    def checks_config(cls) -> dict | None:
-        """
-        Shared fields across all checks in the suite. Use this to define all configuration details needed for this suite's checks. Accessed by rules via cls.config() or self.config()
-        """
-        return None
-
-    @classmethod
     def suite_config(cls) -> dict:
         """
         System configurations for the suite. In the following format:

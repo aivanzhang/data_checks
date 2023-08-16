@@ -28,31 +28,9 @@ class ConsistencySuite(DataSuite):
 
     @classmethod
     def suite_config(cls) -> dict:
-        """
-        System configurations for the suite. In the following format:
-        {
-            "schedules": { # Overrides for check schedules.
-                "CheckClass": "0 8 * * *", # Overrides the schedule for CheckClass and all its rules
-                "CheckClass1": {
-                    "rule_1": "0 8 * * *", # Overrides the schedule for rule_1 in CheckClass1
-                    ...
-                },
-                ...
-            }
-        }
-        """
         return {
-            "schedules": {
-                "GeneralCompanyTransactionCheck": {
-                    "company_payments_size_increasing": "0 1 * * *",
-                    "company_payments_size_increasing_1": "0 2 * * *",
-                },
-            }
+            "schedule": "0 1 * * *",
         }
-
-    @classmethod
-    def checks_config(cls) -> dict | None:
-        return {}
 
     @classmethod
     def checks_overrides(cls) -> dict | None:

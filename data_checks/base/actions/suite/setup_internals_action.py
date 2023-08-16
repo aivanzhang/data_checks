@@ -13,8 +13,4 @@ class SetupInternalsAction(SuiteAction):
         """
         check: Check = context["check"]
         suite._internal["dataset"] = suite.dataset()
-        suite._internal["checks_config"] = suite.checks_config()
-        schedule_overrides = (
-            (suite.suite_config() or {}).get("schedules", {}).get(check.name, None)
-        )
-        check._update_from_suite_internals(suite._internal, schedule_overrides)
+        check._update_from_suite_internals(suite._internal)

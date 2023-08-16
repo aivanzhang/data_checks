@@ -10,4 +10,3 @@ class SuiteInternal(TypedDict):
 
     suite_model: Optional[models.Suite]
     dataset: Optional[Dataset]
-    checks_config: Optional[dict]

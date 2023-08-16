@@ -29,13 +29,6 @@ class SuiteBase(ABC):
         pass
 
     @classmethod
-    def checks_config(cls):
-        """
-        Shared fields across checks
-        """
-        pass
-
-    @classmethod
     def suite_config(cls):
         """
         System configurations for the suite

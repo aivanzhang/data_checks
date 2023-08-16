@@ -40,7 +40,6 @@ class Suite(SuiteBase, ActionMixin):
         self._internal = {
             "suite_model": None,
             "dataset": None,
-            "checks_config": None,
         }
 
     @classmethod
@@ -58,28 +57,16 @@ class Suite(SuiteBase, ActionMixin):
         raise NotImplementedError
 
     @classmethod
-    def checks_config(cls) -> dict | None:
-        """
-        Shared fields across checks
-        """
-        raise NotImplementedError
-
-    @classmethod
     def suite_config(cls) -> dict:
         """
         System configurations for the suite. In the following format:
         {
-            "schedules": { # Overrides for check schedules
-                "CheckClass": "0 8 * * *", # Overrides the schedule for CheckClass and all its rules
-                "CheckClass1": {
-                    "rule_1": "0 8 * * *", # Overrides the schedule for rule_1 in CheckClass1
-                    ...
-                },
-                ...
-            }
+            "schedule": "0 8 * * *", # cron schedule for the suite
         }
         """
-        return {}
+        return {
+            "schedule": "0 8 * * *",  # default to run every day at 8am
+        }
 
     @classmethod
     def checks(cls) -> list[type | str]:

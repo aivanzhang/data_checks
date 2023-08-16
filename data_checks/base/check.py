@@ -49,10 +49,6 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         self.actions: list[type[CheckAction]] = actions
         self.rules = dict()
         self.rules_params = rules_params
-        self.schedule = {
-            "schedule": self.check_config().get("schedule", "0 8 * * *"),
-            "rule_schedules": self.check_config().get("rule_schedules", {}),
-        }
 
         self._set_rules(self.defined_rules())
         if only_run_specified_rules:
@@ -71,21 +67,6 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
                 class_utils.get_all_methods(cls()),
             )
         )
-
-    @classmethod
-    def check_config(cls) -> dict:
-        """
-        Default system configuration for the check. In the following format:
-        {
-            "schedule": "0 8 * * *", # Cron schedule for all rule.
-            "rule_schedules": {
-                "rule_name_1": "0 8 * * *", # Rule-specific cron schedule
-                "rule_name_2": "0 8 * * *", # Rule-specific cron schedule
-                ...
-            }
-        }
-        """
-        return {}
 
     def only_run_specified_rules(self):
         """
@@ -225,24 +206,13 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
             method = getattr(self, class_method)
             self.rules[class_method] = method
 
-    def _update_from_suite_internals(
-        self, suite_internals: SuiteInternal, schedule_overrides: Optional[dict] = None
-    ):
+    def _update_from_suite_internals(self, suite_internals: SuiteInternal):
         """
         Internal: Set the suite model for the check
         """
         self._internal["suite_model"] = suite_internals["suite_model"]
         if suite_internals["dataset"] is not None:
             self.dataset = suite_internals["dataset"]
-        if suite_internals["checks_config"] is not None:
-            self.config = suite_internals["checks_config"]
-        if schedule_overrides is not None:
-            if isinstance(schedule_overrides, str):
-                self.schedule["schedule"] = schedule_overrides
-            elif isinstance(schedule_overrides, dict):
-                if self.schedule["rule_schedules"] is None:
-                    self.schedule["rule_schedules"] = dict()
-                self.schedule["rule_schedules"].update(schedule_overrides)
 
     def _get_rules_params(self, rule: str) -> list[FunctionArgs]:
         """

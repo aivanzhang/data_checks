@@ -24,15 +24,6 @@ class CheckInternal(TypedDict):
     check_model: Optional[models.Check]
 
 
-class CheckSchedule(TypedDict):
-    """
-    Check schedule
-    """
-
-    schedule: str
-    rule_schedules: dict[str, str]
-
-
 class CheckBase(ABC):
     """
     Base class for all checks
@@ -41,7 +32,6 @@ class CheckBase(ABC):
     _internal: CheckInternal
     name: str
     dataset: Dataset
-    config: dict
     description: str
     rules: Dict[str, Callable[..., None]]  # Stores all the rules functions in the check
     rules_params: Dict[
@@ -55,7 +45,6 @@ class CheckBase(ABC):
         | tuple,
     ]  # Stores the params for each rule. If params is a list of params then run the rule multiple times with each param element
     excluded_rules: set
-    schedule: CheckSchedule
     tags: set
     actions: list[type[ActionBase]]
 
@@ -66,14 +55,6 @@ class CheckBase(ABC):
     def defined_rules(cls) -> list[str]:
         """
         Rules to be run by the check. Each rule should be a function in the check class.
-        """
-        pass
-
-    @classmethod
-    @abstractmethod
-    def check_config(cls) -> dict:
-        """
-        System configuration for the check
         """
         pass
 
