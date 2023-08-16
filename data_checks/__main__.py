@@ -111,5 +111,9 @@ if args.scheduling:
     suite_actions = [MainDatabaseAction]
     check_actions["default"] = [CheckMainDatabaseAction, ExecutionDatabaseAction]
     run_suite()
+elif args.deploy:
+    print("Deploying suites")
+else:
+    run_suite()
 
     # getattr(suite(), "schedule")()

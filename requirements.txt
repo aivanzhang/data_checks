@@ -1,6 +1,2 @@
-APScheduler==3.10.3
-pytz==2023.3
-six==1.16.0
 SQLAlchemy==2.0.19
 typing_extensions==4.7.1
-tzlocal==5.0.1
