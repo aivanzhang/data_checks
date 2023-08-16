@@ -6,7 +6,10 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
 from data_checks.conf.data_check_registry import data_check_registry
 from data_checks.base.mixins.action_mixin import ActionMixin
-from data_checks.base.actions.suite import SuiteAction
+from data_checks.base.actions.check import CheckAction
+from data_checks.base.actions.suite import SuiteAction, DefaultSuiteAction
+
+CheckActions = dict[type[Check], list[type[CheckAction]]]
 
 
 class Suite(SuiteBase, ActionMixin):
@@ -18,7 +21,8 @@ class Suite(SuiteBase, ActionMixin):
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
-        self.actions: list[type[SuiteAction]] = actions
+        self.actions: list[type[SuiteAction]] = [DefaultSuiteAction] + actions
+        self.check_actions: CheckActions = dict()
         self._internal = {
             "suite_model": None,
             "suite_execution_model": None,
@@ -184,3 +188,6 @@ class Suite(SuiteBase, ActionMixin):
 
     def remove_actions(self, *actions: type[SuiteAction]):
         return super().remove_actions(*actions)
+
+    def update_check_actions(self, check_actions: CheckActions):
+        self.check_actions.update(check_actions)

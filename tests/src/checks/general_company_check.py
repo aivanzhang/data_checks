@@ -92,12 +92,12 @@ class GeneralCompanyTransactionCheck(DataCheck):
         # )
         time.sleep(2)
         print(company_name, days)
-        # assert_that(
-        #     self.dataset.new_payments_df.shape[0]
-        #     < self.dataset.old_payments_df.shape[0],
-        #     equal_to(True),
-        #     f"Size of the payments dataframe has decreased in the last few days",
-        # )
+        assert_that(
+            self.dataset.new_payments_df.shape[0]
+            < self.dataset.old_payments_df.shape[0],
+            equal_to(True),
+            f"Size of the payments dataframe has decreased in the last few days",
+        )
 
     def company_payments_size_increasing_2(self, company_name="company_2", days=[2, 5]):
         # old_payments_df = pd.read_csv(

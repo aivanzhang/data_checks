@@ -1,5 +1,5 @@
 """
-Basic action that all suites start with
+Template action that all suites actions inherit
 """
 from data_checks.base.actions.action_types import ActionBase
 from data_checks.base.suite_types import SuiteBase

@@ -17,12 +17,12 @@ class ConsistencySuite(DataSuite):
     def dataset(cls) -> Dataset | None:
         return Dataset(
             {
-                "old_payments_df": pd.read_csv(
-                    os.path.dirname(os.path.realpath(__file__)) + "/old_payments.csv"
-                ),
-                "new_payments_df": pd.read_csv(
-                    os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
-                ),
+                # "old_payments_df": pd.read_csv(
+                #     os.path.dirname(os.path.realpath(__file__)) + "/old_payments.csv"
+                # ),
+                # "new_payments_df": pd.read_csv(
+                #     os.path.dirname(os.path.realpath(__file__)) + "/new_payments.csv"
+                # ),
             }
         )
 

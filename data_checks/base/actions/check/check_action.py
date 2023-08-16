@@ -1,5 +1,5 @@
 """
-Basic action that all checks start with
+Template action that all checks actions inherit
 """
 from data_checks.base.actions.action_types import ActionBase
 from data_checks.base.check_types import CheckBase
