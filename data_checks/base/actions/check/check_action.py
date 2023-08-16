@@ -16,34 +16,34 @@ class CheckAction(ActionBase):
     @staticmethod
     def before(check: CheckBase, context: dict) -> None:
         """
-        Executes before each child run
+        Executes before each rule
         """
         return
 
     @staticmethod
     def on_success(check: CheckBase, context: dict) -> None:
         """
-        Executes after each successful child run
+        Executes after each successful rule
         """
         return
 
     @staticmethod
     def on_failure(check: CheckBase, context: dict) -> None:
         """
-        Executes after each failed child run
+        Executes after each failed rule
         """
         return
 
     @staticmethod
     def after(check: CheckBase, context: dict) -> None:
         """
-        Executes after each child run
+        Executes after each rule
         """
         return
 
     @staticmethod
     def teardown(check: CheckBase, context: dict) -> None:
         """
-        One time teardown for parent run
+        One time teardown for check
         """
         return

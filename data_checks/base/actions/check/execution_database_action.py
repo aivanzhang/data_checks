@@ -5,9 +5,7 @@ from io import StringIO
 from data_checks.base.actions.check.check_action import CheckAction
 from data_checks.base.exceptions import DataCheckException
 from data_checks.database.managers import (
-    CheckManager,
     CheckExecutionManager,
-    RuleManager,
     RuleExecutionManager,
 )
 
@@ -40,7 +38,6 @@ class ExecutionDatabaseAction(CheckAction):
 
     @staticmethod
     def before(check, context):
-        rule = context["rule"]
         params = context["params"]
 
         if "rule_model" not in context:

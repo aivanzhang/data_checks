@@ -1,5 +1,5 @@
 """
-Action that deals with creating the rows related to the main check and rules in the database (i.e. scheduling)
+Action that deals with creating the rows related to the main checks and rules in the database (i.e. scheduling)
 """
 
 from data_checks.base.actions.check.check_action import CheckAction
