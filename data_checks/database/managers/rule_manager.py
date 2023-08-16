@@ -44,14 +44,3 @@ class RuleManager(BaseManager, MainManagerMixin):
                     "check_id": check_id,
                 }
             )
-
-    @staticmethod
-    def latest_version(name: str, check_id: int, suite_id: Optional[int]) -> Rule:
-        with session_scope() as session:
-            return (
-                session.query(Rule)
-                .filter_by(name=name, suite_id=suite_id, check_id=check_id)
-                .order_by(Rule.created_at.desc())
-                .limit(1)
-                .one()
-            )

@@ -29,10 +29,8 @@ class ExecutionDatabaseAction(CheckAction):
 
     @staticmethod
     def setup(check, context):
-        """
-        One time setup for check
-        """
-        check._internal["check_model"] = CheckManager.latest_version(check.name)
+        if not check._internal["check_model"]:
+            return
 
         check._internal[
             "check_execution_model"
@@ -42,28 +40,13 @@ class ExecutionDatabaseAction(CheckAction):
 
     @staticmethod
     def before(check, context):
-        """
-        Executes before each child run
-        """
         rule = context["rule"]
         params = context["params"]
 
-        if "rule_model" in context:
-            main_model = context["rule_model"]
-
-        elif check._internal["check_model"] is not None:
-            main_model = RuleManager.latest_version(
-                rule,
-                check_id=check._internal["check_model"].id,
-                suite_id=check._internal["suite_model"].id
-                if check._internal["suite_model"]
-                else None,
-            )
-
-        else:
+        if "rule_model" not in context:
             return
 
-        # new_rule = latest of the check found in DB
+        main_model = context["rule_model"]
         new_rule_execution = RuleExecutionManager.create_execution(
             main_model=main_model,
             status="running",
@@ -81,6 +64,8 @@ class ExecutionDatabaseAction(CheckAction):
         """
         Executes after each successful child run
         """
+        if "exec_id" not in context:
+            return
         exec_id = context["exec_id"]
         ExecutionDatabaseAction.update_execution(
             type="rule",
@@ -94,6 +79,9 @@ class ExecutionDatabaseAction(CheckAction):
         """
         Executes after each failed child run
         """
+        if "exec_id" not in context:
+            return
+
         exec_id = context["exec_id"]
         exception: DataCheckException = context["exception"]
 
@@ -120,8 +108,13 @@ class ExecutionDatabaseAction(CheckAction):
         """
         Executes after each child run
         """
+        if "exec_id" not in context:
+            sys.stdout = sys.__stdout__
+            return
+
         logs = ""
         exec_id = context["exec_id"]
+
         params = context["params"]
         if exec_id and context["output"]:
             logs = context["output"].getvalue()

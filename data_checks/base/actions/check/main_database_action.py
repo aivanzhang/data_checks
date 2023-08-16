@@ -12,11 +12,8 @@ from data_checks.utils import class_utils
 
 class MainDatabaseAction(CheckAction):
     @staticmethod
-    def setup(check, context: dict):
-        """
-        One time setup for check
-        """
-        context["check_model"] = CheckManager.create_check(
+    def setup(check, context):
+        check._internal["check_model"] = CheckManager.create_check(
             name=check.name,
             description=check.description,
             tags=list(check.tags),
@@ -25,10 +22,7 @@ class MainDatabaseAction(CheckAction):
         )
 
     @staticmethod
-    def before(check, context: dict):
-        """
-        Executes before each child run
-        """
+    def before(check, context):
         rule = context["rule"]
 
         new_rule = RuleManager.create_rule(

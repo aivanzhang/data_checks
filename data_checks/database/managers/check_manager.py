@@ -30,14 +30,3 @@ class CheckManager(BaseManager, MainManagerMixin):
         with session_scope() as session:
             session.add(new_check)
         return new_check
-
-    @staticmethod
-    def latest_version(name: str) -> Check:
-        with session_scope() as session:
-            return (
-                session.query(Check)
-                .filter_by(name=name)
-                .order_by(Check.created_at.desc())
-                .limit(1)
-                .one()
-            )
