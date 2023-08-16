@@ -1,6 +1,9 @@
 import argparse
 from copy import deepcopy
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 from multiprocessing import Process
+from data_checks.conf.settings import settings
 from data_checks.conf.data_suite_registry import data_suite_registry
 from data_checks.base.suite import Suite
 from data_checks.base.actions.suite import SuiteAction, MainDatabaseAction
@@ -112,7 +115,29 @@ if args.scheduling:
     check_actions["default"] = [CheckMainDatabaseAction, ExecutionDatabaseAction]
     run_suite()
 elif args.deploy:
-    print("Deploying suites")
+    print("Deploying scheduled suites")
+    scheduler = BackgroundScheduler()
+    for suite_name, suite in suites_to_run.items():
+        schedule = suite.suite_config().get("schedule", settings["DEFAULT_SCHEDULE"])
+        print(f"[CRON JOB - {schedule}] {suite_name}")
+        suite = suite()
+        update_actions(suite)
+        suite_run_func = suite.run_async if getattr(args, "async") else suite.run
+        scheduler.add_job(
+            suite_run_func, CronTrigger.from_crontab(schedule), id=suite_name
+        )
+
+    scheduler.start()
+
+    try:
+        while True:
+            pass
+    except (KeyboardInterrupt, SystemExit):
+        scheduler.shutdown()
+
+    # suite_actions = [MainDatabaseAction]
+    # check_actions["default"] = [CheckMainDatabaseAction, ExecutionDatabaseAction]
+
 else:
     run_suite()
 

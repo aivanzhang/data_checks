@@ -29,7 +29,7 @@ class ConsistencySuite(DataSuite):
     @classmethod
     def suite_config(cls) -> dict:
         return {
-            "schedule": "0 1 * * *",
+            "schedule": "* * * * *",
         }
 
     @classmethod

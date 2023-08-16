@@ -26,6 +26,12 @@ class ConsistencySuite2(DataSuite):
         )
 
     @classmethod
+    def suite_config(cls) -> dict:
+        return {
+            "schedule": "* * * * *",
+        }
+
+    @classmethod
     def checks_overrides(cls) -> dict | None:
         return {
             "GeneralCompanyTransactionCheck": {

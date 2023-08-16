@@ -61,7 +61,7 @@ class Suite(SuiteBase, ActionMixin):
         """
         System configurations for the suite. In the following format:
         {
-            "schedule": "0 8 * * *", # cron schedule for the suite
+            "schedule": CRON_STRING, # cron schedule for the suite
         }
         """
         return {}

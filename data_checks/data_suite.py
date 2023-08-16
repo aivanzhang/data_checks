@@ -1,3 +1,4 @@
+from data_checks.conf.settings import settings
 from data_checks.base.dataset import Dataset
 from data_checks.base.suite import Suite
 
@@ -38,11 +39,11 @@ class DataSuite(Suite):
         """
         System configurations for the suite. In the following format:
         {
-            "schedule": "0 8 * * *", # cron schedule for the suite
+            "schedule": CRON_STRING, # cron schedule for the suite
         }
         """
         return {
-            "schedule": "0 8 * * *",  # default to run every day at 8am
+            "schedule": settings["DEFAULT_SCHEDULE"],  # default to run every day at 8am
         }
 
     @classmethod
