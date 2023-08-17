@@ -16,6 +16,7 @@ from data_checks.base.actions.check import (
     FindRuleModelAction,
     ExecutionDatabaseAction,
     DefaultCheckAction,
+    SkipRuleExecutionAction,
 )
 from data_checks.base.suite import CheckActions
 
@@ -84,11 +85,8 @@ check_actions: CheckActions = {"default": [], "checks": {}}
 
 
 def update_actions(suite: Suite):
-    # print(f"Updating actions for {suite}")
     suite.add_actions(*suite_actions)
-    # print(f"Adding suite actions for {suite, suite_actions}")
     suite.update_check_actions(check_actions)
-    # print(f"Adding check actions for {suite, check_actions}")
 
 
 def run_suite():
@@ -118,12 +116,16 @@ def run_suite():
 if args.scheduling:
     print("Scheduling suites")
     suite_actions = [DefaultSuiteAction, MainDatabaseAction]
-    check_actions["default"] = [DefaultCheckAction, CheckMainDatabaseAction]
+    check_actions["default"] = [
+        DefaultCheckAction,
+        CheckMainDatabaseAction,
+        SkipRuleExecutionAction,
+    ]
     run_suite()
-elif args.deploy:
+
+if args.deploy:
     suite_actions = []
     check_actions["default"] = [FindRuleModelAction, ExecutionDatabaseAction]
-    print("Deploying scheduled suites")
     scheduler = BackgroundScheduler()
     for suite_name, suite in suites_to_run.items():
         schedule = suite.suite_config().get("schedule", settings["DEFAULT_SCHEDULE"])
@@ -143,12 +145,9 @@ elif args.deploy:
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()
 
-    # suite_actions = [MainDatabaseAction]
-    # check_actions["default"] = [CheckMainDatabaseAction, ExecutionDatabaseAction]
-
 else:
     suite_actions = [DefaultSuiteAction]
-    check_actions["default"] = [DefaultCheckAction]
+    check_actions["default"] = [
+        DefaultCheckAction,
+    ]
     run_suite()
-
-    # getattr(suite(), "schedule")()

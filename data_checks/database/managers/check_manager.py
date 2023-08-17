@@ -1,11 +1,10 @@
 from typing import Optional
 from data_checks.database.managers.base_manager import BaseManager
 from data_checks.database.managers.models import Check, Rule
-from data_checks.database.managers.mixins import MainManagerMixin
 from data_checks.database.utils.session_utils import session_scope
 
 
-class CheckManager(BaseManager, MainManagerMixin):
+class CheckManager(BaseManager):
     model = Check
 
     @staticmethod
@@ -28,3 +27,13 @@ class CheckManager(BaseManager, MainManagerMixin):
         with session_scope() as session:
             session.add(new_check)
         return new_check
+
+    @staticmethod
+    def latest(name: str) -> Optional[Check]:
+        with session_scope() as session:
+            return (
+                session.query(Check)
+                .filter(Check.name == name)
+                .order_by(Check.created_at.desc())
+                .first()
+            )

@@ -8,7 +8,7 @@ class ActionMixin:
     def __init__(self):
         self.actions: list[type[ActionBase]] = []
 
-    def _exec_actions(self, action_type: str, context: dict, **kwargs):
+    def _exec_actions(self, action_type: str, context: dict = {}, **kwargs):
         """
         Execute an action
         """
@@ -16,13 +16,16 @@ class ActionMixin:
         for action in self.actions:
             action_func = getattr(action, action_type, None)
             if action_func is not None:
-                action_func(self, context, **kwargs)
+                if action_type == "setup" or action_type == "teardown":
+                    action_func(self)
+                else:
+                    action_func(self, context, **kwargs)
 
     def setup(self):
         """
         Runs all the setup functions
         """
-        self._exec_actions("setup", {})
+        self._exec_actions("setup")
 
     def before(self, context: dict):
         """
@@ -52,7 +55,7 @@ class ActionMixin:
         """
         One time teardown after all rules are run
         """
-        self._exec_actions("teardown", {})
+        self._exec_actions("teardown")
 
     def add_actions(self, *actions: type[ActionBase]):
         """

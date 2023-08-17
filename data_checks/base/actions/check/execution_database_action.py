@@ -62,7 +62,7 @@ class ExecutionDatabaseAction(CheckAction):
             execution_id=exec_id,
             status="failure",
             logs="",
-            traceback="".join(traceback.format_tb(exception.exception.__traceback__))
+            traceback="\n".join(traceback.format_tb(exception.exception.__traceback__))
             if exception.exception
             else None,
             exception=exception.toJSON(),

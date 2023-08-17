@@ -11,7 +11,7 @@ from data_checks.utils import class_utils
 
 class MainDatabaseAction(SuiteAction):
     @staticmethod
-    def setup(suite, context):
+    def setup(suite):
         config = suite.suite_config() or {}
 
         suite._internal["suite_model"] = SuiteManager.create_suite(

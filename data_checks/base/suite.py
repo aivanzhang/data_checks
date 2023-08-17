@@ -112,7 +112,6 @@ class Suite(SuiteBase, ActionMixin):
 
     def run(self, check_tags: Optional[Iterable] = None):
         self.setup()
-
         checks_to_run = self.get_checks_with_tags(check_tags)
         for index, check in enumerate(checks_to_run):
             print(f"[{index + 1}/{len(checks_to_run)} Checks] {check}")

@@ -12,7 +12,7 @@ from data_checks.utils import class_utils
 
 class MainDatabaseAction(CheckAction):
     @staticmethod
-    def setup(check, context):
+    def setup(check):
         check._internal["check_model"] = CheckManager.create_check(
             name=check.name,
             description=check.description,

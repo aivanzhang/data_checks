@@ -1,11 +1,10 @@
 from typing import Optional
 from data_checks.database.managers.base_manager import BaseManager
-from data_checks.database.managers.mixins import MainManagerMixin
 from data_checks.database.managers.models import Rule, RuleExecution
 from data_checks.database.utils.session_utils import session_scope
 
 
-class RuleManager(BaseManager, MainManagerMixin):
+class RuleManager(BaseManager):
     model = Rule
 
     @staticmethod
@@ -41,4 +40,16 @@ class RuleManager(BaseManager, MainManagerMixin):
                 {
                     "check_id": check_id,
                 }
+            )
+
+    @staticmethod
+    def latest(
+        suite_id: Optional[int], check_id: Optional[int], name: str
+    ) -> Optional[Rule]:
+        with session_scope() as session:
+            return (
+                session.query(Rule)
+                .filter_by(suite_id=suite_id, check_id=check_id, name=name)
+                .order_by(Rule.created_at.desc())
+                .first()
             )

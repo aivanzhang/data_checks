@@ -7,3 +7,4 @@ from data_checks.base.actions.suite.setup_check_actions_action import (
     SetupCheckActionsAction,
 )
 from data_checks.base.actions.suite.default_suite_action import DefaultSuiteAction
+from data_checks.base.actions.suite.find_suite_model_action import FindSuiteModelAction
