@@ -10,6 +10,8 @@ class SetupCheckActionsAction(SuiteAction):
     @staticmethod
     def before(suite: SuiteBase, context: dict) -> None:
         check: Check = context["check"]
-        check.add_actions(*suite.check_actions["default"])
-        if type(check) in suite.check_actions:
-            check.add_actions(*suite.check_actions[type(check)])
+        actions_for_check = suite.check_actions["default"]
+        if type(check) in suite.check_actions["checks"]:
+            actions_for_check += suite.check_actions["checks"][type(check)]
+
+        check.set_actions(actions_for_check)

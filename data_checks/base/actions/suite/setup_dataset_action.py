@@ -5,7 +5,7 @@ from data_checks.base.check import Check
 from data_checks.base.actions.suite.suite_action import SuiteAction
 
 
-class SetupInternalsAction(SuiteAction):
+class SetupDatasetAction(SuiteAction):
     @staticmethod
     def before(suite, context):
         """
