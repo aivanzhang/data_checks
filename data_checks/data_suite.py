@@ -7,7 +7,7 @@ class DataSuite(Suite):
     @classmethod
     def dataset(cls) -> Dataset | None:
         """
-        Dataset that is shared across all checks in the suite. Use this to define all the data needed for this suite's checks. Accessed by rules via cls.dataset() or self.dataset()
+        Dataset that is shared across all checks in the suite. Use this to define any shared data/datsets between a suite's checks. Accessed by rules via cls.dataset() or self.dataset()
         """
         return None
 
