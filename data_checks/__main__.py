@@ -10,6 +10,7 @@ from data_checks.base.actions.suite import (
     SuiteAction,
     MainDatabaseAction,
     DefaultSuiteAction,
+    FindSuiteModelAction,
 )
 from data_checks.base.actions.check import (
     MainDatabaseAction as CheckMainDatabaseAction,
@@ -19,6 +20,7 @@ from data_checks.base.actions.check import (
     SkipRuleExecutionAction,
 )
 from data_checks.base.suite import CheckActions
+from data_checks.utils.main_utils import update_actions, run_suites
 
 parser = argparse.ArgumentParser(
     prog="python -m data_checks", description="Run a project's data checks."
@@ -84,54 +86,36 @@ suite_actions: list[type[SuiteAction]] = []
 check_actions: CheckActions = {"default": [], "checks": {}}
 
 
-def update_actions(suite: Suite):
-    suite.add_actions(*suite_actions)
-    suite.update_check_actions(check_actions)
-
-
-def run_suite():
-    is_async = getattr(args, "async")
-    if is_async:
-        print("Starting async run")
-        running_suite_processes = []
-        for suite_name, suite in suites_to_run.items():
-            print(f"[Running Suite] {suite_name}")
-            suite = suite()
-            update_actions(suite)
-            process = Process(target=suite.run_async)
-            process.start()
-            running_suite_processes.append(process)
-        for process in running_suite_processes:
-            process.join()
-    else:
-        count = 1
-        for suite_name, suite in suites_to_run.items():
-            print(f"[{count}/{len(suites_to_run)} Suites] {suite_name}")
-            suite = suite()
-            update_actions(suite)
-            suite.run()
-            count += 1
-
-
 if args.scheduling:
     print("Scheduling suites")
     suite_actions = [DefaultSuiteAction, MainDatabaseAction]
-    check_actions["default"] = [
-        DefaultCheckAction,
-        CheckMainDatabaseAction,
-        SkipRuleExecutionAction,
-    ]
-    run_suite()
+    check_actions: CheckActions = {
+        "default": [
+            DefaultCheckAction,
+            CheckMainDatabaseAction,
+            SkipRuleExecutionAction,
+        ],
+        "checks": {},
+    }
+    run_suites(
+        suites_to_run,
+        suite_actions,
+        check_actions,
+        is_async=getattr(args, "async"),
+    )
 
 if args.deploy:
-    suite_actions = []
-    check_actions["default"] = [FindRuleModelAction, ExecutionDatabaseAction]
+    suite_actions = [FindSuiteModelAction]
+    check_actions: CheckActions = {
+        "default": [FindRuleModelAction, ExecutionDatabaseAction],
+        "checks": {},
+    }
     scheduler = BackgroundScheduler()
     for suite_name, suite in suites_to_run.items():
         schedule = suite.suite_config().get("schedule", settings["DEFAULT_SCHEDULE"])
         print(f"[CRON JOB - {schedule}] {suite_name}")
         suite = suite()
-        update_actions(suite)
+        update_actions(suite, suite_actions, check_actions)
         suite_run_func = suite.run_async if getattr(args, "async") else suite.run
         scheduler.add_job(
             suite_run_func, CronTrigger.from_crontab(schedule), id=suite_name
@@ -145,7 +129,7 @@ if args.deploy:
     except (KeyboardInterrupt, SystemExit):
         scheduler.shutdown()
 
-else:
+if not (args.scheduling or args.deploy):
     suite_actions = [DefaultSuiteAction]
     check_actions["default"] = [
         DefaultCheckAction,

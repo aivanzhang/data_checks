@@ -6,7 +6,6 @@ from data_checks.base.actions.suite.suite_action import SuiteAction
 from data_checks.database.managers import (
     SuiteManager,
 )
-from data_checks.utils import class_utils
 
 
 class FindSuiteModelAction(SuiteAction):
