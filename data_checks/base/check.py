@@ -78,6 +78,12 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
             )
         )
 
+    def set_actions(self, actions: list[type[CheckAction]]):
+        """
+        Set the actions for the check
+        """
+        self.actions = actions
+
     def only_run_specified_rules(self):
         """
         Appends to self.exclude_rules so that only rules in self.rules_params.keys() are run
@@ -250,9 +256,3 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
                 new_params.append(param)
 
             return new_params
-
-    def set_actions(self, actions: list[type[CheckAction]]):
-        """
-        Set the actions for the check
-        """
-        self.actions = actions

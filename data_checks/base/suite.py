@@ -120,6 +120,22 @@ class Suite(SuiteBase, ActionMixin):
                 if set(tags).intersection(check.tags)
             ]
 
+    def get_all_metadata(self):
+        """
+        Get all metadata from all checks
+        """
+
+        suite_metadata = dict()
+        for check in self.get_checks():
+            suite_metadata[check.name] = check.metadata.copy()
+        return suite_metadata
+
+    def set_actions(self, actions: list[type[SuiteAction]]):
+        self.actions = actions
+
+    def set_check_actions(self, check_actions: CheckActions):
+        self.check_actions = check_actions
+
     def run(self, check_tags: Optional[Iterable] = None):
         self.setup()
         checks_to_run = self.get_checks_with_tags(check_tags)
@@ -165,16 +181,6 @@ class Suite(SuiteBase, ActionMixin):
 
         self.teardown()
 
-    def get_all_metadata(self):
-        """
-        Get all metadata from all checks
-        """
-
-        suite_metadata = dict()
-        for check in self.get_checks():
-            suite_metadata[check.name] = check.metadata.copy()
-        return suite_metadata
-
     def _exec_async_check(self, check: Check):
         """
         Execute a check
@@ -195,9 +201,3 @@ class Suite(SuiteBase, ActionMixin):
             context["exception"] = e
             self.on_failure(context)
         self.after(context)
-
-    def set_actions(self, actions: list[type[SuiteAction]]):
-        self.actions = actions
-
-    def set_check_actions(self, check_actions: CheckActions):
-        self.check_actions = check_actions

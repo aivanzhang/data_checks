@@ -6,7 +6,7 @@ from typing import Optional
 
 class SkipExecutionException(Exception):
     """
-    Raise this exception in an action to skip the execution of a check
+    Raise this exception in an before action to skip the execution of a check
     """
 
     def __init__(
