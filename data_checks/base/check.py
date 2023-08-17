@@ -13,11 +13,11 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.mixins.metadata_mixin import MetadataMixin
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.utils import class_utils, check_utils
-from data_checks.base.actions.check import CheckAction, DefaultCheckAction
+from data_checks.base.actions.check import CheckAction
 
 
 class Check(CheckBase, MetadataMixin, ActionMixin):
-    DEFAULT_ACTIONS: list[type[CheckAction]] = [DefaultCheckAction]
+    DEFAULT_ACTIONS: list[type[CheckAction]] = []
 
     def __init__(
         self,

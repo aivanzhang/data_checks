@@ -2,21 +2,19 @@ import argparse
 from copy import deepcopy
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from multiprocessing import Process
 from data_checks.conf.settings import settings
 from data_checks.conf.data_suite_registry import data_suite_registry
-from data_checks.base.suite import Suite
 from data_checks.base.actions.suite import (
     SuiteAction,
     MainDatabaseAction,
-    DefaultSuiteAction,
+    ErrorLoggingSuiteAction,
     FindSuiteModelAction,
 )
 from data_checks.base.actions.check import (
     MainDatabaseAction as CheckMainDatabaseAction,
     FindRuleModelAction,
     ExecutionDatabaseAction,
-    DefaultCheckAction,
+    ErrorLoggingCheckAction,
     SkipRuleExecutionAction,
 )
 from data_checks.base.suite import CheckActions
@@ -69,6 +67,14 @@ parser.add_argument(
     default=False,
 )
 
+parser.add_argument(
+    "--error_logging",
+    "-el",
+    action="store_true",
+    help="Log errors to the console. Note this will also log errors to the database.",
+    default=False,
+)
+
 args = parser.parse_args()
 
 suites_to_run = deepcopy(data_suite_registry.suites)
@@ -80,18 +86,36 @@ if len(args.exclude) > 0:
         del suites_to_run[suite_name]
 
 if args.suite is not None:
-    suites_to_run = {args.suite: suites_to_run[args.suite]}
+    if args.suite in suites_to_run:
+        suites_to_run = {args.suite: suites_to_run[args.suite]}
+    else:
+        raise ValueError(f"Suite {args.suite} not found.")
 
-suite_actions: list[type[SuiteAction]] = []
-check_actions: CheckActions = {"default": [], "checks": {}}
+default_suite_actions: list[type[SuiteAction]] = []
+default_check_actions: CheckActions = {
+    "default": [],
+    "checks": {},
+}
+
+suite_actions: list[type[SuiteAction]]
+check_actions: CheckActions
+
+if args.error_logging:
+    default_suite_actions += [ErrorLoggingSuiteAction]
+    default_check_actions.update(
+        {
+            "default": [ErrorLoggingCheckAction],
+        }
+    )
 
 
 if args.scheduling:
     print("Scheduling suites")
-    suite_actions = [DefaultSuiteAction, MainDatabaseAction]
-    check_actions: CheckActions = {
-        "default": [
-            DefaultCheckAction,
+    # Create the suites and checks in the database with their respective schedules
+    suite_actions = default_suite_actions + [MainDatabaseAction]
+    check_actions = {
+        "default": default_check_actions["default"]
+        + [
             CheckMainDatabaseAction,
             SkipRuleExecutionAction,
         ],
@@ -105,9 +129,12 @@ if args.scheduling:
     )
 
 if args.deploy:
-    suite_actions = [FindSuiteModelAction]
-    check_actions: CheckActions = {
-        "default": [FindRuleModelAction, ExecutionDatabaseAction],
+    print("Deploying suites")
+    # Find database suites and checks to make the rule execution with
+    suite_actions = default_suite_actions + [FindSuiteModelAction]
+    check_actions = {
+        "default": default_check_actions["default"]
+        + [FindRuleModelAction, ExecutionDatabaseAction],
         "checks": {},
     }
     scheduler = BackgroundScheduler()
@@ -132,7 +159,7 @@ if args.deploy:
 if not (args.scheduling or args.deploy):
     run_suites(
         suites_to_run=suites_to_run,
-        actions=[],
-        check_actions={"default": [], "checks": {}},
+        actions=default_suite_actions,
+        check_actions={"default": default_check_actions["default"], "checks": {}},
         is_async=getattr(args, "async"),
     )

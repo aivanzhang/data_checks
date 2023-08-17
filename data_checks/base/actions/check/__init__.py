@@ -9,5 +9,7 @@ from data_checks.base.actions.check.find_rule_model_action import (
 from data_checks.base.actions.check.skip_rule_execution_action import (
     SkipRuleExecutionAction,
 )
-from data_checks.base.actions.check.default_check_action import DefaultCheckAction
+from data_checks.base.actions.check.error_logging_check_action import (
+    ErrorLoggingCheckAction,
+)
 from data_checks.base.actions.check.find_rule_model_action import FindRuleModelAction

@@ -9,7 +9,6 @@ from data_checks.base.exceptions import SkipExecutionException
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.base.actions.check import CheckAction
 from data_checks.base.actions.suite import (
-    DefaultSuiteAction,
     SuiteAction,
     SetupCheckActionsAction,
     SetupDatasetAction,
@@ -23,7 +22,6 @@ class CheckActions(TypedDict):
 
 class Suite(SuiteBase, ActionMixin):
     DEFAULT_ACTIONS: list[type[SuiteAction]] = [
-        DefaultSuiteAction,
         SetupCheckActionsAction,
         SetupDatasetAction,
     ]
