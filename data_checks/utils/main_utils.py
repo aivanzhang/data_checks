@@ -1,7 +1,6 @@
 from multiprocessing import Process
 from data_checks import DataSuite
 from data_checks.base.actions.suite import SuiteAction
-from data_checks.base.actions.check import CheckAction
 from data_checks.base.suite import CheckActions
 
 
