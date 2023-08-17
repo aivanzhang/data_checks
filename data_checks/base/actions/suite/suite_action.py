@@ -7,7 +7,7 @@ from data_checks.base.suite_types import SuiteBase
 
 class SuiteAction(ActionBase):
     @staticmethod
-    def setup(suite: SuiteBase, context: dict) -> None:
+    def setup(suite: SuiteBase) -> None:
         """
         One time setup for suite
         """
@@ -42,7 +42,7 @@ class SuiteAction(ActionBase):
         return
 
     @staticmethod
-    def teardown(suite: SuiteBase, context: dict) -> None:
+    def teardown(suite: SuiteBase) -> None:
         """
         One time teardown for suite
         """

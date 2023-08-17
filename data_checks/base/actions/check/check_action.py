@@ -7,7 +7,7 @@ from data_checks.base.check_types import CheckBase
 
 class CheckAction(ActionBase):
     @staticmethod
-    def setup(check: CheckBase, context: dict) -> None:
+    def setup(check: CheckBase) -> None:
         """
         One time setup for check
         """
@@ -42,7 +42,7 @@ class CheckAction(ActionBase):
         return
 
     @staticmethod
-    def teardown(check: CheckBase, context: dict) -> None:
+    def teardown(check: CheckBase) -> None:
         """
         One time teardown for check
         """
