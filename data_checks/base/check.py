@@ -199,7 +199,6 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
             context["exception"] = e
             self.on_failure(context)
         except Exception as e:
-            sys.stdout = sys.__stdout__
             print(e)
             context["exception"] = DataCheckException.from_exception(e)
             self.on_failure(

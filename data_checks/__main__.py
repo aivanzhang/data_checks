@@ -18,7 +18,7 @@ from data_checks.base.actions.check import (
     SkipRuleExecutionAction,
 )
 from data_checks.base.suite import CheckActions
-from data_checks.utils.main_utils import update_actions, run_suites
+from data_checks.utils.main_utils import update_actions, run_suites, start_suite_run
 
 parser = argparse.ArgumentParser(
     prog="python -m data_checks", description="Run a project's data checks."
@@ -143,9 +143,11 @@ if args.deploy:
         print(f"[CRON JOB - {schedule}] {suite_name}")
         suite = suite()
         update_actions(suite, suite_actions, check_actions)
-        suite_run_func = suite.run_async if getattr(args, "async") else suite.run
         scheduler.add_job(
-            suite_run_func, CronTrigger.from_crontab(schedule), id=suite_name
+            start_suite_run,
+            CronTrigger.from_crontab(schedule),
+            id=suite_name,
+            args=(suite, getattr(args, "async")),
         )
 
     scheduler.start()

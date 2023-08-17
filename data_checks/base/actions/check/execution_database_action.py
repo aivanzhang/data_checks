@@ -73,8 +73,8 @@ class ExecutionDatabaseAction(CheckAction):
         """
         Executes after each child run
         """
+        sys.stdout = sys.__stdout__
         if "exec_id" not in context:
-            sys.stdout = sys.__stdout__
             return
 
         logs = ""
@@ -83,7 +83,6 @@ class ExecutionDatabaseAction(CheckAction):
         params = context["params"]
         if exec_id and context["output"]:
             logs = context["output"].getvalue()
-            sys.stdout = sys.__stdout__
             if logs.strip() != "":
                 print(logs)
 

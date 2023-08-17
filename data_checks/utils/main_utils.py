@@ -4,6 +4,15 @@ from data_checks.base.actions.suite import SuiteAction
 from data_checks.base.suite import CheckActions
 
 
+def start_suite_run(suite: DataSuite, is_async: bool = False):
+    """
+    Each suite is run in a separate process so that stdout don't get mixed up
+    """
+    process = Process(target=suite.run if not is_async else suite.run_async)
+    process.start()
+    process.join()
+
+
 def update_actions(
     suite: DataSuite,
     suite_actions: list[type[SuiteAction]],
