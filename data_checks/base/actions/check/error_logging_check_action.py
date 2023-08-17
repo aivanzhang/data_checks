@@ -1,5 +1,5 @@
 """
-Template action that all checks actions inherit
+Action that logs the failure to the console
 """
 from data_checks.base.actions.check import CheckAction
 from data_checks.base.check_types import CheckBase
