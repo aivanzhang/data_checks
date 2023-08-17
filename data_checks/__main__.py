@@ -130,8 +130,9 @@ if args.deploy:
         scheduler.shutdown()
 
 if not (args.scheduling or args.deploy):
-    suite_actions = [DefaultSuiteAction]
-    check_actions["default"] = [
-        DefaultCheckAction,
-    ]
-    run_suite()
+    run_suites(
+        suites_to_run=suites_to_run,
+        actions=[],
+        check_actions={"default": [], "checks": {}},
+        is_async=getattr(args, "async"),
+    )

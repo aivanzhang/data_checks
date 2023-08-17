@@ -1,7 +1,7 @@
 """
 Action that deals with creating the rows related to the main checks and rules in the database (i.e. scheduling)
 """
-
+import json
 from data_checks.base.actions.check.check_action import CheckAction
 from data_checks.database.managers import (
     CheckManager,
@@ -24,15 +24,27 @@ class MainDatabaseAction(CheckAction):
     @staticmethod
     def before(check, context):
         rule = context["rule"]
+        params = context["params"]
 
-        new_rule = RuleManager.create_rule(
-            name=rule, code=class_utils.get_function_code(check, rule)
+        check_id = (
+            None
+            if check._internal["check_model"] is None
+            else check._internal["check_model"].id
+        )
+        suite_id = (
+            None
+            if check._internal["suite_model"] is None
+            else check._internal["suite_model"].id
         )
 
-        if check._internal["check_model"] is not None:
-            RuleManager.update_check_id(new_rule.id, check._internal["check_model"].id)
-
-        if check._internal["suite_model"] is not None:
-            RuleManager.update_suite_id(new_rule.id, check._internal["suite_model"].id)
-
-        context["rule_model"] = new_rule
+        context["rule_model"] = RuleManager.create_rule(
+            name=rule,
+            code=class_utils.get_function_code(check, rule),
+            params=json.dumps(params, default=str),
+            check_id=check_id,
+            suite_id=suite_id,
+            check_name=check.name,
+            suite_name=None
+            if check._internal["suite_model"] is None
+            else check._internal["suite_model"].name,
+        )

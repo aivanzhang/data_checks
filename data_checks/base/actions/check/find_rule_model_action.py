@@ -1,3 +1,4 @@
+import json
 from data_checks.base.actions.check.check_action import CheckAction
 from data_checks.database.managers import RuleManager, CheckManager
 
@@ -14,12 +15,12 @@ class FindRuleModelAction(CheckAction):
     @staticmethod
     def before(check, context):
         rule = context["rule"]
+        params = context["params"]
         context["rule_model"] = RuleManager.latest(
-            suite_id=check._internal["suite_model"].id
-            if check._internal["suite_model"] is not None
-            else None,
-            check_id=check._internal["check_model"].id
-            if check._internal["check_model"] is not None
-            else None,
+            suite_name=None
+            if check._internal["suite_model"] is None
+            else check._internal["suite_model"].name,
+            check_name=check.name,
             name=rule,
+            params=json.dumps(params, default=str),
         )
