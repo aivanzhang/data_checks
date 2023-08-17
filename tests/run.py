@@ -69,6 +69,6 @@ if __name__ == "__main__":
     # suite.run_async()
 
     check = GeneralCompanyTransactionCheck()
-    check.add_actions(MainDatabaseAction)
-    check.add_actions(ExecutionDatabaseAction)
+    check.set_actions([MainDatabaseAction])
+    check.set_actions([ExecutionDatabaseAction])
     check.run_all_async()
