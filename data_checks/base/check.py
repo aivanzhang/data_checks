@@ -13,10 +13,12 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.mixins.metadata_mixin import MetadataMixin
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.utils import class_utils, check_utils
-from data_checks.base.actions.check import CheckAction
+from data_checks.base.actions.check import CheckAction, DefaultCheckAction
 
 
 class Check(CheckBase, MetadataMixin, ActionMixin):
+    DEFAULT_ACTIONS: list[type[CheckAction]] = [DefaultCheckAction]
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -46,13 +48,21 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
             "check_model": None,
         }
         self.set_metadata_dir(metadata_dir)
-        self.actions: list[type[CheckAction]] = actions
+        self._actions: list[type[CheckAction]] = actions
         self.rules = dict()
         self.rules_params = rules_params
 
         self._set_rules(self.defined_rules())
         if only_run_specified_rules:
             self.only_run_specified_rules()
+
+    @property
+    def actions(self) -> list[type[CheckAction]]:
+        return self.DEFAULT_ACTIONS + self._actions
+
+    @actions.setter
+    def actions(self, actions: list[type[CheckAction]]):
+        self._actions = actions
 
     @classmethod
     def defined_rules(cls) -> list[str]:
@@ -242,8 +252,8 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
 
             return new_params
 
-    def add_actions(self, *actions: type[CheckAction]):
-        return super().add_actions(*actions)
-
-    def remove_actions(self, *actions: type[CheckAction]):
-        return super().remove_actions(*actions)
+    def set_actions(self, actions: list[type[CheckAction]]):
+        """
+        Set the actions for the check
+        """
+        self.actions = actions

@@ -9,9 +9,10 @@ from data_checks.base.exceptions import SkipExecutionException
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.base.actions.check import CheckAction
 from data_checks.base.actions.suite import (
+    DefaultSuiteAction,
     SuiteAction,
     SetupCheckActionsAction,
-    SetupInternalsAction,
+    SetupDatasetAction,
 )
 
 
@@ -21,6 +22,12 @@ class CheckActions(TypedDict):
 
 
 class Suite(SuiteBase, ActionMixin):
+    DEFAULT_ACTIONS: list[type[SuiteAction]] = [
+        DefaultSuiteAction,
+        SetupCheckActionsAction,
+        SetupDatasetAction,
+    ]
+
     def __init__(
         self,
         name: Optional[str] = None,
@@ -29,10 +36,7 @@ class Suite(SuiteBase, ActionMixin):
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.description = description or ""
-        self.actions: list[type[SuiteAction]] = [
-            SetupCheckActionsAction,
-            SetupInternalsAction,
-        ] + actions
+        self._actions: list[type[SuiteAction]] = actions
         self.check_actions: CheckActions = {
             "default": [],
             "checks": {},
@@ -41,6 +45,14 @@ class Suite(SuiteBase, ActionMixin):
             "suite_model": None,
             "dataset": None,
         }
+
+    @property
+    def actions(self) -> list[type[SuiteAction]]:
+        return self.DEFAULT_ACTIONS + self._actions
+
+    @actions.setter
+    def actions(self, actions: list[type[SuiteAction]]):
+        self._actions = actions
 
     @classmethod
     def dataset(cls) -> Dataset | None:
@@ -186,11 +198,8 @@ class Suite(SuiteBase, ActionMixin):
             self.on_failure(context)
         self.after(context)
 
-    def add_actions(self, *actions: type[SuiteAction]):
-        return super().add_actions(*actions)
+    def set_actions(self, actions: list[type[SuiteAction]]):
+        self.actions = actions
 
-    def remove_actions(self, *actions: type[SuiteAction]):
-        return super().remove_actions(*actions)
-
-    def update_check_actions(self, check_actions: CheckActions):
-        self.check_actions.update(check_actions)
+    def set_check_actions(self, check_actions: CheckActions):
+        self.check_actions = check_actions

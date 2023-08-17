@@ -57,16 +57,8 @@ class ActionMixin:
         """
         self._exec_actions("teardown")
 
-    def add_actions(self, *actions: type[ActionBase]):
+    def set_actions(self, actions: list[type[ActionBase]]):
         """
-        Add actions to the check
+        Set actions of the check
         """
-        for action in actions:
-            self.actions.append(action)
-
-    def remove_actions(self, *actions: type[ActionBase]):
-        """
-        Remove actions from the check
-        """
-        for action in actions:
-            self.actions.remove(action)
+        self.actions = actions
