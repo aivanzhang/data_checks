@@ -16,6 +16,7 @@ from data_checks.base.actions.check import (
     ExecutionDatabaseAction,
     ErrorLoggingCheckAction,
     SkipRuleExecutionAction,
+    RuleAlertingAction,
 )
 from data_checks.base.suite import CheckActions
 from data_checks.utils.main_utils import update_actions, run_suites, start_suite_run
@@ -25,8 +26,8 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    "--suite",
-    "-s",
+    "--only",
+    "-o",
     type=str,
     choices=data_suite_registry.keys,
     help="Run a specific data suite.",
@@ -44,10 +45,10 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--async",
-    "-a",
+    "--parallel",
+    "-p",
     action="store_true",
-    help="Run data suites asynchronously. This is useful for running suites in parallel. Order is not guaranteed.",
+    help="Run data suites in parallel. Order is not guaranteed.",
     default=False,
 )
 
@@ -75,6 +76,15 @@ parser.add_argument(
     default=False,
 )
 
+parser.add_argument(
+    "--alerting",
+    "-a",
+    action="store_true",
+    help="Log errors to the console. Note this will also log errors to the database.",
+    default=False,
+)
+
+
 args = parser.parse_args()
 
 suites_to_run = deepcopy(data_suite_registry.suites)
@@ -85,11 +95,11 @@ if len(args.exclude) > 0:
     for suite_name in args.exclude:
         del suites_to_run[suite_name]
 
-if args.suite is not None:
-    if args.suite in suites_to_run:
-        suites_to_run = {args.suite: suites_to_run[args.suite]}
+if args.only is not None:
+    if args.only in suites_to_run:
+        suites_to_run = {args.only: suites_to_run[args.only]}
     else:
-        raise ValueError(f"Suite {args.suite} not found.")
+        raise ValueError(f"Suite {args.only} not found.")
 
 default_suite_actions: list[type[SuiteAction]] = []
 default_check_actions: CheckActions = {
@@ -105,6 +115,13 @@ if args.error_logging:
     default_check_actions.update(
         {
             "default": [ErrorLoggingCheckAction],
+        }
+    )
+
+if args.alerting:
+    default_check_actions.update(
+        {
+            "default": [RuleAlertingAction],
         }
     )
 
@@ -125,7 +142,7 @@ if args.scheduling:
         suites_to_run,
         suite_actions,
         check_actions,
-        is_async=getattr(args, "async"),
+        is_async=args.parallel,
     )
 
 if args.deploy:
@@ -147,7 +164,10 @@ if args.deploy:
             start_suite_run,
             CronTrigger.from_crontab(schedule),
             id=suite_name,
-            args=(suite, getattr(args, "async")),
+            args=(
+                suite,
+                args.parallel,
+            ),
         )
 
     scheduler.start()
@@ -163,5 +183,5 @@ if not (args.scheduling or args.deploy):
         suites_to_run=suites_to_run,
         actions=default_suite_actions,
         check_actions={"default": default_check_actions["default"], "checks": {}},
-        is_async=getattr(args, "async"),
+        is_async=args.parallel,
     )
