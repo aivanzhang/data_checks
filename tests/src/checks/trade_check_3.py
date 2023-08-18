@@ -6,11 +6,11 @@ import os
 import time
 
 
-class TradeCheck2(DataCheck):
+class TradeCheck3(DataCheck):
     def company_payments_size_increasing(
-        self, company_name="company_name", days=[2, 5]
+        self, company_name="company_name", days=[3, 6]
     ):
         print(company_name, days)
 
-    def company_payments_size_increasing_2(self, company_name="company_2"):
+    def company_payments_size_increasing_2(self, company_name="company_3"):
         print(company_name)
