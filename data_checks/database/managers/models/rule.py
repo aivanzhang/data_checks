@@ -16,7 +16,8 @@ class Rule(Base, MainMixin):
     severity: Mapped[float] = mapped_column(Numeric(6, 3), default=0.0)
     tags: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])
     code: Mapped[str] = mapped_column(UnicodeText())
-    hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    hash: Mapped[str] = mapped_column(UnicodeText(), nullable=False)
+    group: Mapped[str] = mapped_column(UnicodeText(), nullable=True)
 
     suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"), nullable=True)
     suite: Mapped["Suite"] = relationship(back_populates="rules")

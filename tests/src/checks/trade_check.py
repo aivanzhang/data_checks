@@ -10,7 +10,7 @@ class TradeCheck(DataCheck):
     def company_payments_size_increasing(
         self, company_name="company_name", days=[2, 5]
     ):
-        print(company_name, days, self.trade)
+        print(company_name, days, self.group["value"])
 
     def company_payments_size_increasing_2(self, company_name="company_2"):
-        print(company_name, self.trade)
+        print(company_name, self.group["value"])

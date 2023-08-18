@@ -5,6 +5,15 @@ from data_checks.base.actions.action_types import ActionBase
 from data_checks.database.managers import models
 
 
+class Group(TypedDict):
+    """
+    Group data (if applicable)
+    """
+
+    name: str
+    value: str
+
+
 # Function positional and keyword arguments
 class FunctionArgs(TypedDict):
     """
@@ -29,9 +38,9 @@ class CheckBase(ABC):
     Base class for all checks
     """
 
+    _internal: CheckInternal
     name: str
     dataset: Dataset
-    _internal: CheckInternal
     description: str
     rules: Dict[str, Callable[..., None]]  # Stores all the rules functions in the check
     rules_params: Dict[
@@ -47,6 +56,7 @@ class CheckBase(ABC):
     excluded_rules: set
     tags: set
     actions: list[type[ActionBase]]
+    group: Optional[Group]
 
     verbose: bool
 

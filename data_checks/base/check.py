@@ -7,7 +7,7 @@ import time
 from typing import Iterable, Optional, Callable
 from multiprocessing import Process
 from data_checks.base.exceptions import DataCheckException, SkipExecutionException
-from data_checks.base.check_types import FunctionArgs, CheckBase
+from data_checks.base.check_types import FunctionArgs, CheckBase, Group
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
 from data_checks.base.mixins.metadata_mixin import MetadataMixin
@@ -29,9 +29,9 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         tags: Iterable = [],
         actions: list[type[CheckAction]] = [],
         verbose=False,
+        group: Optional[Group] = None,
         dataset: Optional[Dataset] = None,
         only_run_specified_rules=False,
-        **additional_kwargs,
     ):
         """
         Initialize a check object
@@ -52,9 +52,7 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         self._actions: list[type[CheckAction]] = actions
         self.rules = dict()
         self.rules_params = rules_params
-
-        for key, value in additional_kwargs.items():
-            setattr(self, key, value)
+        self.group = group
 
         self._set_rules(self.defined_rules())
         if only_run_specified_rules:

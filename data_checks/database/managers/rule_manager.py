@@ -22,6 +22,7 @@ class RuleManager(BaseManager):
         params: str,
         check_id: Optional[int] = None,
         check_name: Optional[str] = None,
+        group: Optional[str] = None,
         suite_id: Optional[int] = None,
         suite_name: Optional[str] = None,
         severity: float = 0.0,
@@ -32,6 +33,7 @@ class RuleManager(BaseManager):
             check_id=check_id,
             suite_id=suite_id,
             hash=RuleManager.generate_hash(name, check_name, suite_name, params),
+            group=group,
             code=code,
             severity=severity,
             executions=executions,
@@ -42,13 +44,20 @@ class RuleManager(BaseManager):
 
     @staticmethod
     def latest(
-        suite_name: Optional[str], check_name: Optional[str], name: str, params: str
+        suite_name: Optional[str],
+        check_name: Optional[str],
+        name: str,
+        params: str,
+        group: Optional[str] = None,
     ) -> Optional[Rule]:
         with session_scope() as session:
             return (
                 session.query(Rule)
                 .filter_by(
-                    hash=RuleManager.generate_hash(name, check_name, suite_name, params)
+                    hash=RuleManager.generate_hash(
+                        name, check_name, suite_name, params
+                    ),
+                    group=group,
                 )
                 .order_by(Rule.created_at.desc())
                 .first()

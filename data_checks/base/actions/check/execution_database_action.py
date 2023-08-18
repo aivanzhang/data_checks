@@ -79,8 +79,6 @@ class ExecutionDatabaseAction(CheckAction):
 
         logs = ""
         exec_id = context["exec_id"]
-
-        params = context["params"]
         if exec_id and context["output"]:
             logs = context["output"].getvalue()
             if logs.strip() != "":
@@ -89,5 +87,4 @@ class ExecutionDatabaseAction(CheckAction):
         RuleExecutionManager.update_execution(
             execution_id=exec_id,
             logs=logs,
-            params=json.dumps(params, default=str),
         )

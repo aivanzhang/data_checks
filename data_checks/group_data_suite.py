@@ -49,5 +49,10 @@ class GroupDataSuite(DataSuite):
         checks = []
         for check in cls.group_checks():
             for element in cls.group():
-                checks.append(check(**{group_name: element}))
+                updated_check = check()
+                updated_check.group = {
+                    "name": group_name,
+                    "value": element,
+                }
+                checks.append(updated_check)
         return checks

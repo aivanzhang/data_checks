@@ -41,6 +41,7 @@ class MainDatabaseAction(CheckAction):
             name=rule,
             code=class_utils.get_function_code(check, rule),
             params=json.dumps(params, default=str),
+            group=json.dumps(check.group, default=str) if check.group else None,
             check_id=check_id,
             suite_id=suite_id,
             check_name=check.name,
