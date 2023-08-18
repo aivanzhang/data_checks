@@ -31,6 +31,7 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         verbose=False,
         dataset: Optional[Dataset] = None,
         only_run_specified_rules=False,
+        **additional_kwargs,
     ):
         """
         Initialize a check object
@@ -51,6 +52,9 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
         self._actions: list[type[CheckAction]] = actions
         self.rules = dict()
         self.rules_params = rules_params
+
+        for key, value in additional_kwargs.items():
+            setattr(self, key, value)
 
         self._set_rules(self.defined_rules())
         if only_run_specified_rules:

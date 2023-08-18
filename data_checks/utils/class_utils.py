@@ -76,7 +76,7 @@ def import_submodules(package, recursive=True):
     return results
 
 
-def classes_for_directory(module, parent_class):
+def classes_for_directory(module, parent_class, excluded_classes=[]):
     """
     Returns a list of Classes in the module that are a subclass
 
@@ -90,6 +90,7 @@ def classes_for_directory(module, parent_class):
                 inspect.isclass(class_attr)
                 and issubclass(class_attr, parent_class)
                 and class_attr != parent_class
+                and class_attr not in excluded_classes
             ):
                 classes.append(class_attr)
     return classes

@@ -1,7 +1,8 @@
-from typing import Iterable, Tuple
+from typing import Tuple
 from data_checks.conf.settings import settings
 from data_checks.utils import class_utils
 from data_checks import DataSuite
+from data_checks import GroupDataSuite
 
 
 class DataSuiteRegistry:
@@ -10,7 +11,7 @@ class DataSuiteRegistry:
             raise ImportError("Please specify SUITES_MODULE in your settings module.")
         else:
             suites = class_utils.classes_for_directory(
-                settings["SUITES_MODULE"], DataSuite
+                settings["SUITES_MODULE"], DataSuite, [GroupDataSuite]
             )
             self.suites: dict[str, type[DataSuite]] = {
                 suite.__name__: suite for suite in suites

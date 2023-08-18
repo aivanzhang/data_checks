@@ -77,7 +77,7 @@ class Suite(SuiteBase, ActionMixin):
         return {}
 
     @classmethod
-    def checks(cls) -> list[type | str]:
+    def checks(cls) -> list[type | str | Check]:
         """
         Checks to be run by the suite
         """
@@ -89,15 +89,23 @@ class Suite(SuiteBase, ActionMixin):
         for check in self.checks():
             overrides = {}
             if checks_overrides is not None:
-                overrides = checks_overrides.get(
-                    check if isinstance(check, str) else check.__name__, {}
-                )
+                check_name: str
+                if isinstance(check, str):
+                    check_name = check
+                elif isinstance(check, type):
+                    check_name = check.__name__
+                else:
+                    check_name = check.name
+                overrides = checks_overrides.get(check_name, {})
             if isinstance(check, str):
                 checks.append(
                     data_check_registry[check](
                         rules_params=overrides,
                     )
                 )
+            elif isinstance(check, Check):
+                check.rules_params = overrides
+                checks.append(check)
             elif issubclass(check, Check):
                 checks.append(
                     check(
