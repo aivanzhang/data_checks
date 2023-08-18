@@ -20,11 +20,6 @@ from data_checks.base.actions.check import (
     RuleAlertingAction,
 )
 from data_checks.base.suite import CheckActions
-from data_checks.utils.main_utils import (
-    update_actions,
-    run_suites,
-    start_suite_deployment,
-)
 from data_checks import DataSuite
 
 
