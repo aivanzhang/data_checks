@@ -4,7 +4,7 @@ from data_checks.base.actions.suite import SuiteAction
 from data_checks.base.suite import CheckActions
 
 
-def start_suite_run(suite: DataSuite, is_async: bool = False):
+def start_suite_deployment(suite: DataSuite, is_async: bool = False):
     """
     Each suite is run in a separate process so that stdout don't get mixed up
     """

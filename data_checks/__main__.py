@@ -19,7 +19,11 @@ from data_checks.base.actions.check import (
     RuleAlertingAction,
 )
 from data_checks.base.suite import CheckActions
-from data_checks.utils.main_utils import update_actions, run_suites, start_suite_run
+from data_checks.utils.main_utils import (
+    update_actions,
+    run_suites,
+    start_suite_deployment,
+)
 
 parser = argparse.ArgumentParser(
     prog="python -m data_checks", description="Run a project's data checks."
@@ -80,7 +84,7 @@ parser.add_argument(
     "--alerting",
     "-a",
     action="store_true",
-    help="Log errors to the console. Note this will also log errors to the database.",
+    help="Alerts the user when a data check fails. Make sure to set up the alerting endpoint in the settings file.",
     default=False,
 )
 
@@ -112,18 +116,10 @@ check_actions: CheckActions
 
 if args.error_logging:
     default_suite_actions += [ErrorLoggingSuiteAction]
-    default_check_actions.update(
-        {
-            "default": [ErrorLoggingCheckAction],
-        }
-    )
+    default_check_actions["default"].append(ErrorLoggingCheckAction)
 
 if args.alerting:
-    default_check_actions.update(
-        {
-            "default": [RuleAlertingAction],
-        }
-    )
+    default_check_actions["default"].append(RuleAlertingAction)
 
 
 if args.scheduling:
@@ -161,7 +157,7 @@ if args.deploy:
         suite = suite()
         update_actions(suite, suite_actions, check_actions)
         scheduler.add_job(
-            start_suite_run,
+            start_suite_deployment,
             CronTrigger.from_crontab(schedule),
             id=suite_name,
             args=(
