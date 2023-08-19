@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "data_checks"
-version = "0.0.29"
+version = "0.0.30"
 authors = [
   { name="Ivan Zhang", email="ivanzhangofficial@gmail.com" },
 ]
@@ -12,6 +12,19 @@ description = "Data observability checks to easily create comprehensive data qua
 readme = "README.md"
 requires-python = ">=3.7"
 license = {file = "LICENSE"}
+dependencies = [
+    "APScheduler==3.10.3",
+    "certifi==2023.7.22",
+    "charset-normalizer==3.2.0",
+    "idna==3.4",
+    "pytz==2023.3",
+    "requests==2.31.0",
+    "six==1.16.0",
+    "SQLAlchemy==2.0.19",
+    "typing_extensions==4.7.1",
+    "tzlocal==5.0.1",
+    "urllib3==2.0.4",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/SuperiorityComplex/data-checks"
