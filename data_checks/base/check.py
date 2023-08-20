@@ -10,13 +10,12 @@ from data_checks.base.exceptions import DataCheckException, SkipExecutionExcepti
 from data_checks.base.check_types import FunctionArgs, CheckBase, Group
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
-from data_checks.base.mixins.metadata_mixin import MetadataMixin
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.utils import class_utils, check_utils
 from data_checks.base.actions.check import CheckAction
 
 
-class Check(CheckBase, MetadataMixin, ActionMixin):
+class Check(CheckBase, ActionMixin):
     DEFAULT_ACTIONS: list[type[CheckAction]] = []
 
     def __init__(
@@ -48,7 +47,6 @@ class Check(CheckBase, MetadataMixin, ActionMixin):
             "suite_model": None,
             "check_model": None,
         }
-        self.set_metadata_dir(metadata_dir)
         self._actions: list[type[CheckAction]] = actions
         self.rules = dict()
         self.rules_params = rules_params
