@@ -5,6 +5,8 @@ from io import StringIO
 from data_checks.base.actions.check.check_action import CheckAction
 from data_checks.base.exceptions import DataCheckException
 from data_checks.database.managers import (
+    CheckManager,
+    RuleManager,
     RuleExecutionManager,
 )
 
@@ -15,13 +17,29 @@ Action that deals with creating the rows related to the execution of check and r
 
 class ExecutionDatabaseAction(CheckAction):
     @staticmethod
+    def setup(check) -> None:
+        check._internal["check_model"] = CheckManager.latest(check.name)
+
+    @staticmethod
     def before(check, context):
+        rule = context["rule"]
         params = context["params"]
 
-        if "rule_model" not in context:
+        rule = RuleManager.latest(
+            suite_name=None
+            if check._internal["suite_model"] is None
+            else check._internal["suite_model"].name,
+            check_name=check.name,
+            group=json.dumps(check.group, default=str) if check.group else None,
+            name=rule,
+            params=json.dumps(params, default=str),
+        )
+
+        if not rule:
             return
 
-        rule = context["rule_model"]
+        context["rule_model"] = rule
+
         new_rule_execution = RuleExecutionManager.create_execution(
             rule=rule,
             status="running",

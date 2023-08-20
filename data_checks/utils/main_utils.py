@@ -13,7 +13,6 @@ from data_checks.base.actions.suite import (
 )
 from data_checks.base.actions.check import (
     MainDatabaseAction as CheckMainDatabaseAction,
-    FindRuleModelAction,
     ExecutionDatabaseAction,
     ErrorLoggingCheckAction,
     SkipRuleExecutionAction,
@@ -187,8 +186,7 @@ def main():
         # Find database suites and checks to make the rule execution with
         suite_actions = default_suite_actions + [FindSuiteModelAction]
         check_actions = {
-            "default": default_check_actions["default"]
-            + [FindRuleModelAction, ExecutionDatabaseAction],
+            "default": default_check_actions["default"] + [ExecutionDatabaseAction],
             "checks": {},
         }
         scheduler = BackgroundScheduler()

@@ -9,7 +9,6 @@ if __name__ == "__main__":
 
     from data_checks.base.actions.check import (
         MainDatabaseAction as CheckMainDatabaseAction,
-        FindRuleModelAction,
         ExecutionDatabaseAction,
         ErrorLoggingCheckAction,
         SkipRuleExecutionAction,
@@ -62,32 +61,34 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     checks_to_run = deepcopy(data_check_registry.checks)
-    check_actions: list[type[CheckAction]] = []
+    default_check_actions: list[type[CheckAction]] = []
 
     if args.error_logging:
-        check_actions.append(ErrorLoggingCheckAction)
+        default_check_actions.append(ErrorLoggingCheckAction)
 
     if args.alerting:
-        check_actions.append(RuleAlertingAction)
+        default_check_actions.append(RuleAlertingAction)
 
     if args.schedule:
         # Create the checks in the database
-        check_actions += [
-            CheckMainDatabaseAction,
-            SkipRuleExecutionAction,
-        ]
         run_checks(
             checks_to_run=checks_to_run,
-            check_actions=check_actions,
+            check_actions=default_check_actions
+            + [
+                CheckMainDatabaseAction,
+                SkipRuleExecutionAction,
+            ],
             is_async=args.parallel,
         )
         print(f"Deploying checks with cron schedule: {args.schedule}")
-        check_actions = [FindRuleModelAction, ExecutionDatabaseAction]
         scheduler = BackgroundScheduler()
         for check_name, check in checks_to_run.items():
             print(f"[CRON JOB - {args.schedule}] {check_name}")
             check = check()
-            update_actions(check, check_actions)
+            update_actions(
+                check,
+                default_check_actions + [ExecutionDatabaseAction],
+            )
             scheduler.add_job(
                 start_check_deployment,
                 CronTrigger.from_crontab(args.schedule),
@@ -108,6 +109,6 @@ if __name__ == "__main__":
     else:
         run_checks(
             checks_to_run=checks_to_run,
-            check_actions=check_actions,
+            check_actions=default_check_actions,
             is_async=args.parallel,
         )
