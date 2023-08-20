@@ -50,6 +50,7 @@ def run_suites(
         print("Starting async run")
         running_suite_processes = []
         for suite_name, suite in suites_to_run.items():
+            print(f"Running suite {suite_name}")
             suite = suite()
             update_actions(suite, actions, check_actions)
             process = Process(target=suite.run_async)
