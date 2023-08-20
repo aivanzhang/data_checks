@@ -11,6 +11,6 @@ class SetupDatasetAction(SuiteAction):
         """
         Run before each check
         """
-        check: Check = context["check"]
+        check: Check = context.get_sys("check")
         suite._internal["dataset"] = suite.dataset()
         check._update_from_suite_internals(suite._internal)

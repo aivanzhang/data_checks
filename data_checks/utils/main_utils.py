@@ -117,7 +117,7 @@ def main():
 
     parser.add_argument(
         "--error_logging",
-        "-el",
+        "-l",
         action="store_true",
         help="Log errors to the console. Note this will also log errors to the database.",
         default=False,

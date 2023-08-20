@@ -7,6 +7,7 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
 from data_checks.base.exceptions import SkipExecutionException
 from data_checks.base.mixins.action_mixin import ActionMixin
+from data_checks.base.actions.execution_context import ExecutionContext
 from data_checks.base.actions.check import CheckAction
 from data_checks.base.actions.suite import (
     SuiteAction,
@@ -128,16 +129,6 @@ class Suite(SuiteBase, ActionMixin):
                 if set(tags).intersection(check.tags)
             ]
 
-    def get_all_metadata(self):
-        """
-        Get all metadata from all checks
-        """
-
-        suite_metadata = dict()
-        for check in self.get_checks():
-            suite_metadata[check.name] = check.metadata.copy()
-        return suite_metadata
-
     def set_actions(self, actions: list[type[SuiteAction]]):
         self.actions = actions
 
@@ -149,9 +140,8 @@ class Suite(SuiteBase, ActionMixin):
         checks_to_run = self.get_checks_with_tags(check_tags)
         for index, check in enumerate(checks_to_run):
             print(f"[{index + 1}/{len(checks_to_run)} Checks] {check}")
-            context: dict = {
-                "check": check,
-            }
+            context = ExecutionContext()
+            context.set_sys("check", check)
             try:
                 self.before(context)
             except SkipExecutionException as e:
@@ -162,7 +152,7 @@ class Suite(SuiteBase, ActionMixin):
                 print(f"{check} finished in {time.time() - start_time} seconds")
                 self.on_success(context)
             except Exception as e:
-                context["exception"] = e
+                context.set_sys("exception", e)
                 self.on_failure(context)
             self.after(context)
 
@@ -193,9 +183,8 @@ class Suite(SuiteBase, ActionMixin):
         """
         Execute a check
         """
-        context: dict = {
-            "check": check,
-        }
+        context = ExecutionContext()
+        context.set_sys("check", check)
         try:
             self.before(context)
         except SkipExecutionException as e:
@@ -206,6 +195,6 @@ class Suite(SuiteBase, ActionMixin):
             print(f"{check} finished in {time.time() - start_time} seconds")
             self.on_success(context)
         except Exception as e:
-            context["exception"] = e
+            context.set_sys("exception", e)
             self.on_failure(context)
         self.after(context)

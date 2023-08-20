@@ -23,8 +23,8 @@ class MainDatabaseAction(CheckAction):
 
     @staticmethod
     def before(check, context):
-        rule = context["rule"]
-        params = context["params"]
+        rule = context.get_sys("rule")
+        params = context.get_sys("params")
 
         check_id = (
             None
@@ -37,15 +37,18 @@ class MainDatabaseAction(CheckAction):
             else check._internal["suite_model"].id
         )
 
-        context["rule_model"] = RuleManager.create_rule(
-            name=rule,
-            code=class_utils.get_function_code(check, rule),
-            params=json.dumps(params, default=str),
-            group=json.dumps(check.group, default=str) if check.group else None,
-            check_id=check_id,
-            suite_id=suite_id,
-            check_name=check.name,
-            suite_name=None
-            if check._internal["suite_model"] is None
-            else check._internal["suite_model"].name,
+        context.set_sys(
+            "rule_model",
+            RuleManager.create_rule(
+                name=rule,
+                code=class_utils.get_function_code(check, rule),
+                params=json.dumps(params, default=str),
+                group=json.dumps(check.group, default=str) if check.group else None,
+                check_id=check_id,
+                suite_id=suite_id,
+                check_name=check.name,
+                suite_name=None
+                if check._internal["suite_model"] is None
+                else check._internal["suite_model"].name,
+            ),
         )

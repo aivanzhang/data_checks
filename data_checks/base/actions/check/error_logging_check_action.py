@@ -7,5 +7,5 @@ from data_checks.base.check_types import CheckBase
 
 class ErrorLoggingCheckAction(CheckAction):
     @staticmethod
-    def on_failure(check: CheckBase, context: dict) -> None:
-        print(context["exception"])
+    def on_failure(check: CheckBase, context) -> None:
+        print(context.get_sys("exception"))

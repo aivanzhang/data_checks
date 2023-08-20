@@ -2,7 +2,6 @@
 Check class
 """
 import copy
-import sys
 import time
 from typing import Iterable, Optional, Callable
 from multiprocessing import Process
@@ -13,6 +12,7 @@ from data_checks.base.dataset import Dataset
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.utils import class_utils, check_utils
 from data_checks.base.actions.check import CheckAction
+from data_checks.base.actions.execution_context import ExecutionContext
 
 
 class Check(CheckBase, ActionMixin):
@@ -166,8 +166,6 @@ class Check(CheckBase, ActionMixin):
         for rule, processes in running_rule_processes:
             for process in processes:
                 process.join()
-
-        # await asyncio.gather(*self._generate_async_rule_runs(tags))
         self.teardown()
 
     def __str__(self):
@@ -180,7 +178,9 @@ class Check(CheckBase, ActionMixin):
         Execute a rule
         """
         rule_metadata = {"rule": rule, "params": params}
-        context = copy.deepcopy(rule_metadata)
+        context = ExecutionContext()
+        context.set_sys("rule", rule)
+        context.set_sys("params", params)
 
         try:
             self.before(context)
@@ -194,19 +194,20 @@ class Check(CheckBase, ActionMixin):
             self.on_success(context)
         except AssertionError as e:
             print(e)
-            context["exception"] = DataCheckException.from_assertion_exception(
-                e, metadata=rule_metadata
+            context.set_sys(
+                "exception",
+                DataCheckException.from_assertion_exception(e, metadata=rule_metadata),
             )
             self.on_failure(
                 context,
             )
         except DataCheckException as e:
             print(e)
-            context["exception"] = e
+            context.set_sys("exception", e)
             self.on_failure(context)
         except Exception as e:
             print(e)
-            context["exception"] = DataCheckException.from_exception(e)
+            context.set_sys("exception", DataCheckException.from_exception(e))
             self.on_failure(
                 context,
             )

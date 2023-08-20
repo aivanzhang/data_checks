@@ -22,8 +22,8 @@ class ExecutionDatabaseAction(CheckAction):
 
     @staticmethod
     def before(check, context):
-        rule = context["rule"]
-        params = context["params"]
+        rule = context.get_sys("rule")
+        params = context.get_sys("params")
 
         rule = RuleManager.latest(
             suite_name=None
@@ -38,7 +38,7 @@ class ExecutionDatabaseAction(CheckAction):
         if not rule:
             return
 
-        context["rule_model"] = rule
+        context.set_sys("rule_model", rule)
 
         new_rule_execution = RuleExecutionManager.create_execution(
             rule=rule,
@@ -48,18 +48,18 @@ class ExecutionDatabaseAction(CheckAction):
 
         rule_output = StringIO()
 
-        context["output"] = rule_output
+        context.set_sys("output", rule_output)
         sys.stdout = rule_output
-        context["exec_id"] = new_rule_execution.id
+        context.set_sys("exec_id", new_rule_execution.id)
 
     @staticmethod
     def on_success(check, context):
         """
         Executes after each successful child run
         """
-        if "exec_id" not in context:
+        if "exec_id" not in context["sys"]:
             return
-        exec_id = context["exec_id"]
+        exec_id = context.get_sys("exec_id")
         RuleExecutionManager.update_execution(
             execution_id=exec_id,
             status="success",
@@ -71,11 +71,10 @@ class ExecutionDatabaseAction(CheckAction):
         """
         Executes after each failed child run
         """
-        if "exec_id" not in context:
+        if "exec_id" not in context["sys"]:
             return
-
-        exec_id = context["exec_id"]
-        exception: DataCheckException = context["exception"]
+        exec_id = context.get_sys("exec_id")
+        exception: DataCheckException = context.get_sys("exception")
         RuleExecutionManager.update_execution(
             execution_id=exec_id,
             status="failure",
@@ -92,13 +91,13 @@ class ExecutionDatabaseAction(CheckAction):
         Executes after each child run
         """
         sys.stdout = sys.__stdout__
-        if "exec_id" not in context:
+        if "exec_id" not in context["sys"]:
             return
+        exec_id = context.get_sys("exec_id")
 
         logs = ""
-        exec_id = context["exec_id"]
-        if exec_id and context["output"]:
-            logs = context["output"].getvalue()
+        if exec_id and "output" in context["sys"]:
+            logs = context.get_sys("output").getvalue()
             if logs.strip() != "":
                 print(logs)
 

@@ -10,10 +10,10 @@ from data_checks.base.check_types import CheckBase
 
 class RuleAlertingAction(CheckAction):
     @staticmethod
-    def on_success(check: CheckBase, context: dict) -> None:
+    def on_success(check: CheckBase, context) -> None:
         rule_execution_id = None
-        if "exec_id" in context:
-            rule_execution_id = context["exec_id"]
+        if "exec_id" in context["sys"]:
+            rule_execution_id = context.get_sys("exec_id")
 
         success_request = requests.post(
             settings["ALERTING_ENDPOINT"],
@@ -27,10 +27,10 @@ class RuleAlertingAction(CheckAction):
             print(success_request.status_code, success_request.reason)
 
     @staticmethod
-    def on_failure(check: CheckBase, context: dict) -> None:
+    def on_failure(check: CheckBase, context) -> None:
         rule_execution_id = None
-        if "exec_id" in context:
-            rule_execution_id = context["exec_id"]
+        if "exec_id" in context["sys"]:
+            rule_execution_id = context.get_sys("exec_id")
 
         failed_request = requests.post(
             settings["ALERTING_ENDPOINT"],

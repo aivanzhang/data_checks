@@ -7,5 +7,5 @@ from data_checks.base.suite_types import SuiteBase
 
 class ErrorLoggingSuiteAction(SuiteAction):
     @staticmethod
-    def on_failure(suite: SuiteBase, context: dict) -> None:
-        print(context["exception"])
+    def on_failure(suite: SuiteBase, context) -> None:
+        print(context.get_sys("exception"))

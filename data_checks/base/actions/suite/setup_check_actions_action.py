@@ -8,8 +8,8 @@ from data_checks.base.check import Check
 
 class SetupCheckActionsAction(SuiteAction):
     @staticmethod
-    def before(suite: SuiteBase, context: dict) -> None:
-        check: Check = context["check"]
+    def before(suite: SuiteBase, context) -> None:
+        check: Check = context.get_sys("check")
         actions_for_check = suite.check_actions["default"]
         if type(check) in suite.check_actions["checks"]:
             actions_for_check += suite.check_actions["checks"][type(check)]

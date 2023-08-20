@@ -10,5 +10,5 @@ Action that skips execution of all rules in a check
 
 class SkipRuleExecutionAction(CheckAction):
     @staticmethod
-    def before(check: CheckBase, context: dict) -> None:
+    def before(check: CheckBase, context) -> None:
         raise SkipExecutionException("Skipping rule execution")

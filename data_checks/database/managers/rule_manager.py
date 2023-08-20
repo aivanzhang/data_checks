@@ -9,11 +9,20 @@ class RuleManager(BaseManager):
 
     @staticmethod
     def generate_hash(
-        name: str, check_name: Optional[str], suite_name: Optional[str], params: str
+        name: str,
+        check_name: Optional[str],
+        group: Optional[str],
+        suite_name: Optional[str],
+        params: str,
     ) -> str:
-        check_name = check_name or "NONENONE"
-        suite_name = suite_name or "NONENONE"
-        return f"{name}_{check_name}_{suite_name}_{params}"
+        hash_value = f"rule:{name}::params:{params}"
+        if group:
+            hash_value = f"group:{group}::{hash_value}"
+        if check_name:
+            hash_value = f"check:{check_name}::{hash_value}"
+        if suite_name:
+            hash_value = f"suite:{suite_name}::{hash_value}"
+        return hash_value
 
     @staticmethod
     def create_rule(
@@ -32,7 +41,13 @@ class RuleManager(BaseManager):
             name=name,
             check_id=check_id,
             suite_id=suite_id,
-            hash=RuleManager.generate_hash(name, check_name, suite_name, params),
+            hash=RuleManager.generate_hash(
+                name=name,
+                check_name=check_name,
+                group=group,
+                suite_name=suite_name,
+                params=params,
+            ),
             group=group,
             code=code,
             severity=severity,
@@ -55,7 +70,11 @@ class RuleManager(BaseManager):
                 session.query(Rule)
                 .filter_by(
                     hash=RuleManager.generate_hash(
-                        name, check_name, suite_name, params
+                        name=name,
+                        check_name=check_name,
+                        group=group,
+                        suite_name=suite_name,
+                        params=params,
                     ),
                     group=group,
                 )
