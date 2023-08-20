@@ -12,7 +12,6 @@ class CheckManager(BaseManager):
         name: str,
         code: str,
         description: Optional[str] = None,
-        tags: list[str] = [],
         excluded_rules: list[str] = [],
         rules: list["Rule"] = [],
     ) -> Check:
@@ -20,7 +19,6 @@ class CheckManager(BaseManager):
             name=name,
             description=description,
             code=code,
-            tags=tags,
             excluded_rules=excluded_rules,
             rules=rules,
         )

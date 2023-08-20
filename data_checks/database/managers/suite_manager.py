@@ -13,7 +13,6 @@ class SuiteManager(BaseManager):
         code: str,
         schedule: Optional[str] = None,
         description: Optional[str] = None,
-        excluded_check_tags: list[str] = [],
         rules: list["Rule"] = [],
     ) -> Suite:
         new_suite = Suite.create(
@@ -22,7 +21,6 @@ class SuiteManager(BaseManager):
             description=description,
             code=code,
             rules=rules,
-            excluded_check_tags=excluded_check_tags,
         )
         with session_scope() as session:
             session.add(new_suite)

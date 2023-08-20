@@ -37,7 +37,6 @@ new_check = CheckManager.create_check(
     readable_name="test",
     description="test",
     code="",
-    tags=[],
     excluded_rules=[],
     executions=[],
 )

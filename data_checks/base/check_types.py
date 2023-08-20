@@ -54,7 +54,6 @@ class CheckBase(ABC):
         | tuple,
     ]  # Stores the params for each rule. If params is a list of params then run the rule multiple times with each param element
     excluded_rules: set
-    tags: set
     actions: list[type[ActionBase]]
     group: Optional[Group]
 

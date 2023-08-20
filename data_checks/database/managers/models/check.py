@@ -10,7 +10,6 @@ class Check(Base, MainMixin):
 
     description: Mapped[str] = mapped_column(String(1024), nullable=True)
     code: Mapped[str] = mapped_column(UnicodeText())
-    tags: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])
     excluded_rules: Mapped[List[str]] = mapped_column(ARRAY(String(255)), default=[])
     rules: Mapped[List["Rule"]] = relationship(back_populates="check")
 

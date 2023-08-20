@@ -48,7 +48,6 @@ class RuleManager(BaseManager):
                 suite_name=suite_name,
                 params=params,
             ),
-            group=group,
             code=code,
             severity=severity,
             executions=executions,
@@ -76,7 +75,6 @@ class RuleManager(BaseManager):
                         suite_name=suite_name,
                         params=params,
                     ),
-                    group=group,
                 )
                 .order_by(Rule.created_at.desc())
                 .first()

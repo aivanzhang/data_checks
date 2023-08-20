@@ -21,11 +21,9 @@ class Check(CheckBase, ActionMixin):
     def __init__(
         self,
         name: Optional[str] = None,
-        metadata_dir: Optional[str] = None,
         description="",
         rules_params=dict(),
         excluded_rules: Iterable = [],
-        tags: Iterable = [],
         actions: list[type[CheckAction]] = [],
         verbose=False,
         group: Optional[Group] = None,
@@ -42,7 +40,6 @@ class Check(CheckBase, ActionMixin):
             self.dataset = dataset
         self.description = description
         self.excluded_rules = set(excluded_rules)
-        self.tags = set(tags)
         self._internal = {
             "suite_model": None,
             "check_model": None,

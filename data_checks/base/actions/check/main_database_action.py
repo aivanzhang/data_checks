@@ -16,7 +16,6 @@ class MainDatabaseAction(CheckAction):
         check._internal["check_model"] = CheckManager.create_check(
             name=check.name,
             description=check.description,
-            tags=list(check.tags),
             excluded_rules=list(check.excluded_rules),
             code=class_utils.get_class_code(check.__class__),
         )

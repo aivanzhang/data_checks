@@ -10,9 +10,6 @@ class Suite(Base, MainMixin):
 
     description: Mapped[str] = mapped_column(String(1024), nullable=True)
     schedule: Mapped[str] = mapped_column(String(255), nullable=True)
-    excluded_check_tags: Mapped[List[str]] = mapped_column(
-        ARRAY(String(255)), default=[]
-    )
     code: Mapped[str] = mapped_column(UnicodeText())
     rules: Mapped[List["Rule"]] = relationship(back_populates="suite")
 

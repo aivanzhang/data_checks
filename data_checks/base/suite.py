@@ -116,28 +116,15 @@ class Suite(SuiteBase, ActionMixin):
 
         return checks
 
-    def get_checks_with_tags(self, tags: Optional[Iterable]) -> list[Check]:
-        """
-        Get checks for a given set of tags
-        """
-        if tags is None:
-            return self.get_checks()
-        else:
-            return [
-                check
-                for check in self.get_checks()
-                if set(tags).intersection(check.tags)
-            ]
-
     def set_actions(self, actions: list[type[SuiteAction]]):
         self.actions = actions
 
     def set_check_actions(self, check_actions: CheckActions):
         self.check_actions = check_actions
 
-    def run(self, check_tags: Optional[Iterable] = None):
+    def run(self):
         self.setup()
-        checks_to_run = self.get_checks_with_tags(check_tags)
+        checks_to_run = self.get_checks()
         for index, check in enumerate(checks_to_run):
             print(f"[{index + 1}/{len(checks_to_run)} Checks] {check}")
             context = ExecutionContext()
@@ -158,13 +145,11 @@ class Suite(SuiteBase, ActionMixin):
 
         self.teardown()
 
-    def run_async(self, check_tags: Optional[Iterable] = None):
+    def run_async(self):
         """
         Run all checks in the suite asynchronously. Note that order of execution is not guaranteed (aside from setup and teardown).
-        Parameters:
-            check_tags: Tags to filter checks by
         """
-        checks = self.get_checks_with_tags(check_tags)
+        checks = self.get_checks()
         running_check_processes = []
         self.setup()
 
