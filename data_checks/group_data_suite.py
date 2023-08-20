@@ -2,7 +2,8 @@ from data_checks import DataSuite
 from data_checks.base.check import Check
 
 """
-Suite of checks that run on a specific pre-defined group of data
+Suite of checks that run on a specific pre-defined group of data. For instance you might have checks on each Item in the Items table. 
+This suite allows you to pass Item item to each check across all Items and checks.
 """
 
 
@@ -10,14 +11,14 @@ class GroupDataSuite(DataSuite):
     @classmethod
     def group_name(cls) -> str:
         """
-        Identifier for each element in the group. Can be accessed through self.group_name in checks
+        Identifier for each element in the group. Can be accessed through self.group["name"] in checks.
         """
         raise NotImplementedError
 
     @classmethod
     def group(cls) -> list:
         """
-        List of group's elements. Each element will be passed to the specified checks
+        List of group's elements. Each element will be passed to the specified checks. Can be accessed through self.group["value"] in checks
         """
         raise NotImplementedError
 
