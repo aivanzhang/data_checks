@@ -1,5 +1,6 @@
 from typing import List
-from sqlalchemy import String, UnicodeText, ARRAY, ForeignKey, Numeric
+import datetime
+from sqlalchemy import UnicodeText, ForeignKey, Numeric, DateTime
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from data_checks.database.managers.models.classes import (
     Base,
@@ -16,6 +17,9 @@ class Rule(Base, MainMixin):
     severity: Mapped[float] = mapped_column(Numeric(6, 3), default=0.0)
     code: Mapped[str] = mapped_column(UnicodeText())
     hash: Mapped[str] = mapped_column(UnicodeText(), nullable=False)
+    silenced_until: Mapped[datetime.datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"), nullable=True)
     suite: Mapped["Suite"] = relationship(back_populates="rules")

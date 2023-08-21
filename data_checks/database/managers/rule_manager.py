@@ -1,6 +1,7 @@
 from typing import Optional
+import datetime
 from data_checks.database.managers.base_manager import BaseManager
-from data_checks.database.managers.models import Rule, RuleExecution
+from data_checks.database.managers.models import Rule, RuleExecution, Check, Suite
 from data_checks.database.utils.session_utils import session_scope
 
 
@@ -15,8 +16,10 @@ class RuleManager(BaseManager):
         suite_name: Optional[str],
         params: str,
     ) -> str:
+        params = params.replace('"', "")
         hash_value = f"rule:{name}::params:{params}"
         if group:
+            group = group.replace('"', "")
             hash_value = f"group:{group}::{hash_value}"
         if check_name:
             hash_value = f"check:{check_name}::{hash_value}"
@@ -79,3 +82,39 @@ class RuleManager(BaseManager):
                 .order_by(Rule.created_at.desc())
                 .first()
             )
+
+    @staticmethod
+    def silence_by_hash(until: datetime.datetime, hash: str) -> bool:
+        with session_scope() as session:
+            rule = session.query(Rule).filter_by(hash=hash).first()
+            if rule:
+                rule.silenced_until = until
+                session.add(rule)
+                return True
+
+        return False
+
+    @staticmethod
+    def silence(
+        until: datetime.datetime,
+        name: str,
+        check_name: Optional[str] = None,
+        suite_name: Optional[str] = None,
+    ) -> bool:
+        with session_scope() as session:
+            rules = (
+                session.query(Rule)
+                .join(Check)
+                .join(Suite)
+                .filter(Rule.name == name)
+                .filter(Check.name == check_name)
+                .filter(Suite.name == suite_name)
+                .all()
+            )
+            if rules:
+                for rule in rules:
+                    rule.silenced_until = until
+                    session.add(rule)
+                return True
+
+        return False
