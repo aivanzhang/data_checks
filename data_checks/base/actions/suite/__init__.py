@@ -10,3 +10,6 @@ from data_checks.base.actions.suite.error_logging_suite_action import (
     ErrorLoggingSuiteAction,
 )
 from data_checks.base.actions.suite.find_suite_model_action import FindSuiteModelAction
+from data_checks.base.actions.suite.update_check_from_internals_action import (
+    UpdateCheckFromInternalsAction,
+)

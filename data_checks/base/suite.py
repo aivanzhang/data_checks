@@ -12,6 +12,7 @@ from data_checks.base.actions.check import CheckAction
 from data_checks.base.actions.suite import (
     SuiteAction,
     SetupCheckActionsAction,
+    UpdateCheckFromInternalsAction,
 )
 
 
@@ -21,9 +22,11 @@ class CheckActions(TypedDict):
 
 
 class Suite(SuiteBase, ActionMixin):
-    DEFAULT_ACTIONS: list[type[SuiteAction]] = [
+    DEFAULT_START_ACTIONS: list[type[SuiteAction]] = [
         SetupCheckActionsAction,
     ]
+
+    DEFAULT_END_ACTIONS: list[type[SuiteAction]] = [UpdateCheckFromInternalsAction]
 
     def __init__(
         self,
@@ -45,7 +48,7 @@ class Suite(SuiteBase, ActionMixin):
 
     @property
     def actions(self) -> list[type[SuiteAction]]:
-        return self.DEFAULT_ACTIONS + self._actions
+        return self.DEFAULT_START_ACTIONS + self._actions + self.DEFAULT_END_ACTIONS
 
     @actions.setter
     def actions(self, actions: list[type[SuiteAction]]):
