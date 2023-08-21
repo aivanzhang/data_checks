@@ -177,7 +177,7 @@ class Suite(SuiteBase, ActionMixin):
             return
         try:
             start_time = time.time()
-            check.run_all_async()
+            check.run_all()
             print(f"{check} finished in {time.time() - start_time} seconds")
             self.on_success(context)
         except Exception as e:
