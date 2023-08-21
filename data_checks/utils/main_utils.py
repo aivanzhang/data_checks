@@ -102,7 +102,7 @@ def main():
 
     parser.add_argument(
         "--scheduling",
-        "-sc",
+        "-s",
         action="store_true",
         help="Only schedules the suites and does not run them.",
         default=False,
