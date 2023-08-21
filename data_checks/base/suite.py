@@ -1,4 +1,4 @@
-from typing import Iterable, Optional, TypedDict
+from typing import Optional, TypedDict
 import time
 from multiprocessing import Process
 from data_checks.conf.data_check_registry import data_check_registry
@@ -12,7 +12,6 @@ from data_checks.base.actions.check import CheckAction
 from data_checks.base.actions.suite import (
     SuiteAction,
     SetupCheckActionsAction,
-    SetupDatasetAction,
 )
 
 
@@ -24,7 +23,6 @@ class CheckActions(TypedDict):
 class Suite(SuiteBase, ActionMixin):
     DEFAULT_ACTIONS: list[type[SuiteAction]] = [
         SetupCheckActionsAction,
-        SetupDatasetAction,
     ]
 
     def __init__(
