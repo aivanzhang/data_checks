@@ -1,6 +1,6 @@
 if __name__ == "__main__":
     import argparse
-    import datetime
+    from datetime import datetime, timedelta
     from data_checks.do.utils.silence_utils import *
     from data_checks.database import RuleManager
 
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--until",
         "-u",
-        type=datetime.datetime.fromisoformat,
+        type=datetime.fromisoformat,
         help="Date to silence the rule until. ISOformat: YYYY-MM-DD:HH:mm:ss",
         default=None,
     )
@@ -68,13 +68,15 @@ if __name__ == "__main__":
             "Must provide either --hash or --rule_name. See --help for more information."
         )
 
-    silence_until_date = args.until or datetime.datetime.now() + datetime.timedelta(
+    silence_until_date = args.until or datetime.now() + timedelta(
         hours=int(args.delta[0]) if args.delta[1] == "h" else 0,
         days=int(args.delta[0]) if args.delta[1] == "d" else 0,
         minutes=int(args.delta[0]) if args.delta[1] == "m" else 0,
         weeks=int(args.delta[0]) if args.delta[1] == "w" else 0,
     )
-    if silence_until_date is None or silence_until_date < datetime.datetime.now():
+
+    print(f"Silencing rule(s) until {silence_until_date}")
+    if silence_until_date is None or silence_until_date < datetime.now():
         raise argparse.ArgumentTypeError(
             "Silence until date not found or must be in the future. See --help for more information."
         )
@@ -90,7 +92,7 @@ if __name__ == "__main__":
             f"Silencing rule(s) with name {args.rule_name}, check {args.check_name}, and suite {args.suite_name}"
         )
         if RuleManager.silence(
-            silence_until_date,
+            until=silence_until_date,
             name=args.rule_name,
             check_name=args.check_name,
             suite_name=args.suite_name,

@@ -1,9 +1,10 @@
 import json
 import sys
 import traceback
+from datetime import datetime, timezone
 from io import StringIO
 from data_checks.base.actions.check.check_action import CheckAction
-from data_checks.base.exceptions import DataCheckException
+from data_checks.base.exceptions import DataCheckException, SkipExecutionException
 from data_checks.database.managers import (
     CheckManager,
     RuleManager,
@@ -37,6 +38,11 @@ class ExecutionDatabaseAction(CheckAction):
 
         if not rule:
             return
+
+        if rule.silenced_until and rule.silenced_until > datetime.now(tz=timezone.utc):
+            raise SkipExecutionException(
+                f"Rule {rule.name} is silenced until {rule.silenced_until}"
+            )
 
         context.set_sys("rule_model", rule)
 
