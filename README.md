@@ -11,7 +11,7 @@ Some reason you might use this library:
 - Greater control over how check are defined and executed
 - Infinitely extendible and customizable for any data quality use case
 - Connect any database to store data related to checks and executions
-- Async execution
+- Parallel execution
 - CRON scheduling
 - Silencing
 - Alerting to a specified endpoint
@@ -19,7 +19,7 @@ Some reason you might use this library:
 
 Some additional features that are in the works (in order of priority):
 1) Custom pre-built analytics and visualizations
-2) More flexibility in specifying the parallelization options (see [Warning on Fully Async Executions](#warning-on-fully-async-executions))
+2) More flexibility in specifying the parallelization options (see [Warning on Fully Parallel Executions](#warning-on-fully-parallel-executions))
 3) Define before, after, on success and on failure actions based on data checks
 4) Automatically generate data checks from the command line (as you would generate a database migration) and Jupyter Notebooks
 
@@ -35,7 +35,7 @@ Some additional features that are in the works (in order of priority):
     + [Run Suites](#run-suites)
     + [Silencing Checks' Rules](#silencing-checks--rules)
   * [Warning on TO STRNG](#warning-on-to-strng)
-  * [Warning on Fully Async Executions](#warning-on-fully-async-executions)
+  * [Warning on Fully Parallel Executions](#warning-on-fully-Parallel-executions)
   * [References](#references)
     + [Subclassing from the Base Check](#subclassing-from-the-base-check)
     + [Subclassing from the Base Suite](#subclassing-from-the-base-suite)
@@ -279,13 +279,51 @@ class GroupDataSuite(DataSuite):
 After defining your suites and/or checks, you can run them as well as other actions from the command line.
 
 ### Run Checks
+To run checks, use the `data_checks.do.run_check` command:
+```bash
+usage: python -m data_checks.do.run_check [-h] [--parallel] [--schedule SCHEDULE] [--error_logging]
+                                          [--alerting]
+                                          {CheckClass1}
+                                          [{CheckClass1,CheckClass2,CheckClass3,CheckClass4,CheckClass5} ...]
+```
+The `run_checks` command takes in the following arguments:
+- `checks`: List of checks to run by class name.
+- `--parallel`: Run checks and nested rules in parallel. Before enabling see [Warning on Fully Parallel Executions](#warning-on-fully-parallel-executions). If not specified, checks will be run sequentially.
+- `--schedule`: CRON schedule for the checks. If not specified, checks will be run once.
+- `--error_logging`: Log errors to the console. This may duplicate some error logs in the database. If not specified, errors will only be stored in the database.
+- `--alerting`: Send alerts to the specified endpoint. If not specified, no alerts will be sent.
+
+For example to run `MyFirstDataCheck` in parallel every minute, log errors to the console, and send alerts to the specified endpoint we would use the following command:
+```bash
+python -m data_checks.do.run_check MyFirstDataCheck --error_logging --alerting --parallel --schedule "* * * * *"
+```
+
 ### Run Suites
+To run suites, use the `data_checks` command:
+```bash
+usage: python -m data_checks [-h] [--only ONLY] [--exclude {ConsistencySuite} [{ConsistencySuite} ...]]
+                             [--parallel] [--scheduling] [--deploy] [--error_logging] [--alerting]
+```
+The `data_checks` command runs all the suites specified in `SUITES_MODULE`. The command can be customized by passing in the following arguments:
+- `--only`: Only run the specified suite. If not specified, all suites will be run.
+- `--exclude`: Exclude the specified suites. If not specified, no suites will be excluded.
+- `--parallel`: Run suites in parallel. This will run each nested check in parallel and each nested rule in parallel. Before enabling see [Warning on Fully Parallel Executions](#warning-on-fully-parallel-executions). If not specified, suites will be run sequentially.
+- `--scheduling`: Run suites on a schedule. If not specified, suites will be run once.
+- `--deploy`: Deploy suites. If not specified, suites will not be deployed.
+- `--error_logging`: Log errors to the console. This may duplicate some error logs in the database. If not specified, errors will only be stored in the database.
+
+For example to run all suites in every minute, log errors to the console, and deploy the suites with we would use the following command:
+```bash
+python -m data_checks --error_logging --deploy --scheduling "* * * * *"
+```
+>[!IMPORTANT]
+>To deploy a suite, the suite must have a schedule. If no schedule is specified and no schedule is found in the database, then an error will be thrown.
 
 ### Silencing Checks' Rules
 
 ## Warning on TO STRNG
 
-## Warning on Fully Async Executions
+## Warning on Fully Parallel Executions
 
 ## References
 ### Subclassing from the Base Check
