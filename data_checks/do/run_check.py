@@ -23,7 +23,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "checks",
         nargs="+",
+        choices=data_check_registry.keys,
         help="One or more checks to run.",
+        default=[],
     )
 
     parser.add_argument(
