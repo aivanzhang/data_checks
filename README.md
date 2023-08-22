@@ -253,7 +253,7 @@ class GroupDataSuite(DataSuite):
 > [!IMPORTANT] 
 > Note that we are overriding `group_checks` and **NOT** `checks`.
 
-:tada: That's it! :tada: A GroupDataSuite can be run in the same manner as a DataSuite (see [Command Line Interface / Run Suites](#run-suites)).
+:tada: That's it! :tada: GroupDataSuite can be run in the same manner as DataSuite (see [Command Line Interface / Run Suites](#run-suites)).
 
 ## Command Line Interface
 After defining your suites and/or checks, you can run them as well as other actions from the command line.
