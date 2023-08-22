@@ -1,7 +1,6 @@
 """
 Check class
 """
-import copy
 import time
 from typing import Iterable, Optional, Callable
 from multiprocessing import Process
