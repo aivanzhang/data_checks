@@ -79,8 +79,11 @@ Your check should be written inside the specified `CHECKS_MODULE` in your settin
 The `DataCheck` class is a simplified beginner friendly subclass of the base `Check` class (`data_checks.base.check`). The user can also directly subclass the `Check` class to create more advanced checks (see [(Advanced) Create Checks](#advanced-create-checks)).
 
 ## (Advanced) Create Checks
+Running checks
+Why do you need suites
 ## (Advanced) Create Suites
 
+Why do you need group data suites
 ## (Advanced) Create Group Data Suites
 
 ## Command Line Interface
