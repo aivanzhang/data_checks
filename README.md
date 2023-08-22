@@ -225,5 +225,7 @@ If you truly want to modify the base `Suite` class, you can do so by subclassing
 
 > [!WARNING]  
 > Documentation for the base `Suite` class is limited and still in a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
+
+### Database
 ### Hierarchy
 ### Execution Flow
