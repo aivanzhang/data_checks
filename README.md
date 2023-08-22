@@ -47,7 +47,7 @@ os.environ["CHECK_SETTINGS_MODULE"] = "data_checks.settings"
 ```
 Now you're ready to start defining checks and suites!
 ## Create Checks
-The library exposes the `DataCheck` class (defined in [data_checks.data_check](data_checks/data_check.py)) which you can use to write your checks. Begin by subclassing the `DataCheck` class:
+The library exposes the `DataCheck` class (defined in [data_checks.data_check](/data_checks/data_check.py)) which you can use to write your checks. Begin by subclassing the `DataCheck` class:
 ```python
 from data_checks.data_check import DataCheck
 
@@ -105,10 +105,10 @@ class MyFirstDataCheck(DataCheck):
 > The example above uses assertions to check the data. You can however use any method you want to check the data. If the rule passes, return nothing. If the rule fails, throw an exception.
 
 > [!NOTE] 
-> If you have existing check classes, you can still subclass `DataCheck` and use the library in the same manner noted above. Make sure that your class does not accidentally override any of the methods in `Check` (see [data_checks.base.check](data_checks/base/check.py)). 
+> If you have existing check classes, you can still subclass `DataCheck` and use the library in the same manner noted above. Make sure that your class does not accidentally override any of the methods in `Check` (see [data_checks.base.check](/data_checks/base/check.py)). 
 
 > [!NOTE] 
-> The `DataCheck` class is a simplified and beginner friendly subclass of the base `Check` class ([data_checks.base.check](data_checks/base/check.py)). The user can also directly subclass the `Check` class to create more advanced checks (see [(Advanced) Create Checks](#advanced-create-checks)).
+> The `DataCheck` class is a simplified and beginner friendly subclass of the base `Check` class ([data_checks.base.check](/data_checks/base/check.py)). The user can also directly subclass the `Check` class to create more advanced checks (see [(Advanced) Create Checks](#advanced-create-checks)).
 
 ## (Advanced) Create Checks
 Running checks
