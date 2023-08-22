@@ -71,7 +71,7 @@ class MyFirstDataCheck(DataCheck):
         assert False
 ```
 
-:tada: That's it! :tada: You've created your first data check. Now you can run it from the command line (see [Command Line Interface / Run Checks](#run-checks)).
+:tada: That's it! :tada: You've created your first DataCheck. Now you can run it from the command line (see [Command Line Interface / Run Checks](#run-checks)).
 
 ---
 
@@ -188,7 +188,7 @@ class MyFirstDataSuite(DataSuite):
             "MyFirstDataCheck"
         ]
 ```
-:tada: That's it! :tada: You've created your first data suite. Now you can run it from the command line (see [Command Line Interface / Run Suites](#run-suites)).
+:tada: That's it! :tada: You've created your first DataSuite. Now you can run it from the command line (see [Command Line Interface / Run Suites](#run-suites)).
 
 > [!IMPORTANT] 
 > Your suite should be written inside the specified `SUITES_MODULE` in your settings file. For example, if you set `SUITES_MODULE = "my_suites"`, then you should write your check in `my_suites/my_first_data_suite.py`. Make sure that `SUITES_MODULE` and any nested modules are properly defined as directories (i.e. have an `__init__.py` file).
@@ -197,6 +197,63 @@ class MyFirstDataSuite(DataSuite):
 > The `DataSuite` class is a simplified and beginner friendly subclass of the base `Suite` class (`data_checks.base.suite`). The user can also directly subclass the `Suite` class to create more advanced suites (see [Subclassing from the Base Suite](#subclassing-from-the-base-suite)).
 
 ## (Advanced) Create Group Data Suites
+Suppose you want to run the same check over many different objects. For example assume you have `ItemCheck` that checks if a certain `Item` is valid or not via various rules (i.e. quality, price, etc.). You have hundreds of these items. You could:
+1) Create a suite for each item and run them individually
+2) Pass the item as an argument to each of the check's rules for all items
+However both methods are tedious and inefficient. This library provides an abstraction to easily define a group where the pre-defined checks run on each group member. Begin by subclassing the `GroupDataSuite` class (defined in `data_checks.group_data_suite`):
+```python
+from data_checks.group_data_suite import GroupDataSuite
+
+class MyFirstGroupDataSuite(GroupDataSuite):
+    pass
+```
+Then override the required class methods:
+```python
+class GroupDataSuite(DataSuite):
+    @classmethod
+    def group_name(cls) -> str:
+        """
+        Identifier for each element in the group. Can be accessed through self.group["name"] in checks.
+        """
+        return "item"
+
+    @classmethod
+    def group(cls) -> list:
+        """
+        List of group's members. Each element will be subject to the specified checks. Can be accessed through self.group["value"] in checks
+        """
+        return [
+            Item("item1", ...),
+            Item("item2", ...),
+            ...
+        ]
+
+    @classmethod
+    def group_checks(cls) -> list[type[Check]]:
+        """
+        Checks to be run on each element in the group. For example:
+        [
+            CheckClass1,
+            CheckClass2,
+            ...
+        ]
+        with group
+        [
+            element1,
+            element2,
+            ...
+        ]
+        will run CheckClass1 on element1, CheckClass1 on element2, CheckClass2 on element1, and CheckClass2 on element2.
+        """
+        return [
+            ItemCheck
+        ]
+```
+
+> [!IMPORTANT] 
+> Note that we are overriding `group_checks` and **NOT** `checks`.
+
+:tada: That's it! :tada: A GroupDataSuite can be run in the same manner as a DataSuite (see [Command Line Interface / Run Suites](#run-suites)).
 
 ## Command Line Interface
 After defining your suites and/or checks, you can run them as well as other actions from the command line.
@@ -206,7 +263,7 @@ After defining your suites and/or checks, you can run them as well as other acti
 
 ### Silencing Checks' Rules
 
-
+## Warning on TO STRNG
 
 ## Warning on Fully Async Executions
 
@@ -217,14 +274,14 @@ The base `Check` class (`data_checks.base.check`) define methods used to initial
 If you truly want to modify the base `Check` class, you can do so by subclassing it and overriding its methods. However be :bangbang: **extremely careful** :bangbang: when doing so as it may break the functionality of the library. If you do so, make sure to test your check thoroughly.
 
 > [!WARNING]  
-> Documentation for the base `Check` class is limited and still in a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
+> Documentation for the base `Check` class is limited and still a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
 ### Subclassing from the Base Suite
 The base `Suite` class (`data_checks.base.check`) define methods used to initialize, customize, and execute a suite and its checks. It also has methods to store data related to the suite and its execution as well as interact with its checks. It is not recommended to directly subclass the `Suite` class unless you have a specific use case that requires it. Instead, use the `DataSuite` class (`data_checks.data_suite`) which is a simplified and beginner friendly subclass of the `Suite` class.
 
 If you truly want to modify the base `Suite` class, you can do so by subclassing it and overriding its methods. However be :bangbang: **extremely careful** :bangbang: when doing so as it may break the functionality of the library. If you do so, make sure to test your suite thoroughly.
 
 > [!WARNING]  
-> Documentation for the base `Suite` class is limited and still in a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
+> Documentation for the base `Suite` class is limited and still a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
 
 ### Database
 ### Hierarchy
