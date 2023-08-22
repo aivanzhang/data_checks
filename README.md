@@ -70,7 +70,7 @@ class MyFirstDataCheck(DataCheck):
         assert False
 ```
 
-That's it! You've created your first data check. Now you can run it from the command line (see [Command Line Interface / Run Checks](#run-checks)).
+:tada: That's it! :tada: You've created your first data check. Now you can run it from the command line (see [Command Line Interface / Run Checks](#run-checks)).
 
 The rule above has default arguments. For checks that are run outside of a suite (see [Create Suites](#advanced-create-suites)), either no arguments (excluding `self` or `cls`) or default arguments are required. For checks that are run within a suite, there are no such requirements as arguments can be specified by the suite.
 
@@ -137,6 +137,6 @@ If you truly want to modify the base `Check` class, you can do so by subclassing
 
 > [!WARNING]  
 > Documentation for the base `Check` class is limited and still in a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
-### Subclassing from the Base Check
+### Subclassing from the Base Suite
 ### Hierarchy
 ### Execution Flow
