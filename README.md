@@ -58,6 +58,7 @@ Then define methods (i.e. rules) that check the data and will be executed when t
 
 ```python
 from data_checks.data_check import DataCheck
+
 class MyFirstDataCheck(DataCheck):
     def my_first_successful_rule(self, data="Hello World"):
         # Call functions to check the data
@@ -72,12 +73,15 @@ class MyFirstDataCheck(DataCheck):
 
 :tada: That's it! :tada: You've created your first data check. Now you can run it from the command line (see [Command Line Interface / Run Checks](#run-checks)).
 
-The rule above has default arguments. For checks that are run outside of a suite (see [Create Suites](#advanced-create-suites)), either no arguments (excluding `self` or `cls`) or default arguments are required. For checks that are run within a suite, there are no such requirements as arguments can be specified by the suite.
+---
+
+The rules above have default arguments. For checks that are run outside of a suite (see [Create Suites](#advanced-create-suites)), either no arguments (excluding `self` or `cls`) or default arguments are required. For checks that are run within a suite, there are no such requirements as arguments can be specified by the suite.
 
 By default the check runs all the functions defined as rules. However this may lead to issues if you have non-rule functions (i.e. helper functions) within the same class. To address this, the `defined_rules` method in `DataCheck` allows you to specify which methods are rules. For example:
 
 ```python
 from data_checks.data_check import DataCheck
+
 class MyFirstDataCheck(DataCheck):
     def my_first_successful_rule(self, data="Hello World"):
         # Call functions to check the data
@@ -111,10 +115,87 @@ class MyFirstDataCheck(DataCheck):
 > [!NOTE] 
 > The `DataCheck` class is a simplified and beginner friendly subclass of the base `Check` class (`data_checks.base.check`). The user can also directly subclass the `Check` class to create more advanced checks (see [Subclassing from the Base Check](#subclassing-from-the-base-check)).
 
-Why do you need suites
 ## (Advanced) Create Suites
+Checks provide the most basic form of a data check. Suites provide an additional layer of abstraction that allows you to group checks together and run them together on a schedule. Suites also provide additional features like shared datasets. Suites are defined in a similar manner as checks. Begin by subclassing the `DataSuite` class (defined in `data_checks.data_suite`):
+```python
+from data_checks.data_suite import DataSuite
 
-Why do you need group data suites
+class MyFirstDataSuite(DataSuite):
+    pass
+```
+Then override the required class methods:
+```python
+from data_checks.data_suite import DataSuite
+from data_checks.dataset import Dataset
+
+class MyFirstDataSuite(DataSuite):
+    @classmethod
+    def dataset(cls) -> Dataset | None:
+        """
+        Define a dataset by passing in a dictionary of keys and values. This will be generated once per suite run and passed to all the specified checks. Checks can then access the dataset by calling `self.dataset()` or `cls.dataset()`.
+        """
+        return Dataset({
+            "my_first_dataset": "SELECT * FROM my_first_table"
+        })
+
+    @classmethod
+    def checks_overrides(cls) -> dict | None:
+        """
+        Override the parameters of Checks' rules. Dictionary should be in the following format:
+        {
+            "CheckClass": {
+                "rule_1": {
+                    "param1": value1,
+                    "param2": value2,
+                    ...
+                },
+                "rule_2": {
+                    "param1": value1,
+                    "param2": value2,
+                    ...
+                }
+                ...
+            },
+            "..."
+        }
+        """
+        return {
+            "MyFirstDataCheck": {
+                "my_first_successful_rule": {
+                    "data": "Hello World from Suite"
+                }
+            }
+        }
+
+    @classmethod
+    def suite_config(cls) -> dict:
+        """
+        Define the suite's configuration. Dictionary should be in the following format:
+        {
+            "schedule": "CRON schedule",
+        }
+        """
+        return {
+            "schedule": "* * * * *", 
+        }
+
+    @classmethod
+    def checks(cls) -> list[type | str | Check]:
+        """
+        Define the checks to be run by the suite. Checks can be specified by passing in the class, the class name, or an instance of the class. If the check is specified by the class or class name, the suite will instantiate the check. If the check is specified by an instance of the class, the suite will use the instance as is.
+        """
+        return [
+            "MyFirstDataCheck"
+        ]
+```
+:tada: That's it! :tada: You've created your first data suite. Now you can run it from the command line (see [Command Line Interface / Run Suites](#run-suites)).
+
+> [!IMPORTANT] 
+> Your suite should be written inside the specified `SUITES_MODULE` in your settings file. For example, if you set `SUITES_MODULE = "my_suites"`, then you should write your check in `my_suites/my_first_data_suite.py`. Make sure that `SUITES_MODULE` and any nested modules are properly defined as directories (i.e. have an `__init__.py` file).
+
+> [!NOTE] 
+> The `DataSuite` class is a simplified and beginner friendly subclass of the base `Suite` class (`data_checks.base.suite`). The user can also directly subclass the `Suite` class to create more advanced suites (see [Subclassing from the Base Suite](#subclassing-from-the-base-suite)).
+
 ## (Advanced) Create Group Data Suites
 
 ## Command Line Interface
@@ -138,5 +219,11 @@ If you truly want to modify the base `Check` class, you can do so by subclassing
 > [!WARNING]  
 > Documentation for the base `Check` class is limited and still in a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
 ### Subclassing from the Base Suite
+The base `Suite` class (`data_checks.base.check`) define methods used to initialize, customize, and execute a suite and its checks. It also has methods to store data related to the suite and its execution as well as interact with its checks. It is not recommended to directly subclass the `Suite` class unless you have a specific use case that requires it. Instead, use the `DataSuite` class (`data_checks.data_suite`) which is a simplified and beginner friendly subclass of the `Suite` class.
+
+If you truly want to modify the base `Suite` class, you can do so by subclassing it and overriding its methods. However be :bangbang: **extremely careful** :bangbang: when doing so as it may break the functionality of the library. If you do so, make sure to test your suite thoroughly.
+
+> [!WARNING]  
+> Documentation for the base `Suite` class is limited and still in a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
 ### Hierarchy
 ### Execution Flow
