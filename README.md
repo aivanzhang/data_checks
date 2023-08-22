@@ -8,7 +8,7 @@ Exisiting data observability solutions are painfully static. **data_checks** pro
 
 Some reason you might use this library:
 - Reuse existing Python code
-- Greater control over how check definition and execution
+- Greater control over how check are defined and executed
 - Infinitely extendible and customizable for any data quality use case
 - Connect any database to store data related to checks and executions
 - Async execution
