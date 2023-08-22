@@ -1,5 +1,5 @@
-from src.data_checks.database import *
-from src.data_checks.database.managers import (
+from src.data_checks.base.database import *
+from src.data_checks.base.database.managers import (
     CheckManager,
     RuleManager,
     SuiteManager,
@@ -37,7 +37,6 @@ new_check = CheckManager.create_check(
     readable_name="test",
     description="test",
     code="",
-    tags=[],
     excluded_rules=[],
     executions=[],
 )
