@@ -70,7 +70,7 @@ class MyFirstDataCheck(DataCheck):
         assert False
 ```
 
-That's it! You've created your first data check. Now you can run it from the command line (see [Command Line Interface](#command-line-interface)).
+That's it! You've created your first data check. Now you can run it from the command line (see [Command Line Interface / Run Checks](#run-checks)).
 
 The rule above has default arguments. For checks that are run outside of a suite (see [Create Suites](#advanced-create-suites)), either no arguments (excluding `self` or `cls`) or default arguments are required. For checks that are run within a suite, there are no such requirements as arguments can be specified by the suite.
 
@@ -109,9 +109,7 @@ class MyFirstDataCheck(DataCheck):
 
 
 > [!NOTE] 
-> The `DataCheck` class is a simplified and beginner friendly subclass of the base `Check` class (`data_checks.base.check`). The user can also directly subclass the `Check` class to create more advanced checks (see [(Advanced) Create Checks](#advanced-create-checks)).
-
-## (Advanced) Create Checks
+> The `DataCheck` class is a simplified and beginner friendly subclass of the base `Check` class (`data_checks.base.check`). The user can also directly subclass the `Check` class to create more advanced checks (see [Subclassing from the Base Check](#subclassing-from-the-base-check)).
 
 Why do you need suites
 ## (Advanced) Create Suites
@@ -123,15 +121,22 @@ Why do you need group data suites
 After defining your suites and/or checks, you can run them as well as other actions from the command line.
 
 ### Run Checks
+### Run Suites
 
 ### Silencing Checks' Rules
 
-### Run Suites
 
 
 ## Warning on Fully Async Executions
 
 ## References
+### Subclassing from the Base Check
+The base `Check` class (`data_checks.base.check`) define methods used to initialize, customize, and execute a check and its rules. It also has methods to store data related to the check and its execution as well as interact with its suite (if any). It is not recommended to directly subclass the `Check` class unless you have a specific use case that requires it. Instead, use the `DataCheck` class (`data_checks.data_check`) which is a simplified and beginner friendly subclass of the `Check` class.
 
+If you truly want to modify the base `Check` class, you can do so by subclassing it and overriding its methods. However be :bangbang: **extremely careful** :bangbang: when doing so as it may break the functionality of the library. If you do so, make sure to test your check thoroughly.
+
+> [!WARNING]  
+> Documentation for the base `Check` class is limited and still in a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
+### Subclassing from the Base Check
 ### Hierarchy
 ### Execution Flow
