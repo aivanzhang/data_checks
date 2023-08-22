@@ -188,14 +188,13 @@ class MyFirstDataSuite(DataSuite):
             "MyFirstDataCheck"
         ]
 ```
-:tada: That's it! :tada: You've created your first DataSuite. Now you can run it from the command line (see [Command Line Interface / Run Suites](#run-suites)).
-
 > [!IMPORTANT] 
 > Your suite should be written inside the specified `SUITES_MODULE` in your settings file. For example, if you set `SUITES_MODULE = "my_suites"`, then you should write your check in `my_suites/my_first_data_suite.py`. Make sure that `SUITES_MODULE` and any nested modules are properly defined as directories (i.e. have an `__init__.py` file).
 
 > [!NOTE] 
 > The `DataSuite` class is a simplified and beginner friendly subclass of the base `Suite` class (`data_checks.base.suite`). The user can also directly subclass the `Suite` class to create more advanced suites (see [Subclassing from the Base Suite](#subclassing-from-the-base-suite)).
 
+:tada: That's it! :tada: You've created your first DataSuite. Now you can run it from the command line (see [Command Line Interface / Run Suites](#run-suites)).
 ## (Advanced) Create Group Data Suites
 Suppose you want to run the same check over many different objects. For example assume you have `ItemCheck` that checks if a certain `Item` is valid or not via various rules (i.e. quality, price, etc.). You have hundreds of these items. You could:
 1) Create a suite for each item and run them individually
