@@ -37,13 +37,13 @@ ALERTING_ENDPOINT = None
 # Default CRON schedule for suites
 DEFAULT_SCHEDULE = None
 ```
-Then, set the `CHECK_SETTINGS_MODULE` environment variable to the path to your settings file (e.g. `data_checks.settings`):
+Then, set the `CHECK_SETTINGS_MODULE` environment variable to your settings file (e.g. `my_data_checks.settings`):
 ```bash
-export CHECK_SETTINGS_MODULE=data_checks.settings
+export CHECK_SETTINGS_MODULE=my_data_checks.settings
 ```
 or in Python:
 ```python
-os.environ["CHECK_SETTINGS_MODULE"] = "data_checks.settings"
+os.environ["CHECK_SETTINGS_MODULE"] = "my_data_checks.settings"
 ```
 Now you're ready to start defining checks and suites!
 ## Create Checks
