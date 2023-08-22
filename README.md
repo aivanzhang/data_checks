@@ -23,6 +23,27 @@ Some additional features that are in the works (in order of priority):
 3) Define before, after, on success and on failure actions based on data checks
 4) Automatically generate data checks from the command line (as you would generate a database migration) and Jupyter Notebooks
 
+## Table of Contents
+- [Data Checks](#data-checks)
+  * [Overview](#overview)
+  * [Define Settings](#define-settings)
+  * [Create Checks](#create-checks)
+  * [(Advanced) Create Suites](#-advanced--create-suites)
+  * [(Advanced) Create Group Data Suites](#-advanced--create-group-data-suites)
+  * [Command Line Interface](#command-line-interface)
+    + [Run Checks](#run-checks)
+    + [Run Suites](#run-suites)
+    + [Silencing Checks' Rules](#silencing-checks--rules)
+  * [Warning on TO STRNG](#warning-on-to-strng)
+  * [Warning on Fully Async Executions](#warning-on-fully-async-executions)
+  * [References](#references)
+    + [Subclassing from the Base Check](#subclassing-from-the-base-check)
+    + [Subclassing from the Base Suite](#subclassing-from-the-base-suite)
+    + [Database](#database)
+    + [Hierarchy](#hierarchy)
+    + [Execution Flow](#execution-flow)
+
+
 ## Define Settings
 Before you can use the package, you need to first set up your settings. Create a settings file (e.g. `settings.py`) and define the following variables:
 ```python
