@@ -26,6 +26,7 @@ Some additional features that are in the works (in order of priority):
 ## Table of Contents
 - [Data Checks](#data-checks)
   * [Overview](#overview)
+  * [Table of Contents](#table-of-contents)
   * [Define Settings](#define-settings)
   * [Create Checks](#create-checks)
   * [(Advanced) Create Suites](#-advanced--create-suites)
@@ -34,16 +35,20 @@ Some additional features that are in the works (in order of priority):
     + [Run Checks](#run-checks)
     + [Run Suites](#run-suites)
     + [Silencing Checks' Rules](#silencing-checks--rules)
-  * [Warning on TO STRNG](#warning-on-to-strng)
-  * [Warning on Fully Parallel Executions](#warning-on-fully-Parallel-executions)
+  * [Warning on Serialization](#warning-on-serialization)
+  * [Warning on Fully Parallel Executions](#warning-on-fully-parallel-executions)
   * [References](#references)
     + [Subclassing from the Base Check](#subclassing-from-the-base-check)
     + [Subclassing from the Base Suite](#subclassing-from-the-base-suite)
     + [Database](#database)
-    + [Hierarchy](#hierarchy)
-    + [Execution Flow](#execution-flow)
-
-
+      - [Suite Table](#suite-table)
+      - [Check Table](#check-table)
+      - [Rule Table](#rule-table)
+      - [Rule Execution Table](#rule-execution-table)
+    + [Architecture](#architecture)
+      - [Hierarchy](#hierarchy)
+      - [Execution Flow](#execution-flow)
+      
 ## Define Settings
 Before you can use the package, you need to first set up your settings. Create a settings file (e.g. `settings.py`) and define the following variables:
 ```python
