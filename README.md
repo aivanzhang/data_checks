@@ -320,6 +320,30 @@ python -m data_checks --error_logging --deploy --scheduling "* * * * *"
 >To deploy a suite, the suite must have a schedule. If no schedule is specified and no schedule is found in the database, then an error will be thrown.
 
 ### Silencing Checks' Rules
+To silence rules, use the `data_checks.do.silence_check` command:
+```bash
+usage: python -m data_checks.do.silence [-h] [--until UNTIL] [--delta DELTA] [--hash HASH]
+                                        [--rule_name RULE_NAME] [--check_name CHECK_NAME]
+                                        [--suite_name SUITE_NAME]
+```
+The `silence_check` command takes in the following arguments:
+- `--until`: Date until which the rule will be silenced. Format should be `YYYY-MM-DD:HH:mm:ss`.
+- `--delta`: Time delta for which the rule will be silenced. Format: 1h, 1d, 1m, 1w (hour, day, minute, week). Example: 3h for 3 hours.
+- `--hash`: Hash of the rule (stored in the database) to silence. See [Database](#database) for more information.
+```
+suite:SUITE_NAME::check:CHECK_NAME::group:{name: GROUP_NAME, value: GROUP_VALUE}::rule:RULE_NAME::params:{args: [ARG1, ARG2, ...], kwargs: {key1: value1, key2: value2, ...}}
+```
+- `--rule_name`: Name of the rule to silence.
+- `--check_name`: Name of the check to silence.
+- `--suite_name`: Name of the suite to silence.
+
+[!IMPORTANT]
+Either `--until` or `--delta` must be specified. If both are specified, `--until` will be used. If neither are specified, an error will be thrown. 
+
+[!IMPORTANT]
+Either `--hash` or `--rule_name` must be specified. `--hash` is the preferred method of silencing as it is the most precise. Specifically the hash allows you to silence a specific rule based off its suite, check, rule, **params**, and **group** (if specified within a GroupDataSuite). If `--hash` is not specified then `--suite_name`, `--check_name`, and `--rule_name` will be used together to find the rule(s) to silence.
+
+
 
 ## Warning on TO STRNG
 
