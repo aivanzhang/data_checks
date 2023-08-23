@@ -188,6 +188,25 @@ class MyFirstDataSuite(DataSuite):
             },
             "..."
         }
+        You can also pass in an array to run a rule multiple times with
+        different parameters. For example:
+        {
+            "CheckClass": {
+                "rule_1": [
+                    {
+                        "param1": value1,
+                        "param2": value2,
+                        ...
+                    },
+                    {
+                        "param1": value3,
+                        "param2": value4,
+                        ...
+                    }
+                ]
+            }
+        }
+        runs rule_1 twice with different parameters.
         """
         return {
             "MyFirstDataCheck": {

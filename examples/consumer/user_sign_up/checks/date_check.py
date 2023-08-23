@@ -5,8 +5,8 @@ from hamcrest import assert_that, equal_to, is_not
 
 
 class DateCheck(DataCheck):
-    def is_properly_formatted(self, format_pattern):
-        dates = self.dataset["data"]["DOB"]
+    def is_properly_formatted(self, format_pattern, column="DOB"):
+        dates = self.dataset["data"][column]
         for date in dates:
             assert_that(
                 re.match(format_pattern, date),
@@ -14,12 +14,12 @@ class DateCheck(DataCheck):
                 f"Invalid date: {date}",
             )
 
-    def nonnull(self):
-        dates = self.dataset["data"]["DOB"]
+    def nonnull(self, column="DOB"):
+        dates = self.dataset["data"][column]
         assert_that(dates.isnull().sum(), equal_to(0), "Null date found")
 
-    def valid_date(self):
-        dates = self.dataset["data"]["DOB"]
+    def valid_date(self, column="DOB"):
+        dates = self.dataset["data"][column]
         for date in dates:
             assert_that(
                 pd.to_datetime(date, errors="coerce"),
@@ -27,8 +27,8 @@ class DateCheck(DataCheck):
                 f"Invalid date: {date}",
             )
 
-    def within_range(self, start, end):
-        dates = self.dataset["data"]["DOB"]
+    def within_range(self, start, end, column="DOB"):
+        dates = self.dataset["data"][column]
         for date in dates:
             date = pd.to_datetime(date)
             if pd.isnull(date):
