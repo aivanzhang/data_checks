@@ -73,7 +73,7 @@ os.environ["CHECK_SETTINGS_MODULE"] = "my_data_checks.settings"
 ```
 Now you're ready to start defining checks and suites!
 ## Create Checks
-The library exposes the `DataCheck` class (defined in [data_checks.data_check](/data_checks/data_checks/data_check.py)) which you can use to write your checks. Begin by subclassing the `DataCheck` class:
+The library exposes the `DataCheck` class (defined in [data_checks.data_check](/data_checks/data_check.py)) which you can use to write your checks. Begin by subclassing the `DataCheck` class:
 ```python
 from data_checks.data_check import DataCheck
 
