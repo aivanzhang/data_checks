@@ -78,7 +78,6 @@ def main():
         "--only",
         "-o",
         type=str,
-        choices=data_suite_registry.keys,
         help="Run a specific data suite.",
         default=None,
     )

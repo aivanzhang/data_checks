@@ -23,7 +23,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "checks",
         nargs="+",
+        choices=data_check_registry.keys,
         help="One or more checks to run.",
+        default=[],
     )
 
     parser.add_argument(
@@ -68,6 +70,18 @@ if __name__ == "__main__":
 
     if args.alerting:
         default_check_actions.append(RuleAlertingAction)
+
+    updated_checks_to_run = {}
+    for check_name in args.checks:
+        if check_name in checks_to_run:
+            updated_checks_to_run[check_name] = checks_to_run[check_name]
+        else:
+            print(f"Check {check_name} not found.")
+    checks_to_run = updated_checks_to_run
+
+    if not len(checks_to_run.keys()):
+        print("No checks to run.")
+        exit(0)
 
     if args.schedule:
         # Create the checks in the database
