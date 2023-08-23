@@ -116,7 +116,7 @@ class MyFirstDataCheck(DataCheck):
 
     def my_first_helper_function(self):
         # This function will not be run as a rule
-        raise Exception("This function will should not be run as a rule")
+        raise Exception("This function should not be run as a rule")
 
     @classmethod
     def defined_rules(cls) -> list[str]:
@@ -337,11 +337,11 @@ suite:SUITE_NAME::check:CHECK_NAME::group:{name: GROUP_NAME, value: GROUP_VALUE}
 - `--check_name`: Name of the check to silence.
 - `--suite_name`: Name of the suite to silence.
 
-[!IMPORTANT]
-Either `--until` or `--delta` must be specified. If both are specified, `--until` will be used. If neither are specified, an error will be thrown. 
+> [!IMPORTANT]
+> Either `--until` or `--delta` must be specified. If both are specified, `--until` will be used. If neither are specified, an error will be thrown. 
 
-[!IMPORTANT]
-Either `--hash` or `--rule_name` must be specified. `--hash` is the preferred method of silencing as it is the most precise. Specifically the hash allows you to silence a specific rule based off its suite, check, rule, **params**, and **group** (if specified within a GroupDataSuite). If `--hash` is not specified then `--suite_name`, `--check_name`, and `--rule_name` will be used together to find the rule(s) to silence.
+> [!IMPORTANT]
+> Either `--hash` or `--rule_name` must be specified. `--hash` is the preferred method of silencing as it is the most precise. Specifically the hash allows you to silence a specific rule based off its suite, check, rule, **params**, and **group** (if specified within a GroupDataSuite). If `--hash` is not specified then `--suite_name`, `--check_name`, and `--rule_name` will be used together to find the rule(s) to silence.
 
 
 
