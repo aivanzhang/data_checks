@@ -212,6 +212,9 @@ class MyFirstDataSuite(DataSuite):
 > [!IMPORTANT] 
 > Your suite should be written inside the specified `SUITES_MODULE` in your settings file. For example, if you set `SUITES_MODULE = "my_suites"`, then you should write your check in `my_suites/my_first_data_suite.py`. Make sure that `SUITES_MODULE` and any nested modules are properly defined as directories (i.e. have an `__init__.py` file).
 
+> [!IMPORTANT] 
+> The params specified in `checks_overrides` will override the default params specified in the check. If no params are specified in `checks_overrides`, then the default params specified in the check will be used. If no default params and no params in `checks_overrides` are specified, then an error will be thrown. Also note that param values need to have a `__str__` method defined (see [Warning on Serialization](#warning-on-serialization)).
+
 > [!NOTE] 
 > The `DataSuite` class is a simplified and beginner friendly subclass of the base `Suite` class (`data_checks.base.suite`). The user can also directly subclass the `Suite` class to create more advanced suites (see [Subclassing from the Base Suite](#subclassing-from-the-base-suite)).
 
@@ -272,6 +275,9 @@ class GroupDataSuite(DataSuite):
 
 > [!IMPORTANT] 
 > Note that we are overriding `group_checks` and **NOT** `checks`.
+
+> [!IMPORTANT] 
+> Note that group name and values need to have a `__str__` method defined (see [Warning on Serialization](#warning-on-serialization)).
 
 :tada: That's it! :tada: GroupDataSuite can be run in the same manner as DataSuite (see [Command Line Interface / Run Suites](#run-suites)).
 
@@ -345,9 +351,16 @@ suite:SUITE_NAME::check:CHECK_NAME::group:{name: GROUP_NAME, value: GROUP_VALUE}
 
 
 
-## Warning on TO STRNG
+## Warning on Serialization
+To generate a hash for a rule, the library uses the `__str__` method of the rule's params and a rule's group (if defined within a GroupDataSuite). If the params are not serializable, then the hash will not be generated and an error will be thrown.
 
 ## Warning on Fully Parallel Executions
+The library allows you to run checks and suites fully parallel by spinning off processes. When suites are run in parallel (i.e. with the `--parallel` flag), each suite will be run in its own process. Each check of the suite will be run in its own process. Each rule of the check will be run in its own process. When checks are run in parallel (i.e. with the `--parallel` flag), each check will be run in its own Process. Each rule of the check will be run in its own process. This allows for maximum parallelization and speed. However, there are some caveats to this:
+1) This can be very resource intensive. Make sure you have enough resources to run the checks and suites in parallel.
+2) Since a database is being used to store suite, check, rule, and execution data, make sure that the database can handle the number of connections (1 per suite, check, and rule).
+3) Ensure that the server running the checks and suites has enough resources to handle the number of processes (1 per suite, check, and rule).
+
+Currently there is no way to specify a maximum number of running processes. This is a feature that is in the works.
 
 ## References
 ### Subclassing from the Base Check
