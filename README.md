@@ -158,7 +158,10 @@ class MyFirstDataSuite(DataSuite):
     @classmethod
     def dataset(cls) -> Dataset | None:
         """
-        Define a dataset by passing in a dictionary of keys and values. This will be generated once per suite run and passed to all the specified checks. Checks can then access the dataset by calling `self.dataset()` or `cls.dataset()`.
+        Define a dataset by passing in a dictionary of keys and values. 
+        This will be generated once per suite run and passed to all the
+        specified checks. Checks can then access the dataset by calling
+        `self.dataset()` or `cls.dataset()`.
         """
         return Dataset({
             "my_first_dataset": "SELECT * FROM my_first_table"
@@ -167,7 +170,8 @@ class MyFirstDataSuite(DataSuite):
     @classmethod
     def checks_overrides(cls) -> dict | None:
         """
-        Override the parameters of Checks' rules. Dictionary should be in the following format:
+        Override the parameters of Checks' rules. Dictionary should 
+        be in the following format:
         {
             "CheckClass": {
                 "rule_1": {
@@ -196,7 +200,8 @@ class MyFirstDataSuite(DataSuite):
     @classmethod
     def suite_config(cls) -> dict:
         """
-        Define the suite's configuration. Dictionary should be in the following format:
+        Define the suite's configuration. Dictionary should be
+        in the following format:
         {
             "schedule": "CRON schedule",
         }
@@ -208,7 +213,11 @@ class MyFirstDataSuite(DataSuite):
     @classmethod
     def checks(cls) -> list[type | str | Check]:
         """
-        Define the checks to be run by the suite. Checks can be specified by passing in the class, the class name, or an instance of the class. If the check is specified by the class or class name, the suite will instantiate the check. If the check is specified by an instance of the class, the suite will use the instance as is.
+        Define the checks to be run by the suite. Checks can be specified 
+        by passing in the class, the class name, or an instance of the class. 
+        If the check is specified by the class or class name, the suite will 
+        instantiate the check. If the check is specified by an instance 
+        of the class, the suite will use the instance as is.
         """
         return [
             "MyFirstDataCheck"
@@ -241,14 +250,16 @@ class GroupDataSuite(DataSuite):
     @classmethod
     def group_name(cls) -> str:
         """
-        Identifier for each element in the group. Can be accessed through self.group["name"] in checks.
+        Identifier for each element in the group. Can be accessed through 
+        self.group["name"] in checks.
         """
         return "item"
 
     @classmethod
     def group(cls) -> list:
         """
-        List of group's members. Each element will be subject to the specified checks. Can be accessed through self.group["value"] in checks
+        List of group's members. Each element will be subject to the specified
+        checks. Can be accessed through self.group["value"] in checks
         """
         return [
             Item("item1", ...),
@@ -271,7 +282,8 @@ class GroupDataSuite(DataSuite):
             element2,
             ...
         ]
-        will run CheckClass1 on element1, CheckClass1 on element2, CheckClass2 on element1, and CheckClass2 on element2.
+        will run CheckClass1 on element1, CheckClass1 on element2, 
+        CheckClass2 on element1, and CheckClass2 on element2.
         """
         return [
             ItemCheck
@@ -292,10 +304,11 @@ After defining your suites and/or checks, you can run them as well as other acti
 ### Run Checks
 To run checks, use the `data_checks.do.run_check` command:
 ```bash
-usage: python -m data_checks.do.run_check [-h] [--parallel] [--schedule SCHEDULE] [--error_logging]
+usage: python -m data_checks.do.run_check [-h] [--parallel] [--schedule SCHEDULE] 
+                                          [--error_logging]
                                           [--alerting]
                                           {CheckClass1}
-                                          [{CheckClass1,CheckClass2,CheckClass3,CheckClass4,CheckClass5} ...]
+                                          [{CheckClass1,CheckClass2, ...} ...]
 ```
 The `run_checks` command takes in the following arguments:
 - `checks`: List of checks to run by class name.
@@ -312,7 +325,8 @@ python -m data_checks.do.run_check MyFirstDataCheck --error_logging --alerting -
 ### Run Suites
 To run suites, use the `data_checks` command:
 ```bash
-usage: python -m data_checks [-h] [--only ONLY] [--exclude {ConsistencySuite} [{ConsistencySuite} ...]]
+usage: python -m data_checks [-h] [--only ONLY] 
+                             [--exclude {ConsistencySuite} [{ConsistencySuite} ...]]
                              [--parallel] [--scheduling] [--deploy] [--error_logging] [--alerting]
 ```
 The `data_checks` command runs all the suites specified in `SUITES_MODULE`. The command can be customized by passing in the following arguments:
