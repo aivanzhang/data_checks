@@ -29,8 +29,8 @@ Some additional features that are in the works (in order of priority):
   * [Table of Contents](#table-of-contents)
   * [Define Settings](#define-settings)
   * [Create Checks](#create-checks)
-  * [(Advanced) Create Suites](#-advanced--create-suites)
-  * [(Advanced) Create Group Data Suites](#-advanced--create-group-data-suites)
+  * [(Advanced) Create Suites](#advanced-create-suites)
+  * [(Advanced) Create Group Data Suites](#advanced-create-group-data-suites)
   * [Command Line Interface](#command-line-interface)
     + [Run Checks](#run-checks)
     + [Run Suites](#run-suites)
@@ -48,7 +48,7 @@ Some additional features that are in the works (in order of priority):
     + [Architecture](#architecture)
       - [Hierarchy](#hierarchy)
       - [Execution Flow](#execution-flow)
-      
+
 ## Define Settings
 Before you can use the package, you need to first set up your settings. Create a settings file (e.g. `settings.py`) and define the following variables:
 ```python
