@@ -73,7 +73,7 @@ os.environ["CHECK_SETTINGS_MODULE"] = "my_data_checks.settings"
 ```
 Now you're ready to start defining checks and suites!
 ## Create Checks
-The library exposes the `DataCheck` class (defined in `data_checks.data_check`) which you can use to write your checks. Begin by subclassing the `DataCheck` class:
+The library exposes the `DataCheck` class (defined in [data_checks.data_check](data_checks/data_check.py)) which you can use to write your checks. Begin by subclassing the `DataCheck` class:
 ```python
 from data_checks.data_check import DataCheck
 
@@ -135,14 +135,14 @@ class MyFirstDataCheck(DataCheck):
 > The example above uses assertions to check the data. You can however use any method you want to check the data. If the rule passes, return nothing. If the rule fails, throw an exception.
 
 > [!NOTE] 
-> If you have existing check classes, you can still subclass `DataCheck` and use the library in the same manner noted above. Make sure that your class does not accidentally override any of the methods in `Check` (see `data_checks.base.check`) 
+> If you have existing check classes, you can still subclass `DataCheck` and use the library in the same manner noted above. Make sure that your class does not accidentally override any of the methods in `Check` (see [data_checks.base.check](data_checks/base/check.py)) 
 
 
 > [!NOTE] 
-> The `DataCheck` class is a simplified and beginner friendly subclass of the base `Check` class (`data_checks.base.check`). The user can also directly subclass the `Check` class to create more advanced checks (see [Subclassing from the Base Check](#subclassing-from-the-base-check)).
+> The `DataCheck` class is a simplified and beginner friendly subclass of the base `Check` class ([data_checks.base.check](data_checks/base/check.py)). The user can also directly subclass the `Check` class to create more advanced checks (see [Subclassing from the Base Check](#subclassing-from-the-base-check)).
 
 ## (Advanced) Create Suites
-Checks provide the most basic form of a data check. Suites provide an additional layer of abstraction that allows you to group checks together and run them together on a schedule. Suites also provide additional features like shared datasets. Suites are defined in a similar manner as checks. Begin by subclassing the `DataSuite` class (defined in `data_checks.data_suite`):
+Checks provide the most basic form of a data check. Suites provide an additional layer of abstraction that allows you to group checks together and run them together on a schedule. Suites also provide additional features like shared datasets. Suites are defined in a similar manner as checks. Begin by subclassing the `DataSuite` class (defined in [data_checks.data_suite](data_checks/data_suite.py)):
 ```python
 from data_checks.data_suite import DataSuite
 
@@ -230,14 +230,14 @@ class MyFirstDataSuite(DataSuite):
 > The params specified in `checks_overrides` will override the default params specified in the check. If no params are specified in `checks_overrides`, then the default params specified in the check will be used. If no default params and no params in `checks_overrides` are specified, then an error will be thrown. Also note that param values need to have a `__str__` method defined (see [Warning on Serialization](#warning-on-serialization)).
 
 > [!NOTE] 
-> The `DataSuite` class is a simplified and beginner friendly subclass of the base `Suite` class (`data_checks.base.suite`). The user can also directly subclass the `Suite` class to create more advanced suites (see [Subclassing from the Base Suite](#subclassing-from-the-base-suite)).
+> The `DataSuite` class is a simplified and beginner friendly subclass of the base `Suite` class ([data_checks.base.suite](data_checks/base/suite.py)). The user can also directly subclass the `Suite` class to create more advanced suites (see [Subclassing from the Base Suite](#subclassing-from-the-base-suite)).
 
 :tada: That's it! :tada: You've created your first DataSuite. Now you can run it from the command line (see [Command Line Interface / Run Suites](#run-suites)).
 ## (Advanced) Create Group Data Suites
 Suppose you want to run the same check over many different objects. For example assume you have `ItemCheck` that checks if a certain `Item` is valid or not via various rules (i.e. quality, price, etc.). You have hundreds of these items. You could:
 1) Create a suite for each item and run them individually
 2) Pass the item as an argument to each of the check's rules for all items
-However both methods are tedious and inefficient. This library provides an abstraction to easily define a group where the pre-defined checks run on each group member. Begin by subclassing the `GroupDataSuite` class (defined in `data_checks.group_data_suite`):
+However both methods are tedious and inefficient. This library provides an abstraction to easily define a group where the pre-defined checks run on each group member. Begin by subclassing the `GroupDataSuite` class (defined in [data_checks.group_data_suite](data_checks/group_data_suite.py)):
 ```python
 from data_checks.group_data_suite import GroupDataSuite
 
@@ -380,14 +380,14 @@ Currently there is no way to specify a maximum number of running processes. This
 
 ## References
 ### Subclassing from the Base Check
-The base `Check` class (`data_checks.base.check`) define methods used to initialize, customize, and execute a check and its rules. It also has methods to store data related to the check and its execution as well as interact with its suite (if any). It is not recommended to directly subclass the `Check` class unless you have a specific use case that requires it. Instead, use the `DataCheck` class (`data_checks.data_check`) which is a simplified and beginner friendly subclass of the `Check` class.
+The base `Check` class ([data_checks.base.check](data_checks/base/check.py)) define methods used to initialize, customize, and execute a check and its rules. It also has methods to store data related to the check and its execution as well as interact with its suite (if any). It is not recommended to directly subclass the `Check` class unless you have a specific use case that requires it. Instead, use the `DataCheck` class ([data_checks.data_check](data_checks/data_check.py)) which is a simplified and beginner friendly subclass of the `Check` class.
 
 If you truly want to modify the base `Check` class, you can do so by subclassing it and overriding its methods. However be :bangbang: **extremely careful** :bangbang: when doing so as it may break the functionality of the library. If you do so, make sure to test your check thoroughly.
 
 > [!WARNING]  
 > Documentation for the base `Check` class is limited and still a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
 ### Subclassing from the Base Suite
-The base `Suite` class (`data_checks.base.check`) define methods used to initialize, customize, and execute a suite and its checks. It also has methods to store data related to the suite and its execution as well as interact with its checks. It is not recommended to directly subclass the `Suite` class unless you have a specific use case that requires it. Instead, use the `DataSuite` class (`data_checks.data_suite`) which is a simplified and beginner friendly subclass of the `Suite` class.
+The base `Suite` class ([data_checks.base.check](data_checks/base/check.py)) define methods used to initialize, customize, and execute a suite and its checks. It also has methods to store data related to the suite and its execution as well as interact with its checks. It is not recommended to directly subclass the `Suite` class unless you have a specific use case that requires it. Instead, use the `DataSuite` class ([data_checks.data_suite](data_checks/data_suite.py)) which is a simplified and beginner friendly subclass of the `Suite` class.
 
 If you truly want to modify the base `Suite` class, you can do so by subclassing it and overriding its methods. However be :bangbang: **extremely careful** :bangbang: when doing so as it may break the functionality of the library. If you do so, make sure to test your suite thoroughly.
 
