@@ -336,9 +336,6 @@ The `silence_check` command takes in the following arguments:
 - `--until`: Date until which the rule will be silenced. Format should be `YYYY-MM-DD:HH:mm:ss`.
 - `--delta`: Time delta for which the rule will be silenced. Format: 1h, 1d, 1m, 1w (hour, day, minute, week). Example: 3h for 3 hours.
 - `--hash`: Hash of the rule (stored in the database) to silence. See [Database](#database) for more information.
-```
-suite:SUITE_NAME::check:CHECK_NAME::group:{name: GROUP_NAME, value: GROUP_VALUE}::rule:RULE_NAME::params:{args: [ARG1, ARG2, ...], kwargs: {key1: value1, key2: value2, ...}}
-```
 - `--rule_name`: Name of the rule to silence.
 - `--check_name`: Name of the check to silence.
 - `--suite_name`: Name of the suite to silence.
@@ -379,5 +376,84 @@ If you truly want to modify the base `Suite` class, you can do so by subclassing
 > Documentation for the base `Suite` class is limited and still a work in progress. For now, you can refer to the source code and its corresponding docstrings for more information.
 
 ### Database
+Suites, checks, rules, and rule executions are stored in a database. The database is specified in the `CHECKS_DATABASE_URL` variable in your settings file. Any database that is supported by SQLAlchemy can be used. This library generates the following tables in the database:
+
+## Suite Table
+Stores data related to suites.
+
+| id (INT)         | name (VARCHAR)       | description (VARCHAR)        | code (TEXT)         | schedule (VARCHAR)   | created_at (TIMESTAMPTZ)      |
+|------------------|----------------------|------------------------------|---------------------|----------------------|-------------------------------|
+| 001              | Suite1               | lorem ipsum dolor sit ...... | def ...             | * */2 * *            | 2023-08-22 00:00:00.359828-00 |
+| 002              | Suite2               | lorem ipsum dolor sit ...... | def ...             | * * * * *            | 2023-08-22 01:00:00.359828-00 |
+| 003              | Suite3               | lorem ipsum dolor sit ...... | def ...             | * */3 * *            | 2023-08-22 02:00:00.359828-00 |
+| 004              | Suite4               | lorem ipsum dolor sit ...... | def ...             | * * * * *            | 2023-08-22 03:00:00.359828-00 |
+
+- `id`: Unique identifier for the suite.
+- `name`: Name of the suite.
+- `description`: Description of the suite.
+- `code`: Code of the suite.
+- `schedule`: CRON schedule of the suite.
+- `created_at`: Timestamp of when the suite was created.
+
+## Check Table
+Stores data related to checks.
+
+| id (INT)         | name (VARCHAR)       | description (VARCHAR)        | code (TEXT)         | excluded_rules (VARCHAR)         | created_at (TIMESTAMPTZ)      |
+|------------------|----------------------|------------------------------|---------------------|----------------------------------|-------------------------------|
+| 001              | Check1               | lorem ipsum dolor sit ...... | def ...             | ["rule1", "rule2", "rule3"]      | 2023-08-22 00:00:00.359828-00 |
+| 002              | Check2               | lorem ipsum dolor sit ...... | def ...             | ["rule1", "rule2", "rule3"]      | 2023-08-22 01:00:00.359828-00 |
+| 003              | Check3               | lorem ipsum dolor sit ...... | def ...             | ["rule1", "rule2", "rule3"]      | 2023-08-22 02:00:00.359828-00 |
+| 004              | Check4               | lorem ipsum dolor sit ...... | def ...             | ["rule1", "rule2", "rule3"]      | 2023-08-22 03:00:00.359828-00 |
+
+- `id`: Unique identifier for the check.
+- `name`: Name of the check.
+- `description`: Description of the check.
+- `code`: Code of the check.
+- `excluded_rules`: List of rules to exclude from the check.
+- `created_at`: Timestamp of when the check was created.
+
+## Rule Table
+Stores data related to rules.
+
+| id (INT)         | check_id (INT)         | suite_id (INT)         | name (VARCHAR)       | hash (TEXT)        | severity (NUMERIC)         | code (TEXT)         | silence_until (TIMESTAMPTZ)      | created_at (TIMESTAMPTZ)      |
+|------------------|------------------------|------------------------|----------------------|--------------------|----------------------------|---------------------|----------------------------------|-------------------------------|
+| 001              | 001                    | NULL                   | Rule1                | RULE_HASH1         | 1                          | def ...             | NULL                             | 2023-08-22 00:00:00.359828-00 |
+| 002              | 002                    | 002                    | Rule2                | RULE_HASH2         | 2                          | def ...             | 2023-08-22 01:00:00.359828-00    | 2023-08-22 01:00:00.359828-00 |
+| 003              | 003                    | NULL                   | Rule3                | RULE_HASH3         | 3                          | def ...             | 2023-08-22 02:00:00.359828-00    | 2023-08-22 02:00:00.359828-00 |
+| 004              | 004                    | 004                    | Rule4                | RULE_HASH4         | 4                          | def ...             | 2023-08-22 03:00:00.359828-00    | 2023-08-22 03:00:00.359828-00 |
+
+- `id`: Unique identifier for the rule.
+- `check_id`: ID of the check the rule belongs to.
+- `suite_id`: ID of the suite the rule belongs to.
+- `name`: Name of the rule.
+- `hash`: Hash of the rule. In the following format:
+```
+suite:SUITE_NAME::check:CHECK_NAME::group:{name: GROUP_NAME, value: GROUP_VALUE}::rule:RULE_NAME::params:{args: [ARG1, ARG2, ...], kwargs: {key1: value1, key2: value2, ...}}
+```
+- `severity`: Severity of the rule.
+- `code`: Code of the rule.
+- `silence_until`: Timestamp of when the rule will be silenced until.
+- `created_at`: Timestamp of when the rule was created.
+
+## Rule Execution Table
+Stores data related to rule executions.
+
+| id (INT)         | rule_id (INT)         | status (VARCHAR)         | params (TEXT)              | logs (TEXT)        | traceback (TEXT)          | exception (TEXT)          | created_at (TIMESTAMPTZ)      | finished_at (TIMESTAMPTZ)      |
+|------------------|-----------------------|--------------------------|----------------------------|--------------------|---------------------------|---------------------------|-------------------------------|--------------------------------|
+| 001              | 001                   | success                  | {"args": [], "kwargs": {}} | hellow world ...   | NULL                      | NULL                      | 2023-08-22 00:00:00.359828-00 | 2023-08-22 00:00:00.359828-00  |
+| 002              | 002                   | failed                   | {"args": [], "kwargs": {}} | NULL               | lorem ipsum dolor sit ... | lorem ipsum dolor sit ... | 2023-08-22 01:00:00.359828-00 | 2023-08-22 01:00:00.359828-00  |
+| 003              | 003                   | success                  | {"args": [], "kwargs": {}} | hellow world ...   | NULL                      | NULL                      | 2023-08-22 02:00:00.359828-00 | 2023-08-22 02:00:00.359828-00  |
+| 004              | 004                   | failed                   | {"args": [], "kwargs": {}} | NULL               | lorem ipsum dolor sit ... | lorem ipsum dolor sit ... | 2023-08-22 03:00:00.359828-00 | 2023-08-22 03:00:00.359828-00  |
+
+- `id`: Unique identifier for the rule execution.
+- `rule_id`: ID of the rule the rule execution belongs to.
+- `status`: Status of the rule execution.
+- `params`: Params of the rule execution.
+- `logs`: Logs of the rule execution.
+- `traceback`: Traceback of the rule execution.
+- `exception`: Exception of the rule execution.
+- `created_at`: Timestamp of when the rule execution was created.
+- `finished_at`: Timestamp of when the rule execution finished.
+
 ### Hierarchy
 ### Execution Flow
