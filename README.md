@@ -378,7 +378,7 @@ If you truly want to modify the base `Suite` class, you can do so by subclassing
 ### Database
 Suites, checks, rules, and rule executions are stored in a database. The database is specified in the `CHECKS_DATABASE_URL` variable in your settings file. Any database that is supported by SQLAlchemy can be used. This library generates the following tables in the database:
 
-## Suite Table
+#### Suite Table
 Stores data related to suites.
 
 | id (INT)         | name (VARCHAR)       | description (VARCHAR)        | code (TEXT)         | schedule (VARCHAR)   | created_at (TIMESTAMPTZ)      |
@@ -395,7 +395,7 @@ Stores data related to suites.
 - `schedule`: CRON schedule of the suite.
 - `created_at`: Timestamp of when the suite was created.
 
-## Check Table
+#### Check Table
 Stores data related to checks.
 
 | id (INT)         | name (VARCHAR)       | description (VARCHAR)        | code (TEXT)         | excluded_rules (VARCHAR)         | created_at (TIMESTAMPTZ)      |
@@ -412,7 +412,7 @@ Stores data related to checks.
 - `excluded_rules`: List of rules to exclude from the check.
 - `created_at`: Timestamp of when the check was created.
 
-## Rule Table
+#### Rule Table
 Stores data related to rules.
 
 | id (INT)         | check_id (INT)         | suite_id (INT)         | name (VARCHAR)       | hash (TEXT)        | severity (NUMERIC)         | code (TEXT)         | silence_until (TIMESTAMPTZ)      | created_at (TIMESTAMPTZ)      |
@@ -435,7 +435,7 @@ suite:SUITE_NAME::check:CHECK_NAME::group:{name: GROUP_NAME, value: GROUP_VALUE}
 - `silence_until`: Timestamp of when the rule will be silenced until.
 - `created_at`: Timestamp of when the rule was created.
 
-## Rule Execution Table
+#### Rule Execution Table
 Stores data related to rule executions.
 
 | id (INT)         | rule_id (INT)         | status (VARCHAR)         | params (TEXT)              | logs (TEXT)        | traceback (TEXT)          | exception (TEXT)          | created_at (TIMESTAMPTZ)      | finished_at (TIMESTAMPTZ)      |
@@ -455,5 +455,13 @@ Stores data related to rule executions.
 - `created_at`: Timestamp of when the rule execution was created.
 - `finished_at`: Timestamp of when the rule execution finished.
 
-### Hierarchy
-### Execution Flow
+### Architecture
+This library defines 3 core concepts: suites, checks, and rules. Suites are a collection of checks and/or rules. Checks are groups of organized rules that can be selectively executed. Rule are the atomic unit of this data check library and are functions that check incoming data. In the current version, rules need to be defined within checks. This will be changed in a later version of the library. Rules are the fundamental building block of data checks — every other component in this library is built on top of rules and adds additional functionality around these rules. Furthermore note that a Dataset simplifies how data moves between checks and when defined in a suite can be accessed by its corresponding checks and their rules.
+#### Hierarchy
+Suites are top level components that group checks. A dataset can be attached to a suite so that the same dataset can be accessed by the underlying checks and rules. Checks are second level components that contain rules. Rules are the lowest level components that actually check data. The following diagram shows the hierarchy of these components: 
+
+![Data Checks Overview](./docs/img/high_level.png)
+#### Execution Flow
+The execution flow of a suite of data checks proceeds as follows:
+
+![Execution Order](./docs/img/execution_order.png)
