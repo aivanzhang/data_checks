@@ -2,5 +2,5 @@
 
 This directory contains examples of data quality checks and suites written with this library. 
 
-## Available Examples
+## Use Cases
 - 
