@@ -1,4 +1,3 @@
-import re
 from data_checks import DataCheck
 from hamcrest import assert_that, equal_to, less_than_or_equal_to
 

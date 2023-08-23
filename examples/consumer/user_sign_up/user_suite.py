@@ -6,7 +6,7 @@ from data_checks import DataSuite
 class UserSuite(DataSuite):
     @classmethod
     def checks(cls):
-        return ["EmailCheck", "DateCheck", "StatusCheck", "PaymentsCheck"]
+        return ["EmailCheck", "DateCheck", "StatusCheck", "PaymentsCheck", "IpCheck"]
 
     @classmethod
     def dataset(cls) -> Dataset | None:
