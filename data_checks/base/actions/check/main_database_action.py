@@ -14,7 +14,7 @@ class MainDatabaseAction(CheckAction):
     @staticmethod
     def setup(check):
         config = check.check_config()
-
+        del config["rules_config"]
         check._internal["check_model"] = CheckManager.create_check(
             name=check.name,
             excluded_rules=list(check.excluded_rules),
