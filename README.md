@@ -27,6 +27,7 @@ Some additional features that are in the works (in order of priority):
 - [Data Checks](#data-checks)
   * [Overview](#overview)
   * [Table of Contents](#table-of-contents)
+  * [Installation](#installation)
   * [Define Settings](#define-settings)
   * [Create Checks](#create-checks)
   * [(Advanced) Create Suites](#advanced-create-suites)
