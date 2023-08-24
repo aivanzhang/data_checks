@@ -3,12 +3,12 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "data_checks"
-version = "0.0.34"
+name = "pydata_checks"
+version = "0.0.2"
 authors = [
   { name="Ivan Zhang", email="ivanzhangofficial@gmail.com" },
 ]
-description = "Data observability checks to easily create comprehensive data quality tests"
+description = "Data quality checks that don't suck."
 readme = "README.md"
 requires-python = ">=3.7"
 license = {file = "LICENSE"}

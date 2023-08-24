@@ -49,6 +49,12 @@ Some additional features that are in the works (in order of priority):
       - [Hierarchy](#hierarchy)
       - [Execution Flow](#execution-flow)
 
+## Installation
+Install the package via pip:
+```bash
+pip install pydata-checks
+```
+
 ## Define Settings
 Before you can use the package, you need to first set up your settings. Create a settings file (e.g. `settings.py`) and define the following variables:
 ```python
