@@ -1,7 +1,7 @@
 """
 Action that deals with creating the rows related to the main suites in the database (i.e. scheduling)
 """
-
+import json
 from data_checks.base.actions.suite.suite_action import SuiteAction
 from data_checks.database.managers import (
     SuiteManager,
@@ -16,6 +16,6 @@ class MainDatabaseAction(SuiteAction):
 
         suite._internal["suite_model"] = SuiteManager.create_suite(
             name=suite.name,
-            schedule=config.get("schedule", None),
+            config=json.dumps(config, default=str),
             code=class_utils.get_class_code(suite.__class__),
         )
