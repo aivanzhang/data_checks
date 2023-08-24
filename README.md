@@ -20,7 +20,7 @@ Some reason you might use this library:
 Some additional features that are in the works (in order of priority):
 1) Custom pre-built analytics and visualizations
 2) More flexibility in specifying the parallelization options (see [Warning on Fully Parallel Executions](#warning-on-fully-parallel-executions))
-3) Define before, after, on success and on failure actions based on data checks
+3) Attach actions to their data checks (i.e. remediation, custom flow if check succeeds or fails, etc.)
 4) Automatically generate data checks from the command line (as you would generate a database migration) and Jupyter Notebooks
 
 ## Table of Contents
@@ -188,6 +188,25 @@ class MyFirstDataSuite(DataSuite):
             },
             "..."
         }
+        You can also pass in an array to run a rule multiple times with
+        different parameters. For example:
+        {
+            "CheckClass": {
+                "rule_1": [
+                    {
+                        "param1": value1,
+                        "param2": value2,
+                        ...
+                    },
+                    {
+                        "param1": value3,
+                        "param2": value4,
+                        ...
+                    }
+                ]
+            }
+        }
+        runs rule_1 twice with different parameters.
         """
         return {
             "MyFirstDataCheck": {
