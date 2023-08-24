@@ -13,10 +13,13 @@ from data_checks.utils import class_utils
 class MainDatabaseAction(CheckAction):
     @staticmethod
     def setup(check):
+        config = check.check_config()
+
         check._internal["check_model"] = CheckManager.create_check(
             name=check.name,
             excluded_rules=list(check.excluded_rules),
             code=class_utils.get_class_code(check.__class__),
+            config=json.dumps(config, default=str),
         )
 
     @staticmethod
@@ -35,6 +38,8 @@ class MainDatabaseAction(CheckAction):
             else check._internal["suite_model"].id
         )
 
+        rule_config = check.check_config().get("rules_config", {}).get(rule, {})
+
         context.set_sys(
             "rule_model",
             RuleManager.create_rule(
@@ -42,6 +47,7 @@ class MainDatabaseAction(CheckAction):
                 code=class_utils.get_function_code(check, rule),
                 params=json.dumps(params, default=str),
                 group=json.dumps(check.group, default=str) if check.group else None,
+                config=json.dumps(rule_config, default=str),
                 check_id=check_id,
                 suite_id=suite_id,
                 check_name=check.name,

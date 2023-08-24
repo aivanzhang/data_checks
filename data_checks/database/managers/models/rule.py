@@ -17,6 +17,7 @@ class Rule(Base, MainMixin):
     severity: Mapped[float] = mapped_column(Numeric(6, 3), default=0.0)
     code: Mapped[str] = mapped_column(UnicodeText())
     hash: Mapped[str] = mapped_column(UnicodeText(), nullable=False)
+    config: Mapped[str] = mapped_column(UnicodeText(), nullable=True)
     silenced_until: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), nullable=True
     )

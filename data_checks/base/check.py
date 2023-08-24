@@ -73,6 +73,13 @@ class Check(CheckBase, ActionMixin):
             )
         )
 
+    @classmethod
+    def check_config(cls) -> dict:
+        """
+        Configurations for the check and its rules. This will be stored in the database.
+        """
+        return {}
+
     def set_actions(self, actions: list[type[CheckAction]]):
         """
         Set the actions for the check

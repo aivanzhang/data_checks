@@ -36,6 +36,7 @@ Some additional features that are in the works (in order of priority):
     + [1) Override the `defined_rules` method](#override_defined_rules)
     + [2) Use `DataCheck(excluded_rules=[...])` (Suite Only)](#define_excluded_rules)
     + [3) Use `DataCheck(rules_params={...}, only_run_specified_rules=True)` (Suite Only)](#only_specified_flag)
+  * [(Advanced) Built-in Functionality](#advanced-built-in-functionality)
   * [Command Line Interface](#command-line-interface)
     + [Run Checks](#run-checks)
     + [Run Suites](#run-suites)
@@ -140,6 +141,39 @@ class MyFirstDataCheck(DataCheck):
         return ["my_first_successful_rule", "my_first_failed_rule"]
 ```
 
+In addition there is a `check_config` method that allows you to specify the check's and its rules' configuration. This configuration is then stored in the database. For example:
+```python
+from data_checks.data_check import DataCheck
+
+class MyFirstDataCheck(DataCheck):
+    ...
+    @classmethod
+    def check_config(cls) -> dict:
+        """
+        Define the check's configuration. This will be stored in the database.
+        You can attach any configuration option as long as it is JSON serializable.
+        """
+        return {
+            "param1": value1,
+            "param2": value2,
+            "rules_config": {
+                "my_first_successful_rule": {
+                    "param1": value1,
+                    "param2": value2,
+                    ...
+                },
+                "my_first_failed_rule": {
+                    "param1": value1,
+                    "param2": value2,
+                    ...
+                }
+            }
+        }
+```
+stores the entire dictionary as the config for the check and the specific configs under `rules_config` as the configuration for each rule. This can be useful for defining additional features for your checks and rules. This library defines a few of these additional features (see [(Advanced) Built-in Functionality](#advanced-built-in-functionality)).
+
+
+
 > [!IMPORTANT] 
 > Your check should be written inside the specified `CHECKS_MODULE` in your settings file. For example, if you set `CHECKS_MODULE = "my_checks"`, then you should write your check in `my_checks/my_first_data_check.py`. Make sure that `CHECK_MODULE` and any nested modules are properly defined as directories (i.e. have an `__init__.py` file).
 
@@ -233,15 +267,10 @@ class MyFirstDataSuite(DataSuite):
         """
         Define the suite's configuration. This will be stored in the database.
         You can attach any configuration option as long as it is JSON serializable.
-        `schedule` is the only system defined configuration option that defines the
-        CRON schedule for the suite. For example:
-        {
-            "schedule": "CRON schedule",
-        }
+        Like checks, you can also define additional features for your suite.
+        This library has a few of these additional features (see Built-in Functionality).
         """
-        return {
-            "schedule": "* * * * *", 
-        }
+        return {}
 
     @classmethod
     def checks(cls) -> list[type | str | Check]:
@@ -281,6 +310,16 @@ class MyFirstGroupDataSuite(GroupDataSuite):
 Then override the required class methods:
 ```python
 class MyFirstGroupDataSuite(GroupDataSuite):
+    @classmethod
+    def suite_config(cls) -> dict:
+        """
+        Define the suite's configuration. This will be stored in the database.
+        You can attach any configuration option as long as it is JSON serializable.
+        Like checks, you can also define additional features for your suite.
+        This library has a few of these additional features (see Built-in Functionality).
+        """
+        return {}
+
     @classmethod
     def group_name(cls) -> str:
         """
@@ -432,6 +471,43 @@ class MyFirstDataSuite(DataSuite):
 ```
 would run only `my_first_failed_rule` with no params.
 
+## (Advanced) Built-in Functionality
+This library comes with a few built-in features for your suites, checks, and rules through their respective configuration class methods (`check_config` and `suite_config`). **Make sure that the values for these configuration options are valid (see below).**
+
+### Suite Configuration
+The following suite configuration options are used by the system:
+```python
+from data_checks.data_suite import DataSuite
+
+class MyFirstDataSuite(DataSuite):
+    @classmethod
+    def suite_config(cls) -> dict:
+        return {
+            "schedule": "* * * * *", # CRON schedule for the suite. If not provided, the default schedule (DEFAULT_SCHEDULE in the settings file) is used. If that is not provided, an error will be thrown.
+        }
+```
+
+### Check Configuration
+The following suite configuration options are used by the system:
+```python
+from data_checks.data_check import DataCheck
+
+class MyFirstDataCheck(DataCheck):
+    @classmethod
+    def check_config(cls) -> dict:
+        return {
+            "rules_config": { # Configuration for each rule. If not provided, rule config will be empty dictionary.
+                "rule_1": {
+                    ...
+                },
+                "rule_2": {
+                    ...
+                },
+            }
+        }
+```
+
+
 
 ## Command Line Interface
 After defining your suites and/or checks, you can run them as well as other actions from the command line.
@@ -473,10 +549,8 @@ The `data_checks` command runs all the suites specified in `SUITES_MODULE`. The 
 
 For example to run all suites in every minute, log errors to the console, and deploy the suites with we would use the following command:
 ```bash
-python -m data_checks --error_logging --deploy --scheduling "* * * * *"
+python -m data_checks --error_logging --deploy
 ```
->[!IMPORTANT]
->To deploy a suite, the suite must have a schedule. If no schedule is specified, then the default schedule (in the settings file) is used. If that is not provided, an error will be thrown.
 
 ### Silencing Checks' Rules
 To silence rules, use the `data_checks.do.silence_check` command:

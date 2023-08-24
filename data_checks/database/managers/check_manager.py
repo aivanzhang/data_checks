@@ -12,12 +12,14 @@ class CheckManager(BaseManager):
         name: str,
         code: str,
         excluded_rules: list[str] = [],
+        config: Optional[str] = None,
         rules: list["Rule"] = [],
     ) -> Check:
         new_check = Check.create(
             name=name,
             code=code,
             excluded_rules=excluded_rules,
+            config=config,
             rules=rules,
         )
         with session_scope() as session:
