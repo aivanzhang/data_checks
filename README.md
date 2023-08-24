@@ -32,6 +32,7 @@ Some additional features that are in the works (in order of priority):
   * [Create Checks](#create-checks)
   * [(Advanced) Create Suites](#advanced-create-suites)
   * [(Advanced) Create Group Data Suites](#advanced-create-group-data-suites)
+  * [(Advanced) Cherry Pick Checks' Rules](#advanced-cherry-pick-checks-rules)
   * [Command Line Interface](#command-line-interface)
     + [Run Checks](#run-checks)
     + [Run Suites](#run-suites)
@@ -79,6 +80,7 @@ or in Python:
 os.environ["CHECK_SETTINGS_MODULE"] = "my_data_checks.settings"
 ```
 Now you're ready to start defining checks and suites!
+
 ## Create Checks
 The library exposes the `DataCheck` class (defined in [data_checks.data_check](/data_checks/data_check.py)) which you can use to write your checks. Begin by subclassing the `DataCheck` class:
 ```python
@@ -259,6 +261,7 @@ class MyFirstDataSuite(DataSuite):
 > The `DataSuite` class is a simplified and beginner friendly subclass of the base `Suite` class ([data_checks.base.suite](/data_checks/base/suite.py)). The user can also directly subclass the `Suite` class to create more advanced suites (see [Subclassing from the Base Suite](#subclassing-from-the-base-suite)).
 
 :tada: That's it! :tada: You've created your first DataSuite. Now you can run it from the command line (see [Command Line Interface / Run Suites](#run-suites)).
+
 ## (Advanced) Create Group Data Suites
 Suppose you want to run the same check over many different objects. For example assume you have `ItemCheck` that checks if a certain `Item` is valid or not via various rules (i.e. quality, price, etc.). You have hundreds of these items. You could:
 1) Create a suite for each item and run them individually
@@ -272,7 +275,7 @@ class MyFirstGroupDataSuite(GroupDataSuite):
 ```
 Then override the required class methods:
 ```python
-class GroupDataSuite(DataSuite):
+class MyFirstGroupDataSuite(GroupDataSuite):
     @classmethod
     def group_name(cls) -> str:
         """
@@ -294,7 +297,7 @@ class GroupDataSuite(DataSuite):
         ]
 
     @classmethod
-    def group_checks(cls) -> list[type[Check]]:
+    def group_checks(cls) -> list[type[Check] | str]:
         """
         Checks to be run on each element in the group. For example:
         [
@@ -322,7 +325,40 @@ class GroupDataSuite(DataSuite):
 > [!IMPORTANT] 
 > Note that group name and values need to have a `__str__` method defined (see [Warning on Serialization](#warning-on-serialization)).
 
-:tada: That's it! :tada: GroupDataSuite can be run in the same manner as DataSuite (see [Command Line Interface / Run Suites](#run-suites)).
+:tada: That's it! :tada: GroupDataSuite can be run in the same manner as DataSuite (see [Command Line Interface / Run Suites](#run-suites)). Now you can access the group name and value in your checks:
+```python
+from data_checks.data_check import DataCheck
+
+class ItemCheck(DataCheck):
+    ...
+    def discount_limit(self):
+        item: Item = self.group["value"]
+        assert_that(
+            item.discount,
+            less_than_or_equal_to(
+                item.price,
+            ),
+            f"discount should not be greater than price for productId: {item.product_id}",
+        )
+    ...
+```
+See the full example [here](/examples/operations/inventory/inventory_suite.py).
+
+## (Advanced) Cherry Pick Checks' Rules
+Suppose you want to run only a subset of a check's rules. For example assume you have `ItemCheck` that checks if a certain `Item` is valid or not via various rules (i.e. quality, price, etc.). Some `Items` are perishable and some are not. You may have the following `ItemCheck` defined:
+```python
+from data_checks.data_check import DataCheck
+
+class ItemCheck(DataCheck):
+
+    ...
+
+    def check_item_expiration_date(self):
+        # Check if the item is perishable
+        assert Item.
+
+    ...
+```
 
 ## Command Line Interface
 After defining your suites and/or checks, you can run them as well as other actions from the command line.
