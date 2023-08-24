@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import TypedDict, Dict, Callable, Optional, Union
+from typing import TypedDict, Dict, Callable, Optional, Union, Any
 from data_checks.base.dataset import Dataset
 from data_checks.base.actions.action_types import ActionBase
 from data_checks.database.managers import models
@@ -11,7 +11,7 @@ class Group(TypedDict):
     """
 
     name: str
-    value: str
+    value: Any
 
 
 # Function positional and keyword arguments

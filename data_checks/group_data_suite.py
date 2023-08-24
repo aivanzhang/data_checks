@@ -1,5 +1,7 @@
 from data_checks import DataSuite
 from data_checks.base.check import Check
+from data_checks.base.check_types import Group
+from data_checks.conf.data_check_registry import data_check_registry
 
 """
 Suite of checks that run on a specific pre-defined group of data. For instance you might have checks on each Item in the Items table. 
@@ -23,7 +25,7 @@ class GroupDataSuite(DataSuite):
         raise NotImplementedError
 
     @classmethod
-    def group_checks(cls) -> list[type[Check]]:
+    def group_checks(cls) -> list[type[Check] | str]:
         """
         Checks to be run on each element in the group. For example:
         [
@@ -49,11 +51,18 @@ class GroupDataSuite(DataSuite):
         group_name = cls.group_name()
         checks = []
         for check in cls.group_checks():
+            if isinstance(check, str):
+                registered_check = data_check_registry[check]
+                if registered_check is None or not issubclass(registered_check, Check):
+                    raise ValueError(f"Check {check} is not registered")
+                check = data_check_registry[check]
+
             for element in cls.group():
                 updated_check = check()
-                updated_check.group = {
+                group: Group = {
                     "name": group_name,
                     "value": element,
                 }
+                updated_check.group = group
                 checks.append(updated_check)
         return checks
