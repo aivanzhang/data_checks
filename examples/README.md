@@ -18,8 +18,8 @@ This directory contains examples of data quality checks and suites written with 
     - [Benchmarking](/examples/ml/benchmarking/): Data quality checks for benchmarking.
     - [Bias](/examples/ml/bias/): Data quality checks for bias.
     - [Consistent Model Responses](/examples/ml/consistent_model_responses/): Data quality checks for consistent model responses.
-- (WIP) [Operations](/examples/operations/): Data quality checks for operations.
-    - [Customer Support](/examples/operations/customer_support/): Data quality checks for customer support.
-    - [Delivery](/examples/operations/delivery/): Data quality checks for delivery.
+- [Operations](/examples/operations/): Data quality checks for operations.
+    - (WIP) [Customer Support](/examples/operations/customer_support/): Data quality checks for customer support.
+    - (WIP) [Delivery](/examples/operations/delivery/): Data quality checks for delivery.
     - [Inventory](/examples/operations/inventory/): Data quality checks for inventory.
-    - [Resource Access](/examples/operations/resource_access/): Data quality checks for resource access.
+    - (WIP) [Resource Access](/examples/operations/resource_access/): Data quality checks for resource access.
