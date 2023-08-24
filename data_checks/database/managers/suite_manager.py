@@ -12,13 +12,11 @@ class SuiteManager(BaseManager):
         name: str,
         code: str,
         schedule: Optional[str] = None,
-        description: Optional[str] = None,
         rules: list["Rule"] = [],
     ) -> Suite:
         new_suite = Suite.create(
             name=name,
             schedule=schedule,
-            description=description,
             code=code,
             rules=rules,
         )

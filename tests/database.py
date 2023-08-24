@@ -20,14 +20,12 @@ from src.data_checks.base.database.managers import (
 new_rule = RuleManager.create_rule(
     name="test",
     readable_name="test",
-    description="test",
     code="",
 )
 
 new_suite = SuiteManager.create_suite(
     name="test",
     readable_name="test",
-    description="test",
     code="",
     executions=[],
 )
@@ -35,7 +33,6 @@ new_suite = SuiteManager.create_suite(
 new_check = CheckManager.create_check(
     name="test",
     readable_name="test",
-    description="test",
     code="",
     excluded_rules=[],
     executions=[],

@@ -41,7 +41,6 @@ class CheckBase(ABC):
     _internal: CheckInternal
     name: str
     dataset: Dataset
-    description: str
     rules: Dict[str, Callable[..., None]]  # Stores all the rules functions in the check
     rules_params: Dict[
         str,

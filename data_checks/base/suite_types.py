@@ -8,7 +8,6 @@ class SuiteBase(ABC):
 
     verbose: bool
     name: str
-    description: str
     actions: list
     check_actions: dict
 

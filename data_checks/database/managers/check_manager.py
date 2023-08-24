@@ -11,13 +11,11 @@ class CheckManager(BaseManager):
     def create_check(
         name: str,
         code: str,
-        description: Optional[str] = None,
         excluded_rules: list[str] = [],
         rules: list["Rule"] = [],
     ) -> Check:
         new_check = Check.create(
             name=name,
-            description=description,
             code=code,
             excluded_rules=excluded_rules,
             rules=rules,

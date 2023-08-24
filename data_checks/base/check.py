@@ -20,7 +20,6 @@ class Check(CheckBase, ActionMixin):
     def __init__(
         self,
         name: Optional[str] = None,
-        description="",
         rules_params=dict(),
         excluded_rules: Iterable = [],
         actions: list[type[CheckAction]] = [],
@@ -37,7 +36,7 @@ class Check(CheckBase, ActionMixin):
         self.name = self.__class__.__name__ if name is None else name
         if dataset is not None:
             self.dataset = dataset
-        self.description = description
+
         self.excluded_rules = set(excluded_rules)
         self._internal = {
             "suite_model": None,

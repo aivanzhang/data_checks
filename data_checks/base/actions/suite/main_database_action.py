@@ -16,7 +16,6 @@ class MainDatabaseAction(SuiteAction):
 
         suite._internal["suite_model"] = SuiteManager.create_suite(
             name=suite.name,
-            description=suite.description,
             schedule=config.get("schedule", None),
             code=class_utils.get_class_code(suite.__class__),
         )

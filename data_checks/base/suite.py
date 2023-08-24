@@ -31,11 +31,10 @@ class Suite(SuiteBase, ActionMixin):
     def __init__(
         self,
         name: Optional[str] = None,
-        description: Optional[str] = None,
         actions: list[type[SuiteAction]] = [],
     ):
         self.name = self.__class__.__name__ if name is None else name
-        self.description = description or ""
+
         self._actions: list[type[SuiteAction]] = actions
         self.check_actions: CheckActions = {
             "default": [],
