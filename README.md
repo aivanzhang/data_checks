@@ -624,12 +624,12 @@ Stores data related to suites.
 #### Check Table
 Stores data related to checks.
 
-| id (INT)         | name (VARCHAR)       | code (TEXT)         | excluded_rules (VARCHAR)         | created_at (TIMESTAMPTZ)      |
-|------------------|----------------------|---------------------|----------------------------------|-------------------------------|
-| 001              | Check1               | def ...             | ["rule1", "rule2", "rule3"]      | 2023-08-22 00:00:00.359828-00 |
-| 002              | Check2               | def ...             | ["rule1", "rule2", "rule3"]      | 2023-08-22 01:00:00.359828-00 |
-| 003              | Check3               | def ...             | ["rule1", "rule2", "rule3"]      | 2023-08-22 02:00:00.359828-00 |
-| 004              | Check4               | def ...             | ["rule1", "rule2", "rule3"]      | 2023-08-22 03:00:00.359828-00 |
+| id (INT)         | name (VARCHAR)       | code (TEXT)         | excluded_rules (VARCHAR)         | config (TEXT)                | created_at (TIMESTAMPTZ)      |
+|------------------|----------------------|---------------------|----------------------------------|------------------------------|-------------------------------|
+| 001              | Check1               | def ...             | ["rule1", "rule2", "rule3"]      | {..., "rules_config": {...}} | 2023-08-22 00:00:00.359828-00 |
+| 002              | Check2               | def ...             | ["rule1", "rule2", "rule3"]      | {..., "rules_config": {...}} |2023-08-22 01:00:00.359828-00 |
+| 003              | Check3               | def ...             | ["rule1", "rule2", "rule3"]      | {}                           | 2023-08-22 02:00:00.359828-00 |
+| 004              | Check4               | def ...             | ["rule1", "rule2", "rule3"]      | {..., "rules_config": {...}} |2023-08-22 03:00:00.359828-00 |
 
 - `id`: Unique identifier for the check.
 - `name`: Name of the check.
