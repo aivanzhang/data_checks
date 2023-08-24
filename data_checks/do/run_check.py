@@ -1,11 +1,11 @@
 if __name__ == "__main__":
     import argparse
-    from data_checks.do.utils.run_check_utils import *
     from copy import deepcopy
     from apscheduler.schedulers.background import BackgroundScheduler
     from apscheduler.triggers.cron import CronTrigger
     from data_checks.conf.data_check_registry import data_check_registry
     from data_checks.base.actions.check import CheckAction
+    from data_checks.do.utils.run_check_utils import *
 
     from data_checks.base.actions.check import (
         MainDatabaseAction as CheckMainDatabaseAction,
