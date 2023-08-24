@@ -30,7 +30,7 @@ class SuiteBase(ABC):
     @classmethod
     def suite_config(cls):
         """
-        System configurations for the suite
+        Configurations for the suite
         """
         pass
 

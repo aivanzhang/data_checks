@@ -57,10 +57,10 @@ class DataSuite(Suite):
     @classmethod
     def suite_config(cls) -> dict:
         """
-        System configurations for the suite. In the following format:
-        {
-            "schedule": CRON_STRING, # cron schedule for the suite
-        }
+        Define the suite's configuration. This will be stored in the database.
+        You can attach any configuration option as long as it is JSON serializable.
+        `schedule` is the only system defined configuration option that defines the
+        CRON schedule for the suite. For example:
         """
         return {
             "schedule": settings["DEFAULT_SCHEDULE"],  # default to run every day at 8am

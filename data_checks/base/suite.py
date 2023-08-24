@@ -70,10 +70,7 @@ class Suite(SuiteBase, ActionMixin):
     @classmethod
     def suite_config(cls) -> dict:
         """
-        System configurations for the suite. In the following format:
-        {
-            "schedule": CRON_STRING, # cron schedule for the suite
-        }
+        Configurations for the suite. This will be stored in the database.
         """
         return {}
 
