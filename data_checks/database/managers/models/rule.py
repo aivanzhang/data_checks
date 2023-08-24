@@ -18,9 +18,6 @@ class Rule(Base, MainMixin):
     code: Mapped[str] = mapped_column(UnicodeText())
     hash: Mapped[str] = mapped_column(UnicodeText(), nullable=False)
     config: Mapped[str] = mapped_column(UnicodeText(), nullable=True)
-    silenced_until: Mapped[datetime.datetime] = mapped_column(
-        DateTime(timezone=True), nullable=True
-    )
 
     suite_id: Mapped[int] = mapped_column(ForeignKey("suites.id"), nullable=True)
     suite: Mapped["Suite"] = relationship(back_populates="rules")

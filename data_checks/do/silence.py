@@ -1,6 +1,7 @@
 if __name__ == "__main__":
     import argparse
-    from datetime import datetime, timedelta
+    import time
+    from datetime import datetime, timedelta, timezone
     from data_checks.do.utils.silence_utils import *
     from data_checks.database import RuleManager
 
@@ -32,30 +33,6 @@ if __name__ == "__main__":
         default=None,
     )
 
-    parser.add_argument(
-        "--rule_name",
-        "-r",
-        type=str,
-        help="Name of the rule to silence.",
-        default=None,
-    )
-
-    parser.add_argument(
-        "--check_name",
-        "-c",
-        type=str,
-        help="Name of the check to silence.",
-        default=None,
-    )
-
-    parser.add_argument(
-        "--suite_name",
-        "-s",
-        type=str,
-        help="Name of the suite to silence.",
-        default=None,
-    )
-
     args = parser.parse_args()
 
     if not (args.until or args.delta):
@@ -63,40 +40,31 @@ if __name__ == "__main__":
             "Must provide either --until or --delta. See --help for more information."
         )
 
-    if not (args.hash or args.rule_name):
+    if not (args.hash):
         raise argparse.ArgumentTypeError(
-            "Must provide either --hash or --rule_name. See --help for more information."
+            "Must provide either --hash. See --help for more information."
         )
-
-    silence_until_date = args.until or datetime.now() + timedelta(
-        hours=int(args.delta[0]) if args.delta[1] == "h" else 0,
-        days=int(args.delta[0]) if args.delta[1] == "d" else 0,
-        minutes=int(args.delta[0]) if args.delta[1] == "m" else 0,
-        weeks=int(args.delta[0]) if args.delta[1] == "w" else 0,
+    silence_until_date = (
+        datetime.fromtimestamp(time.mktime(args.until.timetuple()), tz=timezone.utc)
+        if args.until
+        else datetime.now(timezone.utc)
+        + timedelta(
+            hours=int(args.delta[0]) if args.delta[1] == "h" else 0,
+            days=int(args.delta[0]) if args.delta[1] == "d" else 0,
+            minutes=int(args.delta[0]) if args.delta[1] == "m" else 0,
+            weeks=int(args.delta[0]) if args.delta[1] == "w" else 0,
+        )
     )
 
     print(f"Silencing rule(s) until {silence_until_date}")
-    if silence_until_date is None or silence_until_date < datetime.now():
+    if silence_until_date is None or silence_until_date < datetime.now(timezone.utc):
         raise argparse.ArgumentTypeError(
             "Silence until date not found or must be in the future. See --help for more information."
         )
 
     if args.hash:
         print(f"Silencing rule with hash:\n{args.hash}")
-        if RuleManager.silence_by_hash(silence_until_date, args.hash):
+        if RuleManager.silence(silence_until_date, args.hash):
             print("Successfully silenced rule.")
         else:
             print("Rule not found.")
-    else:
-        print(
-            f"Silencing rule(s) with name {args.rule_name}, check {args.check_name}, and suite {args.suite_name}"
-        )
-        if RuleManager.silence(
-            until=silence_until_date,
-            name=args.rule_name,
-            check_name=args.check_name,
-            suite_name=args.suite_name,
-        ):
-            print("Successfully silenced rule(s).")
-        else:
-            print("Rule(s) not found.")

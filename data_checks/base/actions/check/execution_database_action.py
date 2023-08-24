@@ -1,5 +1,6 @@
 import json
 import sys
+import pandas as pd
 import traceback
 from datetime import datetime, timezone
 from io import StringIO
@@ -39,9 +40,13 @@ class ExecutionDatabaseAction(CheckAction):
         if not rule:
             return
 
-        if rule.silenced_until and rule.silenced_until > datetime.now(tz=timezone.utc):
+        rule_config = json.loads(rule.config) if rule.config else {}
+        silenced_until = rule_config.get("silenced_until", None)
+        if silenced_until and pd.to_datetime(silenced_until) > datetime.now(
+            tz=timezone.utc
+        ):
             raise SkipExecutionException(
-                f"Rule {rule.name} is silenced until {rule.silenced_until}"
+                f"Rule {rule.name} is silenced until {silenced_until}"
             )
 
         context.set_sys("rule_model", rule)

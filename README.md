@@ -498,6 +498,7 @@ class MyFirstDataCheck(DataCheck):
         return {
             "rules_config": { # Configuration for each rule. If not provided, rule config will be empty dictionary.
                 "rule_1": {
+                    "silenced_until": "2021-08-22 00:00:00.359828-00", # Date until which the rule will be silenced. If not provided, rule will not be silenced.
                     ...
                 },
                 "rule_2": {
@@ -556,24 +557,14 @@ python -m data_checks --error_logging --deploy
 To silence rules, use the `data_checks.do.silence_check` command:
 ```bash
 usage: python -m data_checks.do.silence [-h] [--until UNTIL] [--delta DELTA] [--hash HASH]
-                                        [--rule_name RULE_NAME] [--check_name CHECK_NAME]
-                                        [--suite_name SUITE_NAME]
 ```
 The `silence_check` command takes in the following arguments:
 - `--until`: Date until which the rule will be silenced. Format should be `YYYY-MM-DD:HH:mm:ss`.
 - `--delta`: Time delta for which the rule will be silenced. Format: 1h, 1d, 1m, 1w (hour, day, minute, week). Example: 3h for 3 hours.
 - `--hash`: Hash of the rule (stored in the database) to silence. See [Database](#database) for more information.
-- `--rule_name`: Name of the rule to silence.
-- `--check_name`: Name of the check to silence.
-- `--suite_name`: Name of the suite to silence.
 
 > [!IMPORTANT]
 > Either `--until` or `--delta` must be specified. If both are specified, `--until` will be used. If neither are specified, an error will be thrown. 
-
-> [!IMPORTANT]
-> Either `--hash` or `--rule_name` must be specified. `--hash` is the preferred method of silencing as it is the most precise. Specifically the hash allows you to silence a specific rule based off its suite, check, rule, **params**, and **group** (if specified within a GroupDataSuite). If `--hash` is not specified then `--suite_name`, `--check_name`, and `--rule_name` will be used together to find the rule(s) to silence.
-
-
 
 ## Warning on Serialization
 To generate a hash for a rule, the library uses the `__str__` method of the rule's params and a rule's group (if defined within a GroupDataSuite). If the params are not serializable, then the hash will not be generated and an error will be thrown.
@@ -635,17 +626,18 @@ Stores data related to checks.
 - `name`: Name of the check.
 - `code`: Code of the check.
 - `excluded_rules`: List of rules to exclude from the check.
+- `config`: Configuration (in JSON) of the check.
 - `created_at`: Timestamp of when the check was created.
 
 #### Rule Table
 Stores data related to rules.
 
-| id (INT)         | check_id (INT)         | suite_id (INT)         | name (VARCHAR)       | hash (TEXT)        | severity (NUMERIC)         | code (TEXT)         | silence_until (TIMESTAMPTZ)      | created_at (TIMESTAMPTZ)      |
+| id (INT)         | check_id (INT)         | suite_id (INT)         | name (VARCHAR)       | hash (TEXT)        | severity (NUMERIC)         | code (TEXT)         | config (TEXT)                    | created_at (TIMESTAMPTZ)      |
 |------------------|------------------------|------------------------|----------------------|--------------------|----------------------------|---------------------|----------------------------------|-------------------------------|
-| 001              | 001                    | NULL                   | Rule1                | RULE_HASH1         | 1                          | def ...             | NULL                             | 2023-08-22 00:00:00.359828-00 |
-| 002              | 002                    | 002                    | Rule2                | RULE_HASH2         | 2                          | def ...             | 2023-08-22 01:00:00.359828-00    | 2023-08-22 01:00:00.359828-00 |
-| 003              | 003                    | NULL                   | Rule3                | RULE_HASH3         | 3                          | def ...             | 2023-08-22 02:00:00.359828-00    | 2023-08-22 02:00:00.359828-00 |
-| 004              | 004                    | 004                    | Rule4                | RULE_HASH4         | 4                          | def ...             | 2023-08-22 03:00:00.359828-00    | 2023-08-22 03:00:00.359828-00 |
+| 001              | 001                    | NULL                   | Rule1                | RULE_HASH1         | 1                          | def ...             | {"silenced_until": ...}          | 2023-08-22 00:00:00.359828-00 |
+| 002              | 002                    | 002                    | Rule2                | RULE_HASH2         | 2                          | def ...             | {"silenced_until": ...}          | 2023-08-22 01:00:00.359828-00 |
+| 003              | 003                    | NULL                   | Rule3                | RULE_HASH3         | 3                          | def ...             | {}                               | 2023-08-22 02:00:00.359828-00 |
+| 004              | 004                    | 004                    | Rule4                | RULE_HASH4         | 4                          | def ...             | {}                               | 2023-08-22 03:00:00.359828-00 |
 
 - `id`: Unique identifier for the rule.
 - `check_id`: ID of the check the rule belongs to.
@@ -657,7 +649,7 @@ suite:SUITE_NAME::check:CHECK_NAME::group:{name: GROUP_NAME, value: GROUP_VALUE}
 ```
 - `severity`: Severity of the rule.
 - `code`: Code of the rule.
-- `silence_until`: Timestamp of when the rule will be silenced until.
+- `config`: Configuration (in JSON) of the rule.
 - `created_at`: Timestamp of when the rule was created.
 
 #### Rule Execution Table
