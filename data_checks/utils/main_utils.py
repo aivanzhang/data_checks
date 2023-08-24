@@ -187,7 +187,7 @@ def main():
         # Find database suites and checks to make the rule execution with
         suite_actions = default_suite_actions + [
             SetupDatasetAction,
-            FindSuiteModelAction,
+            FindSuiteModelAction,  # Finds the corresponding Suite model for the check and rule
         ]
         check_actions = {
             "default": default_check_actions["default"] + [ExecutionDatabaseAction],
