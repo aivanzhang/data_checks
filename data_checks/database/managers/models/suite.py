@@ -1,5 +1,5 @@
 from typing import List
-from sqlalchemy import String, UnicodeText, ARRAY
+from sqlalchemy import String, UnicodeText
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 from data_checks.database.managers.models.classes import Base, Rule
 from data_checks.database.managers.models.mixins import MainMixin
