@@ -25,7 +25,7 @@ class GroupDataSuite(DataSuite):
         raise NotImplementedError
 
     @classmethod
-    def group_checks(cls) -> list[type[Check] | str]:
+    def group_checks(cls) -> list[type[Check] | str | Check]:
         """
         Checks to be run on each element in the group. For example:
         [
@@ -58,7 +58,10 @@ class GroupDataSuite(DataSuite):
                 check = data_check_registry[check]
 
             for element in cls.group():
-                updated_check = check()
+                if isinstance(check, Check):
+                    updated_check = check
+                else:
+                    updated_check = check()
                 group: Group = {
                     "name": group_name,
                     "value": element,

@@ -33,10 +33,13 @@ Some additional features that are in the works (in order of priority):
   * [(Advanced) Create Suites](#advanced-create-suites)
   * [(Advanced) Create Group Data Suites](#advanced-create-group-data-suites)
   * [(Advanced) Cherry Pick Checks' Rules](#advanced-cherry-pick-checks-rules)
+    + [1) Override the `defined_rules` method](#override_defined_rules)
+    + [2) Use `DataCheck(excluded_rules=[...])` (Suite Only)](#define_excluded_rules)
+    + [3) Use `DataCheck(rules_params={...}, only_run_specified_rules=True)` (Suite Only)](#only_specified_flag)
   * [Command Line Interface](#command-line-interface)
     + [Run Checks](#run-checks)
     + [Run Suites](#run-suites)
-    + [Silencing Checks' Rules](#silencing-checks--rules)
+    + [Silencing Checks' Rules](#silencing-checks-rules)
   * [Warning on Serialization](#warning-on-serialization)
   * [Warning on Fully Parallel Executions](#warning-on-fully-parallel-executions)
   * [References](#references)
@@ -345,20 +348,88 @@ class ItemCheck(DataCheck):
 See the full example [here](/examples/operations/inventory/inventory_suite.py).
 
 ## (Advanced) Cherry Pick Checks' Rules
-Suppose you want to run only a subset of a check's rules. For example assume you have `ItemCheck` that checks if a certain `Item` is valid or not via various rules (i.e. quality, price, etc.). Some `Items` are perishable and some are not. You may have the following `ItemCheck` defined:
+Suppose you want to run only a subset of a check's rules. There are three ways this can be done. 
+
+### 1) Override the `defined_rules` method<a id='override_defined_rules'></a>
+The `defined_rules` method in `DataCheck` allows you to specify which methods are rules. For example:
 ```python
 from data_checks.data_check import DataCheck
 
-class ItemCheck(DataCheck):
+class MyFirstDataCheck(DataCheck):
+    def my_first_successful_rule(self, data="Hello World"):
+        # Call functions to check the data
+        assert data == "Hello World"
+        # Return nothing if the rule passes
+    
+    def my_first_failed_rule(self):
+        # Call functions to check the data
+        # Throw an exception if the rule fails
+        assert False
 
-    ...
+    def my_first_helper_function(self):
+        # This function will not be run as a rule
+        raise Exception("This function should not be run as a rule")
 
-    def check_item_expiration_date(self):
-        # Check if the item is perishable
-        assert Item.
+    @classmethod
+    def defined_rules(cls) -> list[str]:
+        return ["my_first_successful_rule", "my_first_failed_rule"]
 
-    ...
+class MySecondDataCheck(MyFirstDataCheck):
+    @classmethod
+    def defined_rules(cls) -> list[str]:
+        # Only runs my_first_successful_rule
+        return ["my_first_successful_rule"]
+
 ```
+
+### 2) Use `DataCheck(excluded_rules=[...])` (Suite Only)<a id='define_excluded_rules'></a>
+For checks defined within a suite, you can specify which rules to exclude from the check with the `excluded_rules` parameter. For example:
+```python
+from data_checks.data_suite import DataSuite
+from data_checks.data_check import DataCheck
+
+class MyFirstDataCheck(DataCheck):
+    def my_first_successful_rule(self, data="Hello World"):
+        # Call functions to check the data
+        assert data == "Hello World"
+        # Return nothing if the rule passes
+    
+    def my_first_failed_rule(self):
+        # Call functions to check the data
+        # Throw an exception if the rule fails
+        assert False
+
+class MyFirstDataSuite(DataSuite):
+    @classmethod
+    def checks(cls) -> list[type | str | Check]: # or group_checks for GroupDataSuite
+        return [MyFirstDataCheck(excluded_rules=["my_first_failed_rule"])]
+```
+would exclude `my_first_failed_rule` from the check.
+
+### 3) Use `DataCheck(rules_params={...}, only_run_specified_rules=True)` (Suite Only)<a id='only_specified_flag'></a>
+For checks defined within a suite, you can specify which rules to run and their params with the `rules_params` parameter. Then utilize the `only_run_specified_rules` flag to run only those rules. For example:
+```python
+from data_checks.data_suite import DataSuite
+from data_checks.data_check import DataCheck
+
+class MyFirstDataCheck(DataCheck):
+    def my_first_successful_rule(self, data="Hello World"):
+        # Call functions to check the data
+        assert data == "Hello World"
+        # Return nothing if the rule passes
+    
+    def my_first_failed_rule(self):
+        # Call functions to check the data
+        # Throw an exception if the rule fails
+        assert False
+
+class MyFirstDataSuite(DataSuite):
+    @classmethod
+    def checks(cls) -> list[type | str | Check]: # or group_checks for GroupDataSuite
+        return [MyFirstDataCheck(rules_params={"my_first_failed_rule": {}}, only_run_specified_rules=True)]
+```
+would run only `my_first_failed_rule` with no params.
+
 
 ## Command Line Interface
 After defining your suites and/or checks, you can run them as well as other actions from the command line.
