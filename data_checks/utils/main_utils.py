@@ -101,14 +101,6 @@ def main():
     )
 
     parser.add_argument(
-        "--scheduling",
-        "-s",
-        action="store_true",
-        help="Only schedules the suites and does not run them.",
-        default=False,
-    )
-
-    parser.add_argument(
         "--deploy",
         "-d",
         action="store_true",
@@ -163,9 +155,8 @@ def main():
     if args.alerting:
         default_check_actions["default"].append(RuleAlertingAction)
 
-    if args.scheduling:
-        print("Scheduling suites")
-        # Create the suites and checks in the database with their respective schedules
+    if args.deploy:
+        print("Creating database rows for suites, checks, and rows.")
         suite_actions = default_suite_actions + [MainDatabaseAction]
         check_actions = {
             "default": default_check_actions["default"]
@@ -182,7 +173,6 @@ def main():
             is_async=args.parallel,
         )
 
-    if args.deploy:
         print("Deploying suites")
         # Find database suites and checks to make the rule execution with
         suite_actions = default_suite_actions + [
@@ -219,7 +209,7 @@ def main():
         except (KeyboardInterrupt, SystemExit):
             scheduler.shutdown()
 
-    if not (args.scheduling or args.deploy):
+    if not args.deploy:
         run_suites(
             suites_to_run=suites_to_run,
             actions=default_suite_actions + [SetupDatasetAction],

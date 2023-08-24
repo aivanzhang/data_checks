@@ -231,8 +231,10 @@ class MyFirstDataSuite(DataSuite):
     @classmethod
     def suite_config(cls) -> dict:
         """
-        Define the suite's configuration. Dictionary should be
-        in the following format:
+        Define the suite's configuration. This will be stored in the database.
+        You can attach any configuration option as long as it is JSON serializable.
+        `schedule` is the only system defined configuration option that defines the
+        CRON schedule for the suite. For example:
         {
             "schedule": "CRON schedule",
         }
@@ -460,14 +462,13 @@ To run suites, use the `data_checks` command:
 ```bash
 usage: python -m data_checks [-h] [--only ONLY] 
                              [--exclude {ConsistencySuite} [{ConsistencySuite} ...]]
-                             [--parallel] [--scheduling] [--deploy] [--error_logging] [--alerting]
+                             [--parallel] [--deploy] [--error_logging] [--alerting]
 ```
 The `data_checks` command runs all the suites specified in `SUITES_MODULE`. The command can be customized by passing in the following arguments:
 - `--only`: Only run the specified suite. If not specified, all suites will be run.
 - `--exclude`: Exclude the specified suites. If not specified, no suites will be excluded.
 - `--parallel`: Run suites in parallel. This will run each nested check in parallel and each nested rule in parallel. Before enabling see [Warning on Fully Parallel Executions](#warning-on-fully-parallel-executions). If not specified, suites will be run sequentially.
-- `--scheduling`: Run suites on a schedule. If not specified, suites will be run once.
-- `--deploy`: Deploy suites. If not specified, suites will not be deployed.
+- `--deploy`: Creates database rows for suites, checks, and rules. Then deploys suites and creates a new rule execution row per execution. If not specified, no database rows will be created and will be run once.
 - `--error_logging`: Log errors to the console. This may duplicate some error logs in the database. If not specified, errors will only be stored in the database.
 
 For example to run all suites in every minute, log errors to the console, and deploy the suites with we would use the following command:
@@ -475,7 +476,7 @@ For example to run all suites in every minute, log errors to the console, and de
 python -m data_checks --error_logging --deploy --scheduling "* * * * *"
 ```
 >[!IMPORTANT]
->To deploy a suite, the suite must have a schedule. If no schedule is specified and no schedule is found in the database, then an error will be thrown.
+>To deploy a suite, the suite must have a schedule. If no schedule is specified, then the default schedule (in the settings file) is used. If that is not provided, an error will be thrown.
 
 ### Silencing Checks' Rules
 To silence rules, use the `data_checks.do.silence_check` command:
@@ -533,17 +534,17 @@ Suites, checks, rules, and rule executions are stored in a database. The databas
 #### Suite Table
 Stores data related to suites.
 
-| id (INT)         | name (VARCHAR)       | code (TEXT)         | schedule (VARCHAR)   | created_at (TIMESTAMPTZ)      |
-|------------------|----------------------|---------------------|----------------------|-------------------------------|
-| 001              | Suite1               | def ...             | * */2 * *            | 2023-08-22 00:00:00.359828-00 |
-| 002              | Suite2               | def ...             | * * * * *            | 2023-08-22 01:00:00.359828-00 |
-| 003              | Suite3               | def ...             | * */3 * *            | 2023-08-22 02:00:00.359828-00 |
-| 004              | Suite4               | def ...             | * * * * *            | 2023-08-22 03:00:00.359828-00 |
+| id (INT)         | name (VARCHAR)       | code (TEXT)         | config (TEXT)               | created_at (TIMESTAMPTZ)      |
+|------------------|----------------------|---------------------|-----------------------------|-------------------------------|
+| 001              | Suite1               | def ...             | {"schedule": "* */2 * * *"} | 2023-08-22 00:00:00.359828-00 |
+| 002              | Suite2               | def ...             | {"schedule": "* * * * *"}   | 2023-08-22 01:00:00.359828-00 |
+| 003              | Suite3               | def ...             | {"schedule": "* */3 * * *"} | 2023-08-22 02:00:00.359828-00 |
+| 004              | Suite4               | def ...             | {"schedule": "* * * * *"}   | 2023-08-22 03:00:00.359828-00 |
 
 - `id`: Unique identifier for the suite.
 - `name`: Name of the suite.
 - `code`: Code of the suite.
-- `schedule`: CRON schedule of the suite.
+- `config`: Configuration (in JSON) of the suite.
 - `created_at`: Timestamp of when the suite was created.
 
 #### Check Table
