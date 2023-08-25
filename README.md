@@ -566,6 +566,21 @@ The `silence_check` command takes in the following arguments:
 > [!IMPORTANT]
 > Either `--until` or `--delta` must be specified. If both are specified, `--until` will be used. If neither are specified, an error will be thrown. 
 
+### Analytics
+This library comes with a few built-in analytics that can be accessed via the `data_checks.do.analytics` command:
+```bash
+usage: python -m data_checks.do.analytics [-h] [analytic_func]
+```
+The `analytics` command takes in the following arguments:
+- `analytic_func`: Name of the analytic function to run. If not specified, all analytics will be run.
+
+The available analytics are:
+- `get_executions_since`: Get all executions since yesterday.
+- `get_silenced_rules`: Get all the latest silenced rules.
+- `get_latest_rules`: Get the latest rules in the database.
+- `get_prev_next_executions`: Get the previous and next execution for each suite.
+- `get_status_counts`: Get the success, failure, and total counts the executions of each rule since yesterday.
+
 ## Warning on Serialization
 To generate a hash for a rule, the library uses the `__str__` method of the rule's params and a rule's group (if defined within a GroupDataSuite). If the params are not serializable, then the hash will not be generated and an error will be thrown.
 
