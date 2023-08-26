@@ -32,7 +32,6 @@ class ExecutionDatabaseAction(CheckAction):
             if check._internal["suite_model"] is None
             else check._internal["suite_model"].name,
             check_name=check.name,
-            group=json.dumps(check.group, default=str) if check.group else None,
             name=rule,
             params=json.dumps(params, default=str),
         )

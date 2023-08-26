@@ -7,8 +7,8 @@ class InventorySuite(GroupDataSuite):
     @classmethod
     def group_name(cls) -> str:
         """
-        Identifier for each element in the group. Can be accessed through
-        self.group["name"] in checks.
+        Identifier for each element in the group. Used to access the element
+        in checks through self.{group_name}
         """
         return "item"
 
@@ -16,7 +16,7 @@ class InventorySuite(GroupDataSuite):
     def group(cls) -> list:
         """
         List of group's members. Each element will be subject to the specified
-        checks. Can be accessed through self.group["value"] in checks
+        checks. Can be accessed through self.{group_name} in checks
         """
         items_df = pd.read_csv("examples/operations/inventory/data.csv")
 
@@ -41,3 +41,9 @@ class InventorySuite(GroupDataSuite):
         CheckClass2 on element1, and CheckClass2 on element2.
         """
         return ["ItemCheck"]
+
+    @classmethod
+    def suite_config(cls) -> dict:
+        return {
+            "schedule": "* * * * *",
+        }

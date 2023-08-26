@@ -2,7 +2,7 @@ from typing import Optional
 import datetime
 import json
 from data_checks.database.managers.base_manager import BaseManager
-from data_checks.database.managers.models import Rule, RuleExecution, Check, Suite
+from data_checks.database.managers.models import Rule, RuleExecution
 from data_checks.database.utils.session_utils import session_scope
 
 
@@ -13,15 +13,11 @@ class RuleManager(BaseManager):
     def generate_hash(
         name: str,
         check_name: Optional[str],
-        group: Optional[str],
         suite_name: Optional[str],
         params: str,
     ) -> str:
         params = params.replace('"', "")
         hash_value = f"rule:{name}::params:{params}"
-        if group:
-            group = group.replace('"', "")
-            hash_value = f"group:{group}::{hash_value}"
         if check_name:
             hash_value = f"check:{check_name}::{hash_value}"
         if suite_name:
@@ -36,7 +32,6 @@ class RuleManager(BaseManager):
         config: Optional[str] = None,
         check_id: Optional[int] = None,
         check_name: Optional[str] = None,
-        group: Optional[str] = None,
         suite_id: Optional[int] = None,
         suite_name: Optional[str] = None,
         severity: float = 0.0,
@@ -49,7 +44,6 @@ class RuleManager(BaseManager):
             hash=RuleManager.generate_hash(
                 name=name,
                 check_name=check_name,
-                group=group,
                 suite_name=suite_name,
                 params=params,
             ),
@@ -68,7 +62,6 @@ class RuleManager(BaseManager):
         check_name: Optional[str],
         name: str,
         params: str,
-        group: Optional[str] = None,
     ) -> Optional[Rule]:
         with session_scope() as session:
             return (
@@ -77,7 +70,6 @@ class RuleManager(BaseManager):
                     hash=RuleManager.generate_hash(
                         name=name,
                         check_name=check_name,
-                        group=group,
                         suite_name=suite_name,
                         params=params,
                     ),

@@ -7,7 +7,7 @@ from examples.operations.inventory.item import Item
 
 class ItemCheck(DataCheck):
     def rule_required_fields(self):
-        item: Item = self.group["value"]
+        item: Item = self.item
         assert_that(
             item.product_id,
             is_not(None),
@@ -40,7 +40,7 @@ class ItemCheck(DataCheck):
         )
 
     def rule_reasonable_values(self):
-        item: Item = self.group["value"]
+        item: Item = self.item
         assert_that(
             item.price,
             greater_than(
@@ -64,7 +64,7 @@ class ItemCheck(DataCheck):
         )
 
     def rule_date_consistency(self):
-        item: Item = self.group["value"]
+        item: Item = self.item
         assert_that(
             item.release_date,
             is_not(None),
@@ -91,7 +91,7 @@ class ItemCheck(DataCheck):
         )
 
     def rule_ratings_reviews(self):
-        item: Item = self.group["value"]
+        item: Item = self.item
         assert_that(
             item.rating,
             less_than_or_equal_to(
@@ -115,7 +115,7 @@ class ItemCheck(DataCheck):
         )
 
     def rule_discount_limit(self):
-        item: Item = self.group["value"]
+        item: Item = self.item
         assert_that(
             item.discount,
             less_than_or_equal_to(
@@ -125,7 +125,7 @@ class ItemCheck(DataCheck):
         )
 
     def rule_dimensions_format(self):
-        item: Item = self.group["value"]
+        item: Item = self.item
         dimensions_regex = re.compile(r"^\d+x\d+x\d+ in$")
         matched = dimensions_regex.match(item.dimensions)
         assert_that(

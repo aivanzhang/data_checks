@@ -5,7 +5,7 @@ import time
 from typing import Iterable, Optional, Callable
 from multiprocessing import Process
 from data_checks.base.exceptions import DataCheckException, SkipExecutionException
-from data_checks.base.check_types import FunctionArgs, CheckBase, Group
+from data_checks.base.check_types import FunctionArgs, CheckBase
 from data_checks.base.suite_helper_types import SuiteInternal
 from data_checks.base.dataset import Dataset
 from data_checks.base.mixins.action_mixin import ActionMixin
@@ -24,9 +24,9 @@ class Check(CheckBase, ActionMixin):
         excluded_rules: Iterable = [],
         actions: list[type[CheckAction]] = [],
         verbose=False,
-        group: Optional[Group] = None,
         dataset: Optional[Dataset] = None,
         only_run_specified_rules=False,
+        **params,
     ):
         """
         Initialize a check object
@@ -45,12 +45,13 @@ class Check(CheckBase, ActionMixin):
         self._actions: list[type[CheckAction]] = actions
         self.rules = dict()
         self.rules_params = rules_params
-        self.group = group
 
         self._set_rules(self.defined_rules())
         if only_run_specified_rules:
             self.only_run_specified_rules()
 
+        self._set_additional_properties(params)
+        
     @property
     def actions(self) -> list[type[CheckAction]]:
         return self.DEFAULT_ACTIONS + self._actions
@@ -260,3 +261,14 @@ class Check(CheckBase, ActionMixin):
                 new_params.append(param)
 
             return new_params
+
+    def _set_additional_properties(self, properties: dict):
+        """
+        Set additional instance properties for the check
+        """
+        for param_name, param_value in properties.items():
+            if param_name in dir(self):
+                raise ValueError(
+                    f"Cannot set {param_name} as it is a reserved parameter name"
+                )
+            setattr(self, param_name, param_value)

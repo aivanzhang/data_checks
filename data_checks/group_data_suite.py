@@ -1,6 +1,6 @@
+import json
 from data_checks import DataSuite
 from data_checks.base.check import Check
-from data_checks.base.check_types import Group
 from data_checks.conf.data_check_registry import data_check_registry
 
 """
@@ -13,14 +13,16 @@ class GroupDataSuite(DataSuite):
     @classmethod
     def group_name(cls) -> str:
         """
-        Identifier for each element in the group. Can be accessed through self.group["name"] in checks.
+        Identifier for each element in the group. Used to access the element
+        in checks through self.{group_name}
         """
         raise NotImplementedError
 
     @classmethod
     def group(cls) -> list:
         """
-        List of group's elements. Each element will be passed to the specified checks. Can be accessed through self.group["value"] in checks
+        List of group's members. Each element will be subject to the specified
+        checks. Can be accessed through self.{group_name} in checks
         """
         raise NotImplementedError
 
@@ -48,7 +50,6 @@ class GroupDataSuite(DataSuite):
         """
         Do not override this method. Override group_checks instead.
         """
-        group_name = cls.group_name()
         checks = []
         for check in cls.group_checks():
             if isinstance(check, str):
@@ -58,14 +59,14 @@ class GroupDataSuite(DataSuite):
                 check = data_check_registry[check]
 
             for element in cls.group():
+                check_name = f"{check.__name__}::{cls.group_name()}-{json.dumps(element, default=str)}"
                 if isinstance(check, Check):
                     updated_check = check
                 else:
                     updated_check = check()
-                group: Group = {
-                    "name": group_name,
-                    "value": element,
-                }
-                updated_check.group = group
+                updated_check.name = check_name
+                updated_check._set_additional_properties({
+                    cls.group_name(): element,
+                })
                 checks.append(updated_check)
         return checks

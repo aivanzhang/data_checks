@@ -1,18 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import TypedDict, Dict, Callable, Optional, Union, Any
+from typing import TypedDict, Dict, Callable, Optional, Union
 from data_checks.base.dataset import Dataset
 from data_checks.base.actions.action_types import ActionBase
 from data_checks.database.managers import models
-
-
-class Group(TypedDict):
-    """
-    Group data (if applicable)
-    """
-
-    name: str
-    value: Any
-
 
 # Function positional and keyword arguments
 class FunctionArgs(TypedDict):
@@ -54,7 +44,6 @@ class CheckBase(ABC):
     ]  # Stores the params for each rule. If params is a list of params then run the rule multiple times with each param element
     excluded_rules: set
     actions: list[type[ActionBase]]
-    group: Optional[Group]
 
     verbose: bool
 
