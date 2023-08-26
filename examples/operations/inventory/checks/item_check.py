@@ -6,7 +6,7 @@ from examples.operations.inventory.item import Item
 
 
 class ItemCheck(DataCheck):
-    def required_fields(self):
+    def rule_required_fields(self):
         item: Item = self.group["value"]
         assert_that(
             item.product_id,
@@ -39,7 +39,7 @@ class ItemCheck(DataCheck):
             f"stock is required for productId: {item.product_id}",
         )
 
-    def reasonable_values(self):
+    def rule_reasonable_values(self):
         item: Item = self.group["value"]
         assert_that(
             item.price,
@@ -63,7 +63,7 @@ class ItemCheck(DataCheck):
             f"stock should be a positive integer for productId: {item.product_id}",
         )
 
-    def date_consistency(self):
+    def rule_date_consistency(self):
         item: Item = self.group["value"]
         assert_that(
             item.release_date,
@@ -90,7 +90,7 @@ class ItemCheck(DataCheck):
             f"release_date should be before expiry_date for productId: {item.product_id}",
         )
 
-    def ratings_reviews(self):
+    def rule_ratings_reviews(self):
         item: Item = self.group["value"]
         assert_that(
             item.rating,
@@ -114,7 +114,7 @@ class ItemCheck(DataCheck):
             f"reviews should be a non-negative integer for productId: {item.product_id}",
         )
 
-    def discount_limit(self):
+    def rule_discount_limit(self):
         item: Item = self.group["value"]
         assert_that(
             item.discount,
@@ -124,7 +124,7 @@ class ItemCheck(DataCheck):
             f"discount should not be greater than price for productId: {item.product_id}",
         )
 
-    def dimensions_format(self):
+    def rule_dimensions_format(self):
         item: Item = self.group["value"]
         dimensions_regex = re.compile(r"^\d+x\d+x\d+ in$")
         matched = dimensions_regex.match(item.dimensions)

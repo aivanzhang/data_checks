@@ -62,14 +62,15 @@ class Check(CheckBase, ActionMixin):
     @classmethod
     def defined_rules(cls) -> list[str]:
         """
-        Generate rules based off of the decorator and rules_prefix
+        Generate rules based off of the rules_prefix
         """
+        prefix = "rule_"
         return list(
             filter(
-                lambda method_name: getattr(
-                    getattr(cls, method_name), "is_rule", False
+                lambda method_name: (
+                    method_name.startswith(prefix)
                 ),
-                class_utils.get_all_methods(cls()),
+                class_utils.get_all_methods(cls),
             )
         )
 

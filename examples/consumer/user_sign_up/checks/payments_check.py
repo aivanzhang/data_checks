@@ -4,7 +4,7 @@ from hamcrest import assert_that, equal_to, is_not
 
 
 class PaymentsCheck(DataCheck):
-    def positive_payments(self):
+    def rule_positive_payments(self):
         payments = self.dataset["data"]["Payment Amount"]
         for payment in payments:
             assert_that(
@@ -13,7 +13,7 @@ class PaymentsCheck(DataCheck):
                 f"Payment value is not positive: {payment}",
             )
 
-    def payments_numeric_values(self):
+    def rule_payments_numeric_values(self):
         payments = self.dataset["data"]["Payment Amount"]
         for payment in payments:
             assert_that(
@@ -22,7 +22,7 @@ class PaymentsCheck(DataCheck):
                 f"Payment value is not numeric: {payment}",
             )
 
-    def payments_not_null(self):
+    def rule_payments_not_null(self):
         payments = self.dataset["data"]["Payment Amount"]
         for payment in payments:
             assert_that(
@@ -31,7 +31,7 @@ class PaymentsCheck(DataCheck):
                 f"Payment value is null: {payment}",
             )
 
-    def payments_less_than(self, value=100):
+    def rule_payments_less_than(self, value=100):
         payments = self.dataset["data"]["Payment Amount"]
         for payment in payments:
             assert_that(

@@ -6,14 +6,14 @@ from hamcrest import assert_that, equal_to, is_not
 class IpCheck(DataCheck):
     BLACKLISTED = ["192.256.1.1", "192.168.1.1"]
 
-    def not_blacklisted(self):
+    def rule_not_blacklisted(self):
         ips = self.dataset["data"]["IP Address"]
         for ip in ips:
             assert_that(
                 ip in self.BLACKLISTED, equal_to(False), f"IP {ip} is blacklisted"
             )
 
-    def valid_ipv4(self):
+    def rule_valid_ipv4(self):
         ips = self.dataset["data"]["IP Address"]
         for ip in ips:
             assert_that(

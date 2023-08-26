@@ -4,7 +4,7 @@ from data_checks import DataCheck
 
 
 class FreshnessCheck(DataCheck):
-    def ensure_all_fresh_data(self, date_column="date", max_days_stale=2):
+    def rule_ensure_all_fresh_data(self, date_column="date", max_days_stale=2):
         dates = pd.read_csv("examples/general/freshness/data.csv")[date_column]
         for date in dates:
             assert_that(

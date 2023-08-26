@@ -5,7 +5,7 @@ from hamcrest import assert_that, equal_to, is_not
 
 
 class DateCheck(DataCheck):
-    def is_properly_formatted(self, format_pattern, column="DOB"):
+    def rule_is_properly_formatted(self, format_pattern, column="DOB"):
         dates = self.dataset["data"][column]
         for date in dates:
             assert_that(
@@ -14,11 +14,11 @@ class DateCheck(DataCheck):
                 f"Invalid date: {date}",
             )
 
-    def nonnull(self, column="DOB"):
+    def rule_nonnull(self, column="DOB"):
         dates = self.dataset["data"][column]
         assert_that(dates.isnull().sum(), equal_to(0), "Null date found")
 
-    def valid_date(self, column="DOB"):
+    def rule_valid_date(self, column="DOB"):
         dates = self.dataset["data"][column]
         for date in dates:
             assert_that(
@@ -27,7 +27,7 @@ class DateCheck(DataCheck):
                 f"Invalid date: {date}",
             )
 
-    def within_range(self, start, end, column="DOB"):
+    def rule_within_range(self, start, end, column="DOB"):
         dates = self.dataset["data"][column]
         for date in dates:
             date = pd.to_datetime(date)

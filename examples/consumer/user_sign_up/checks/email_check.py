@@ -4,7 +4,7 @@ from hamcrest import assert_that, equal_to, is_not
 
 
 class EmailCheck(DataCheck):
-    def does_not_contain_invalid_characters(self):
+    def rule_does_not_contain_invalid_characters(self):
         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         emails = self.dataset["data"]["Email"]
         for email in emails:
@@ -14,7 +14,7 @@ class EmailCheck(DataCheck):
                 f"Invalid email address: {email}",
             )
 
-    def has_unique_emails(self):
+    def rule_has_unique_emails(self):
         emails = self.dataset["data"]["Email"]
         assert_that(
             len(emails.unique()),
@@ -22,7 +22,7 @@ class EmailCheck(DataCheck):
             "Emails are not unique",
         )
 
-    def has_valid_domains(self):
+    def rule_has_valid_domains(self):
         domains = self.dataset["data"]["Email"].str.split("@", expand=True)[1]
         for domain in domains:
             assert_that(
@@ -31,7 +31,7 @@ class EmailCheck(DataCheck):
                 f"Invalid email domain: {domain}",
             )
 
-    def has_valid_tlds(self):
+    def rule_has_valid_tlds(self):
         tlds = self.dataset["data"]["Email"].str.split(".", expand=True)[2]
         for tld in tlds:
             assert_that(

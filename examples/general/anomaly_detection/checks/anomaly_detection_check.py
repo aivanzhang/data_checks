@@ -14,7 +14,7 @@ class AnomalyDetectionCheck(DataCheck):
         parse_dates=True,
     )
 
-    def detect_with_adtk(self):
+    def rule_detect_with_adtk(self):
         s_train = validate_series(self.time_series_data)
         persist_ad = PersistAD()
         anomalies = persist_ad.fit_detect(s_train).dropna()
@@ -22,7 +22,7 @@ class AnomalyDetectionCheck(DataCheck):
             (anomalies == False).all().squeeze(), equal_to(True), "Anomalies detected"
         )
 
-    def detect_with_pyod_iforest(self):
+    def rule_detect_with_pyod_iforest(self):
         X = self.time_series_data[["value"]]
         model = IForest()
         model.fit(X)
@@ -37,7 +37,7 @@ class AnomalyDetectionCheck(DataCheck):
             f"Anomalies detected: {detected_anomalies}",
         )
 
-    def detect_with_pyod_ocsvm(self):
+    def rule_detect_with_pyod_ocsvm(self):
         X = self.time_series_data[["value"]]
         model = OCSVM()
         model.fit(X)

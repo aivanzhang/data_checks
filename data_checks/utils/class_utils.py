@@ -8,7 +8,7 @@ import pkgutil
 import importlib
 
 
-def get_all_methods(cls: object) -> list[str]:
+def get_all_methods(cls: type) -> list[str]:
     """
     Get list of methods (excluding magic methods) for a class.
     """
