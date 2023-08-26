@@ -3,6 +3,12 @@ from data_checks.utils import class_utils
 
 
 class DataCheck(Check):
+    def setup(self):
+        """
+        Setup the check. Use this to load data, initialize models, etc.
+        """
+        super().setup()
+
     @classmethod
     def defined_rules(cls) -> list[str]:
         return super().defined_rules()
