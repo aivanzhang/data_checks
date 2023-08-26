@@ -7,7 +7,6 @@ from multiprocessing import Process
 from data_checks.base.exceptions import DataCheckException, SkipExecutionException
 from data_checks.base.check_types import FunctionArgs, CheckBase
 from data_checks.base.suite_helper_types import SuiteInternal
-from data_checks.base.dataset import Dataset
 from data_checks.base.mixins.action_mixin import ActionMixin
 from data_checks.utils import class_utils, check_utils
 from data_checks.base.actions.check import CheckAction
@@ -24,7 +23,6 @@ class Check(CheckBase, ActionMixin):
         excluded_rules: Iterable = [],
         actions: list[type[CheckAction]] = [],
         verbose=False,
-        dataset: Optional[Dataset] = None,
         only_run_specified_rules=False,
         **params,
     ):
@@ -34,9 +32,6 @@ class Check(CheckBase, ActionMixin):
         super().__init__()
         self.verbose = verbose
         self.name = self.__class__.__name__ if name is None else name
-        if dataset is not None:
-            self.dataset = dataset
-
         self.excluded_rules = set(excluded_rules)
         self._internal = {
             "suite_model": None,
@@ -82,6 +77,12 @@ class Check(CheckBase, ActionMixin):
         """
         return {}
 
+    def setup(self):
+        """
+        Setup the check
+        """
+        super().setup()
+    
     def set_actions(self, actions: list[type[CheckAction]]):
         """
         Set the actions for the check
@@ -95,12 +96,6 @@ class Check(CheckBase, ActionMixin):
         self.excluded_rules = self.excluded_rules.union(
             set(self.rules.keys()) - set(self.rules_params.keys())
         )
-
-    def use_dataset(self, dataset: Dataset):
-        """
-        Sets the dataset for the check
-        """
-        self.dataset = dataset
 
     def get_rules_to_run(self) -> set[str]:
         """
@@ -231,8 +226,6 @@ class Check(CheckBase, ActionMixin):
         Internal: Set the suite model for the check
         """
         self._internal["suite_model"] = suite_internals["suite_model"]
-        if suite_internals["dataset"] is not None:
-            self.dataset = suite_internals["dataset"]
 
     def _get_rules_params(self, rule: str) -> list[FunctionArgs]:
         """

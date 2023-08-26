@@ -4,8 +4,7 @@ from hamcrest import assert_that, equal_to, less_than_or_equal_to
 
 class StatusCheck(DataCheck):
     def rule_valid_values(self):
-        statuses = self.dataset["data"]["Status"]
-        for status in statuses:
+        for status in self.statuses:
             assert_that(
                 status in ["pending", "inactive", "active"],
                 equal_to(True),
@@ -13,15 +12,14 @@ class StatusCheck(DataCheck):
             )
 
     def rule_majority_active_status(self):
-        statuses = self.dataset["data"]["Status"]
         assert_that(
-            statuses.value_counts().idxmax(),
+            self.statuses.value_counts().idxmax(),
             equal_to("active"),
             "Majority of statuses are not active",
         )
 
     def rule_minimal_inactive_and_pending_status(self):
-        status_counts = self.dataset["data"]["Status"].value_counts()
+        status_counts = self.statuses.value_counts()
         inactive_count = status_counts["inactive"]
         pending_count = status_counts["pending"]
         total_count = status_counts.sum()

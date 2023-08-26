@@ -13,14 +13,6 @@ class SuiteBase(ABC):
 
     @classmethod
     @abstractmethod
-    def dataset(cls):
-        """
-        Get the dataset for the suite
-        """
-        pass
-
-    @classmethod
-    @abstractmethod
     def checks_overrides(cls):
         """
         Overrides for rules in checks

@@ -3,7 +3,6 @@ import time
 from multiprocessing import Process
 from data_checks.conf.data_check_registry import data_check_registry
 from data_checks.base.check import Check
-from data_checks.base.dataset import Dataset
 from data_checks.base.suite_types import SuiteBase
 from data_checks.base.exceptions import SkipExecutionException
 from data_checks.base.mixins.action_mixin import ActionMixin
@@ -42,7 +41,6 @@ class Suite(SuiteBase, ActionMixin):
         }
         self._internal = {
             "suite_model": None,
-            "dataset": None,
         }
 
     @property
@@ -52,13 +50,6 @@ class Suite(SuiteBase, ActionMixin):
     @actions.setter
     def actions(self, actions: list[type[SuiteAction]]):
         self._actions = actions
-
-    @classmethod
-    def dataset(cls) -> Dataset | None:
-        """
-        Get the dataset for the suite
-        """
-        raise NotImplementedError
 
     @classmethod
     def checks_overrides(cls) -> dict | None:

@@ -10,7 +10,6 @@ from data_checks.base.actions.suite import (
     MainDatabaseAction,
     ErrorLoggingSuiteAction,
     FindSuiteModelAction,
-    SetupDatasetAction,
 )
 from data_checks.base.actions.check import (
     MainDatabaseAction as CheckMainDatabaseAction,
@@ -176,7 +175,6 @@ def main():
         print("Deploying suites")
         # Find database suites and checks to make the rule execution with
         suite_actions = default_suite_actions + [
-            SetupDatasetAction,
             FindSuiteModelAction,  # Finds the corresponding Suite model for the check and rule
         ]
         check_actions = {
@@ -212,7 +210,7 @@ def main():
     if not args.deploy:
         run_suites(
             suites_to_run=suites_to_run,
-            actions=default_suite_actions + [SetupDatasetAction],
+            actions=default_suite_actions,
             check_actions={
                 "default": default_check_actions["default"],
                 "checks": {},

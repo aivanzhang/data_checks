@@ -1,20 +1,23 @@
 import pandas as pd
-from data_checks.base.dataset import Dataset
+from examples.consumer.user_sign_up.checks.date_check import DataCheck
+from examples.consumer.user_sign_up.checks.email_check import EmailCheck
+from examples.consumer.user_sign_up.checks.ip_check import IpCheck
+from examples.consumer.user_sign_up.checks.payments_check import PaymentsCheck
+from examples.consumer.user_sign_up.checks.status_check import StatusCheck
 from data_checks import DataSuite
 
 
 class UserSuite(DataSuite):
     @classmethod
     def checks(cls):
-        return ["EmailCheck", "DateCheck", "StatusCheck", "PaymentsCheck", "IpCheck"]
-
-    @classmethod
-    def dataset(cls) -> Dataset | None:
-        return Dataset(
-            {
-                "data": pd.read_csv("examples/consumer/user_sign_up/data.csv"),
-            }
-        )
+        data = pd.read_csv("examples/consumer/user_sign_up/data.csv")
+        return [
+            DataCheck(dates_df=data),
+            EmailCheck(emails=data["Email"]),
+            IpCheck(ips=data["IP Address"]),
+            PaymentsCheck(payments=data["Payment Amount"]),
+            StatusCheck(statuses=data["Status"]),
+        ]
 
     @classmethod
     def suite_config(cls) -> dict:

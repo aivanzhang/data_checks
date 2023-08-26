@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import TypedDict, Dict, Callable, Optional, Union
-from data_checks.base.dataset import Dataset
 from data_checks.base.actions.action_types import ActionBase
 from data_checks.database.managers import models
 
@@ -30,7 +29,6 @@ class CheckBase(ABC):
 
     _internal: CheckInternal
     name: str
-    dataset: Dataset
     rules: Dict[str, Callable[..., None]]  # Stores all the rules functions in the check
     rules_params: Dict[
         str,
