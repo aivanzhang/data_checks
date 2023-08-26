@@ -1,5 +1,4 @@
 from data_checks.base.check import Check
-from data_checks.utils import class_utils
 
 
 class DataCheck(Check):
