@@ -16,13 +16,12 @@ class RuleManager(BaseManager):
         suite_name: Optional[str],
         params: str,
     ) -> str:
-        params = params.replace('"', "")
         hash_value = f"rule:{name}::params:{params}"
         if check_name:
             hash_value = f"check:{check_name}::{hash_value}"
         if suite_name:
             hash_value = f"suite:{suite_name}::{hash_value}"
-        return hash_value
+        return hash_value.replace('"', "")
 
     @staticmethod
     def create_rule(
