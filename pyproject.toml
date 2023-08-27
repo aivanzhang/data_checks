@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pydata_checks"
-version = "0.0.6"
+version = "0.0.7"
 authors = [
   { name="Ivan Zhang", email="ivanzhangofficial@gmail.com" },
 ]
@@ -17,5 +17,5 @@ license = {file = "LICENSE"}
 "Homepage" = "https://github.com/SuperiorityComplex/data-checks"
 "Bug Tracker" = "https://github.com/SuperiorityComplex/data-checks/issues"
 
-[tool.setuptools]
-py-modules = ["data_checks"]
+[options.packages.find]
+where = "data_checks"
