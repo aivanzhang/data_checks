@@ -1,5 +1,5 @@
 import re
-from data_checks import DataCheck
+from data_checks.classes.data_check import DataCheck
 from hamcrest import assert_that, equal_to, is_not
 
 

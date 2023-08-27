@@ -1,5 +1,5 @@
 import pandas as pd
-from data_checks.group_data_suite import GroupDataSuite
+from data_checks.classes.group_data_suite import GroupDataSuite
 from examples.operations.inventory.item import Item
 
 

@@ -4,7 +4,7 @@ from adtk.detector import PersistAD
 from pyod.models.iforest import IForest
 from pyod.models.ocsvm import OCSVM
 from hamcrest import assert_that, equal_to
-from data_checks import DataCheck
+from data_checks.classes.data_check import DataCheck
 
 
 class AnomalyDetectionCheck(DataCheck):

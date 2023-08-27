@@ -2,7 +2,7 @@ import argparse
 import re
 from multiprocessing import Process
 from data_checks.base.actions.check import CheckAction
-from data_checks import DataCheck
+from data_checks.classes.data_check import DataCheck
 
 
 def validate_cron_expression(value):

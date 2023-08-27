@@ -1,8 +1,8 @@
 from typing import Tuple
 from data_checks.conf.settings import settings
 from data_checks.utils import class_utils
-from data_checks import DataSuite
-from data_checks import GroupDataSuite
+from data_checks.classes.data_suite import DataSuite
+from data_checks.classes.group_data_suite import GroupDataSuite
 
 
 class DataSuiteRegistry:

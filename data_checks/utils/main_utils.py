@@ -19,7 +19,7 @@ from data_checks.base.actions.check import (
     RuleAlertingAction,
 )
 from data_checks.base.suite import CheckActions
-from data_checks import DataSuite
+from data_checks.classes.data_suite import DataSuite
 
 
 def start_suite_deployment(suite: DataSuite, is_async: bool = False):

@@ -1,6 +1,6 @@
 from data_checks.conf.settings import settings
 from data_checks.utils import class_utils
-from data_checks import DataCheck
+from data_checks.classes.data_check import DataCheck
 
 
 class DataCheckRegistry:

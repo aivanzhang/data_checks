@@ -1,11 +1,10 @@
 import re
 import pandas as pd
-from data_checks import DataCheck
+from data_checks.classes.data_check import DataCheck
 from hamcrest import assert_that, equal_to, is_not
 
 
 class DateCheck(DataCheck):
-
     def rule_is_properly_formatted(self, format_pattern, column="DOB"):
         dates = self.dates_df[column]
         for date in dates:

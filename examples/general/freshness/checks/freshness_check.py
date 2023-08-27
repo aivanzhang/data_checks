@@ -1,6 +1,6 @@
 import pandas as pd
 from hamcrest import assert_that, greater_than_or_equal_to
-from data_checks import DataCheck
+from data_checks.classes.data_check import DataCheck
 
 
 class FreshnessCheck(DataCheck):

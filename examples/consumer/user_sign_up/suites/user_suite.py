@@ -1,10 +1,10 @@
 import pandas as pd
-from examples.consumer.user_sign_up.checks.date_check import DataCheck
+from examples.consumer.user_sign_up.checks.date_check import DateCheck
 from examples.consumer.user_sign_up.checks.email_check import EmailCheck
 from examples.consumer.user_sign_up.checks.ip_check import IpCheck
 from examples.consumer.user_sign_up.checks.payments_check import PaymentsCheck
 from examples.consumer.user_sign_up.checks.status_check import StatusCheck
-from data_checks import DataSuite
+from data_checks.classes.data_suite import DataSuite
 
 
 class UserSuite(DataSuite):
@@ -12,7 +12,7 @@ class UserSuite(DataSuite):
     def checks(cls):
         data = pd.read_csv("examples/consumer/user_sign_up/data.csv")
         return [
-            DataCheck(dates_df=data),
+            DateCheck(dates_df=data),
             EmailCheck(emails=data["Email"]),
             IpCheck(ips=data["IP Address"]),
             PaymentsCheck(payments=data["Payment Amount"]),

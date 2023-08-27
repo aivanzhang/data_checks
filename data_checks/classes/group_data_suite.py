@@ -1,5 +1,5 @@
 import json
-from data_checks import DataSuite
+from data_checks.classes.data_suite import DataSuite
 from data_checks.base.check import Check
 from data_checks.conf.data_check_registry import data_check_registry
 
@@ -65,8 +65,10 @@ class GroupDataSuite(DataSuite):
                 else:
                     updated_check = check()
                 updated_check.name = check_name
-                updated_check._set_additional_properties({
-                    cls.group_name(): element,
-                })
+                updated_check._set_additional_properties(
+                    {
+                        cls.group_name(): element,
+                    }
+                )
                 checks.append(updated_check)
         return checks

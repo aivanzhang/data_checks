@@ -1,10 +1,9 @@
 import re
-from data_checks import DataCheck
+from data_checks.classes.data_check import DataCheck
 from hamcrest import assert_that, equal_to, is_not
 
 
 class EmailCheck(DataCheck):
-
     def rule_does_not_contain_invalid_characters(self):
         email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
         for email in self.emails:

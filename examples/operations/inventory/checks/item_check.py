@@ -1,7 +1,7 @@
 from hamcrest import assert_that, equal_to, is_not, greater_than, less_than_or_equal_to
 import pandas as pd
 import re
-from data_checks.data_check import DataCheck
+from data_checks.classes.data_check import DataCheck
 from examples.operations.inventory.item import Item
 
 

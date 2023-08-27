@@ -1,12 +1,11 @@
-import pandas as pd
-from data_checks import DataCheck
 import openai
+import pandas as pd
+from data_checks.classes.data_check import DataCheck
 
 openai.api_key = "SECRET KEY HERE"
 
 
 class ContentCheck(DataCheck):
-
     def setup(self):
         super().setup()
         self.content = pd.read_csv("examples/consumer/content/data.csv")["Content"]
