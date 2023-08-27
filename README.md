@@ -28,7 +28,7 @@ Enter the relative file path of the directory where checks will be stored: my_fi
 Directory '/Users/USERNAME/Desktop/PROJECT_NAME/my_first_data_checks_project/checks' does not exist.
 Would you like to create it? [y/n]: y
 Enter the default CRON schedule: * * * * *
-Enter the database URL: postgresql://USERNAME:@localhost:5432/data_checks_db
+Enter the database URL: database_url
 Enter the alerting endpoint URL:
 check_settings.py generated.
 my_first_data_check.py generated.
