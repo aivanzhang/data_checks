@@ -14,7 +14,10 @@ def validate_cron_schedule(schedule):
 
 def generate_settings_file(data):
     settings_content = "\n".join(
-        [f"{key} = {repr(value)}" for key, value in data.items()]
+        [
+            f"{key} = {repr(value) if value != 'None' else value}"
+            for key, value in data.items()
+        ]
     )
     with open("check_settings.py", "w") as settings_file:
         settings_file.write(settings_content)
@@ -67,7 +70,7 @@ class MyFirstDataCheck(DataCheck):
     def rule_my_first_failed_rule(self):
         # Call functions to check the data
         # Throw an exception if the rule fails
-        assert False
+        assert False, "This rule failed"
 
     def my_first_helper_function(self):
         # This function will not be run as a rule
