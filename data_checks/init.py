@@ -43,12 +43,16 @@ def create_module_structure(module_directory_path):
         if confirm.lower() == "y":
             if not os.path.exists(directory_path):
                 os.makedirs(directory_path)
+        else:
+            return False
 
     sub_directories = module_directory_path.split("/")
     for i in range(len(sub_directories)):
         directory_path = os.path.join(base_dir, "/".join(sub_directories[: i + 1]))
         if "__init__.py" not in os.listdir(directory_path):
             create_init_file(directory_path)
+
+    return True
 
 
 MY_FIRST_DATA_CHECK = """
@@ -82,12 +86,16 @@ def main():
     suite_directory_path = input(
         "Enter the relative file path of the directory where suites will be stored: "
     )
-    create_module_structure(suite_directory_path)
+    if not create_module_structure(suite_directory_path):
+        print("You must create the suites directory before continuing.")
+        return
 
     checks_directory_path = input(
         "Enter the relative file path of the directory where checks will be stored: "
     )
-    create_module_structure(checks_directory_path)
+    if not create_module_structure(checks_directory_path):
+        print("You must create the checks directory before continuing.")
+        return
 
     default_schedule = input("Enter the default CRON schedule: ")
     if not validate_cron_schedule(default_schedule):
