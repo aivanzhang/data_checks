@@ -10,3 +10,6 @@ SQLAlchemy==2.0.19
 typing_extensions==4.7.1
 tzlocal==5.0.1
 urllib3==2.0.4
+numpy==1.25.2
+pandas==2.0.3
+python-dateutil==2.8.2
