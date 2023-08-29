@@ -76,7 +76,7 @@ class MyFirstDataCheck(DataCheck):
     ...
 
     def rule_my_first_failed_rule(self):
-        # This rule will always pass
+        # This rule will always fail
         assert True, "This rule failed"
 
     ...
