@@ -45,10 +45,10 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--error_logging",
-        "-el",
+        "--disable_exception_logging",
+        "-d",
         action="store_true",
-        help="Log errors to the console. Note this will also log errors to the database.",
+        help="Disable exceptions logs to the console. Set this flag if you see superfluous logs.",
         default=False,
     )
 
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     checks_to_run = deepcopy(data_check_registry.checks)
     default_check_actions: list[type[CheckAction]] = []
 
-    if args.error_logging:
+    if not args.disable_exception_logging:
         default_check_actions.append(ErrorLoggingCheckAction)
 
     if args.alerting:

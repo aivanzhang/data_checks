@@ -108,10 +108,10 @@ def main():
     )
 
     parser.add_argument(
-        "--error_logging",
-        "-l",
+        "--disable_exception_logging",
+        "-s",
         action="store_true",
-        help="Log errors to the console. Note this will also log errors to the database.",
+        help="Disable exception logs to the console. Set this flag if you see superfluous logs.",
         default=False,
     )
 
@@ -147,7 +147,7 @@ def main():
     suite_actions: list[type[SuiteAction]]
     check_actions: CheckActions
 
-    if args.error_logging:
+    if not args.disable_exception_logging:
         default_suite_actions += [ErrorLoggingSuiteAction]
         default_check_actions["default"].append(ErrorLoggingCheckAction)
 
