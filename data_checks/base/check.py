@@ -75,12 +75,6 @@ class Check(CheckBase, ActionMixin):
         """
         return {}
 
-    def setup(self):
-        """
-        Setup the check
-        """
-        super().setup()
-
     def set_actions(self, actions: list[type[CheckAction]]):
         """
         Set the actions for the check
