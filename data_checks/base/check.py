@@ -46,7 +46,7 @@ class Check(CheckBase, ActionMixin):
             self.only_run_specified_rules()
 
         self._set_additional_properties(params)
-        
+
     @property
     def actions(self) -> list[type[CheckAction]]:
         return self.DEFAULT_ACTIONS + self._actions
@@ -63,9 +63,7 @@ class Check(CheckBase, ActionMixin):
         prefix = "rule_"
         return list(
             filter(
-                lambda method_name: (
-                    method_name.startswith(prefix)
-                ),
+                lambda method_name: (method_name.startswith(prefix)),
                 class_utils.get_all_methods(cls),
             )
         )
@@ -82,7 +80,7 @@ class Check(CheckBase, ActionMixin):
         Setup the check
         """
         super().setup()
-    
+
     def set_actions(self, actions: list[type[CheckAction]]):
         """
         Set the actions for the check
@@ -188,7 +186,8 @@ class Check(CheckBase, ActionMixin):
 
         try:
             start_time = time.time()
-            rule_func(*params["args"], **params["kwargs"])
+            result = rule_func(*params["args"], **params["kwargs"])
+            context.set_sys("result", result)
             print(f"\t\t{rule} took {time.time() - start_time} seconds")
             self.on_success(context)
         except AssertionError as e:
