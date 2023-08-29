@@ -53,19 +53,19 @@ class DataCheck(Check):
         """
         Runs after each rule
         """
-        super().before(context)
+        super().after(context)
 
     def on_success(self, context: ExecutionContext):
         """
         Called when a rule succeeds
         """
-        super().before(context)
+        super().on_success(context)
 
     def on_failure(self, context: ExecutionContext):
         """
         Called when a rule fails
         """
-        super().before(context)
+        super().on_failure(context)
 
     def teardown(self):
         """
