@@ -3,6 +3,7 @@
 
 **Create, schedule, and deploy data quality checks.**
 
+**Questions and feedback:** https://calendly.com/ivanzhang0/demo-with-ivan
 ## Overview
 Exisiting data observability solutions are painfully static. **data_checks** provides a dynamic data observability framework that allows you to reuse existing Python code and/or write new Python code to define data quality checks that can then be easily scheduled and monitored. Inspired by Python's [unittest](https://docs.python.org/3/library/unittest.html), data_checks allows you to write data quality checks as easily and seamlessly as you would write unittests on your code.
 
