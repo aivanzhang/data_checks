@@ -1,0 +1,18 @@
+Username,Email,DOB,Subscription Date,Status,Payment Amount,Country,IP Address
+john_doe,johndoe@example.com,1985/05/20,2022-07-15,active,19.99,USA,192.168.1.1
+jane_smith,jane.smith@example.com,19981010,2021-08-30,pending,15.5,Canada,172.16.0.1
+user123,user123@example.com,1972-09-25,2020/05/10,active,10,UK,10.0.0.1
+invalid_email,invalidemail.com,1989-03-30,2023-04-02,inactive,5.99,Australia,192.256.1.1
+missing_dob,missingdob@example.com,,2021-12-18,active,-8.75,Germany,172.32.0.1
+future_date,futuredate@example.com,2001-06-15,2024-09-01,pending,12.25,France,10.1.0.256
+inconsistent_date,inconsistentdate@example.com,1995/10/30,20211205,active,9.5,Spain,300.168.1.1
+special_chars,spec!alchars@example.com,1984-11-21,2022-02-30,active,7.99,Italy,192.168.0.256
+random_user,random.user123@email.co.uk,19991231,2022-11-10,active,14.75,UK,172.16.1.1
+accented_user,josé@example.com,1987-07-08,2021-05-25,active,11.5,Spain,10.0.0.2
+new_user,newuser456@email.net,19951120,2023-01-15,active,9.25,Canada,192.168.1.2
+test_user,testuser789@email.org,20000602,2021-04-05,pending,13.5,USA,172.16.0.2
+custom_domain,user@customdomain.info,1988-04-12,2020-08-20,active,6.5,Germany,10.0.0.3
+another_user,anotheruser@example.net,19930315,2022-06-12,active,11.99,UK,192.168.1.3
+newbie,newbie123@example.org,20010203,2023-07-20,inactive,5.0,Canada,172.16.0.3
+mysterious,mysterious.user@email.co.uk,19861207,2021-09-25,active,15.25,UK,10.0.0.4
+hidden_user,hiddenuser@email.net,19981025,2022-03-15,Pending,12.0,Germany,192.168.1.4

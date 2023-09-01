@@ -1,0 +1,21 @@
+product_id,name,category,brand,price,discount,stock,size,color,material,description,features,rating,reviews,release_date,warranty,country_of_origin,dimensions,expiry_date
+1,Widget X,Electronics,ABC Electronics,99.99,10,50,Large,Blue,Plastic,A high-tech gadget,WiFi,4.5,120,1/15/23,1 year,USA,10x5x2 in,
+2,SuperPhone 2000,Electronics,XYZ Tech,599.99,5,20,Medium,Black,Metal/Glass,The ultimate smartphone,5G,4.8,250,2/28/23,2 years,China,6x3x0.3 in,
+3,Comfy Pillow,Home,Foam Comfort,29.99,15,100,,White,Memory Foam,Get a good night's sleep,Hypoallergenic,,,3/10/23,None,USA,20x14 in,
+4,Adventure Backpack,Sports,Explore Outdoors,79.99,0,30,Large,Green,Nylon,For the avid explorer,Multiple pockets,,,4/22/23,None,Canada,24x18x8 in,
+5,Classic Watch,Fashion,Elegance Timepieces,149.99,20,15,,Silver,Stainless Steel,Timeless elegance on your wrist,Water-resistant,4.6,80,5/5/23,1 year,Switzerland,2x2x0.4 in,
+6,Organic Tea Pack,Grocery,Healthy Harvest,12.99,10,75,,Various,Organic,Enjoy a cup of nature,Assorted flavors,,,6/18/23,None,India,,6/18/25
+7,Pro Fitness Mat,Fitness,FitZone,49.99,8,25,Large,Black,Rubber,Support for your workouts,Non-slip surface,,,7/1/23,None,China,72x24 in,
+8,Artistic Canvas,Arts,Creative Canvas,39.99,0,40,Medium,White,Cotton,Express your creativity,Pre-primed,,,8/14/23,None,USA,16x20 in,
+9,Culinary Masterclass,Education,LearnEdu,199.99,25,10,,Various,Digital,Unlock your cooking potential,Online tutorials,,,9/27/23,None,Online,,
+10,Power Blender,Kitchen Appliances,BlendMaster,129.99,12,10,,Silver,Plastic,Blend your way to health,Multiple speed options,4.2,45,10/10/23,2 years,USA,,
+11,Fresh Apples,Grocery,Farm Fresh,1.99,0,200,,Red,,Juicy and delicious,Organic,,,1/1/23,None,USA,,1/10/23
+12,Whole Wheat Bread,Grocery,Healthy Bites,2.49,15,150,,Brown,,Nutritious and hearty,High in fiber,,,2/5/23,None,USA,,2/12/23
+13,Cheddar Cheese,Grocery,Dairy Delights,4.99,10,100,,Yellow,,Rich and creamy,Aged for flavor,,,3/15/23,None,USA,,4/15/23
+14,Ground Coffee,Grocery,Coffee Co.,8.99,5,80,,Brown,,Start your day with a cup,Medium roast,,,4/2/23,None,Colombia,,10/2/23
+15,Frozen Peas,Grocery,Frosty Foods,1.79,0,300,,Green,,Convenient and nutritious,Vitamin-rich,,,5/20/23,None,USA,,5/20/24
+16,Granola Bars,Grocery,SnackZone,3.49,20,120,,Assorted,,On-the-go energy,Variety pack,,,6/10/23,None,USA,,6/10/24
+17,Canned Soup,Grocery,Easy Eats,1.29,0,250,,Various,,Quick and comforting,Assorted flavors,,,7/18/23,None,USA,,7/18/25
+18,Fresh Salmon,Grocery,Seafood Sensations,10.99,5,40,,Pink,,Delicate and flavorful,Sustainably sourced,,,8/3/23,None,Norway,,8/10/23
+19,Organic Eggs,Grocery,Happy Hens,3.99,0,100,,Brown,,Farm-fresh goodness,Free-range,,,9/14/23,None,USA,,9/30/23
+20,Sparkling Water,Grocery,Bubble Beverage,0.99,0,500,,Clear,,Refreshing and bubbly,No added sugars,,,10/25/23,None,USA,,10/25/24

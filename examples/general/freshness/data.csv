@@ -1,0 +1,5 @@
+id,date,message
+1,2023-08-22 14:30:00,Some data entry 1
+2,2023-08-22 15:45:00,Some data entry 2
+3,2023-08-21 10:00:00,Stale data entry 1
+4,2023-08-20 09:30:00,Stale data entry 2
